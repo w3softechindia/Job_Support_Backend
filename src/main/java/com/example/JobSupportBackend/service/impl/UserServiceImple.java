@@ -1,6 +1,5 @@
 package com.example.JobSupportBackend.service.impl;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
-import com.example.JobSupportBackend.dto.SkillsAndExperience;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -38,15 +36,18 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User updateRole(User user, String email) throws Exception {
+	public User updateRole(String email,String newRole) throws Exception {
 		User uuser = repo.findById(email).orElseThrow(() -> new Exception("Email Id not found..!!!"));
-		uuser.setRole(user.getRole());
-
-		return repo.save(uuser);
+		if(uuser!=null) {
+			uuser.setRole(newRole);
+			return repo.save(uuser);
+		}else {
+			throw new InvalidIdException("Email not found..!!!"+email);
+		}
 	}
 
 	@Override
-	public User personalInfo(PersonalInfo personalInfo, String email) throws Exception {
+	public User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception {
 		User uuser = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
 		uuser.setFirstname(personalInfo.getFirstname());
 		uuser.setLastname(personalInfo.getLastname());
@@ -57,16 +58,6 @@ public class UserServiceImple implements UserService {
 		uuser.setDescription(personalInfo.getDescription());
 
 		return repo.save(uuser);
-	}
-
-	private   List<SkillsAndExperience>  skills;
-	
-	@Override
-	public User skillsandexperience( String email) throws InvalidIdException {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
-		  
-		
-		return null;
 	}
 
 	@Override
@@ -80,10 +71,17 @@ public class UserServiceImple implements UserService {
 		user.setCity(otherInfo.getCity());
 		user.setState(otherInfo.getState());
 		user.setPostcode(otherInfo.getPostcode());
-		user.setPostcodetype(otherInfo.getPostcodetype());
 		user.setDocumenttype(otherInfo.getDocumenttype());
 		user.setDocumentnumber(otherInfo.getDocumentnumber());
 		return repo.save(user);
 	}
 
+	@Override
+	public User getDetails(String email) {
+		User user = repo.findByEmail(email);
+		System.out.println(user);
+		return user;
+	}
+
+	
 }

@@ -8,9 +8,11 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -46,26 +48,21 @@ public class User implements UserDetails {
 	private String typeofjob;
 	private String description;
 	
-	@OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonManagedReference
 	private List<Skills> skills;
-
-//	private String skills;
-//	private String level;
-//	private String degree;
-//	private String university;
-//	private String startdate;
-//	private String enddate;
-//
-//	private String certification;
-//	private String certifiedfrom;
-//	private String year;
-//	private String companyname;
-//	private String position;
-//	private String companystartdate;
-//	private String companyenddate;
-//
-//	private String language;
-//	private String chooselevel;
+	
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Education> education;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Experience> experience;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Certification> certification;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Language> language;
 
 	private String facebook;
 	private String instagram;
@@ -76,7 +73,6 @@ public class User implements UserDetails {
 	private String city;
 	private String state;
 	private String postcode;
-	private String postcodetype;
 	private String documenttype;
 	private String documentnumber;
 
