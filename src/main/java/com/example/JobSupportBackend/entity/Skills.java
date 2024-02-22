@@ -1,11 +1,15 @@
 package com.example.JobSupportBackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,35 +19,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Skills {
-	
-	
-	  @Id
-	  @GeneratedValue
-	 private int skillid;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int skillid;
 	private String skills;
 	private String level;
-	
-	@ManyToOne
-	private User user; 
-	
-	private String degree;
-	private String university;
-	private String startdate;
-	private String enddate;
 
-	private String certification;
-	private String certifiedfrom;
-	private String year;
-	private String companyname;
-	private String position;
-	private String companystartdate;
-	private String companyenddate;
-
-	private String language;
-	private String chooselevel;
-	
-	
-
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_email")
+	@JsonBackReference
+	private User user;
 }
