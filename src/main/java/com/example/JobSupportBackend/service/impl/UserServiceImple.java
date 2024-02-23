@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
@@ -83,5 +84,17 @@ public class UserServiceImple implements UserService {
 		return user;
 	}
 
-	
+	@Override
+	public User employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException {
+		User user = repo.findById(email).orElseThrow(()->new InvalidIdException("Email Id not found..!!!"));
+		user.setEcompany(employerInfo.getEcompany());
+		user.setEtagline(employerInfo.getEtagline());
+		user.setEstablishdate(employerInfo.getEstablishdate());
+		user.setEcompanyownername(employerInfo.getEcompanyownername());
+		user.setIndustry(employerInfo.getIndustry());
+		user.setEwebsite(employerInfo.getEwebsite());
+		user.setEteamsize(employerInfo.getEteamsize());
+		user.setEdescribe(employerInfo.getEdescribe());
+		return repo.save(user);
+	}
 }
