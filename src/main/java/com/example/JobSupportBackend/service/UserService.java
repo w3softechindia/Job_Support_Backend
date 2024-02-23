@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.service;
 
+import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
@@ -17,4 +18,6 @@ public interface UserService {
 
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;
 	
+	public User employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException;
+
 }
