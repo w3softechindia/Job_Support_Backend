@@ -11,5 +11,4 @@ import com.example.JobSupportBackend.entity.Language;
 public interface LanguageRepository extends JpaRepository<Language, Long>{
 
 	List<Language> findByUserEmail(String email);
-
 }

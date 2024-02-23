@@ -1,5 +1,7 @@
 package com.example.JobSupportBackend.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +69,7 @@ public class UserController {
 			throws Exception {
 		return new ResponseEntity<User>(userService.otherinfo(otherinfo, email), HttpStatus.ACCEPTED);
 	}
-	
+
 //	@PostMapping("/addSkills/{email}/skills")
 //	public ResponseEntity<?> addSkillsToUser(@PathVariable String email,@RequestBody Set<Skills> skills, ){
 //		try {
@@ -102,7 +104,7 @@ public class UserController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
 	        }
 	    }
-	
+
 	 @GetMapping("/getUser/{email}")
 	 public ResponseEntity<?> getUserByEmail(@PathVariable String email){
 		 User user = skillsService.getUserByEmail(email);
@@ -110,7 +112,7 @@ public class UserController {
 			 return new ResponseEntity<>(user, HttpStatus.OK);
 		 }else
 		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	 }
+   }
 	 
 	 @PutMapping("/employerInfo/{email}")
 		public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)

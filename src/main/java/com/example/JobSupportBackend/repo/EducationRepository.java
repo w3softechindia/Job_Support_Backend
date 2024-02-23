@@ -11,5 +11,4 @@ import com.example.JobSupportBackend.entity.Education;
 public interface EducationRepository extends JpaRepository<Education, Long>{
 
 	List<Education> findByUserEmail(String email);
-
 }

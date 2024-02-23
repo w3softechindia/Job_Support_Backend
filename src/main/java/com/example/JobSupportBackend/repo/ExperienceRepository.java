@@ -9,7 +9,6 @@ import com.example.JobSupportBackend.entity.Experience;
 
 @Repository
 public interface ExperienceRepository extends JpaRepository<Experience, Long>{
-
 	List<Experience> findByUserEmail(String email);
 
 }
