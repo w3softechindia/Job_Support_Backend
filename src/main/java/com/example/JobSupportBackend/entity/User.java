@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.entity;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,9 @@ public class User implements UserDetails {
 	private String email;
 	private String username;
 	private String password;
+	private String otp;
+	private LocalDateTime otpGeneratedtime;
+	private boolean verified;
 
 	private String firstname;
 	private String lastname;

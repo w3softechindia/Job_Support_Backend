@@ -23,17 +23,7 @@ public class CertificationServiceImple implements CertificationService{
 	private CertificationRepository certificationRepository;
 
 	@Override
-	public User getUserByEmail(String email) {
-		User user = userRepository.findByEmail(email);
-		if(user!=null) {
-			List<Certification> certifications = certificationRepository.findByUserEmail(email);
-			user.setCertification(certifications);
-		}
-		return user;
-	}
-
-	@Override
-	public void addCertications(String userEmail, Set<Certification> certifications) throws InvalidIdException {
+	public void addCertications(String userEmail, List<Certification> certifications) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			certifications.forEach(certificate->{

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.JobSupportBackend.entity.Language;
 
 @Repository
-public interface LanguageRepository extends JpaRepository<Language, Long>{
+public interface LanguageRepository extends JpaRepository<Language, Integer>{
 
 	List<Language> findByUserEmail(String email);
 }

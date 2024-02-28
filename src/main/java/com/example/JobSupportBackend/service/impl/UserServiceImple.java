@@ -1,10 +1,16 @@
 package com.example.JobSupportBackend.service.impl;
 
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.JobSupportBackend.EmailUtil.EmailUtil;
+import com.example.JobSupportBackend.EmailUtil.OtpUtil;
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
@@ -14,6 +20,8 @@ import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
+import jakarta.mail.MessagingException;
+
 @Service
 public class UserServiceImple implements UserService {
 
@@ -22,18 +30,33 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private OtpUtil otpUtil;
+	
+	@Autowired
+	private EmailUtil emailUtil;
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
 	}
 
 	@Override
-	public User register(Register register) {
-
-		User user = User.builder().username(register.getUsername()).email(register.getEmail())
-				.password(getEncodedPassword(register.getPassword())).build();
-
-		return repo.save(user);
+	public User register(Register register) throws InvalidIdException, MessagingException {
+		Optional<User> user2 = repo.findById(register.getEmail());
+		if(user2.isPresent()) {
+			throw new InvalidIdException("Email already exists...!!!"+register.getEmail());
+		}
+		else {
+			String otp=otpUtil.generateOtp();
+			emailUtil.sendOtpMail(register.getEmail(), otp);
+			User user = User.builder().username(register.getUsername()).email(register.getEmail())
+					.password(getEncodedPassword(register.getPassword()))
+					.otp(otp)
+					.otpGeneratedtime(LocalDateTime.now())
+					.build();
+			return repo.save(user);
+		}
 	}
 
 	@Override
@@ -96,5 +119,52 @@ public class UserServiceImple implements UserService {
 		user.setEteamsize(employerInfo.getEteamsize());
 		user.setEdescribe(employerInfo.getEdescribe());
 		return repo.save(user);
+	}
+
+	@Override
+	public User verifyAccount(String email, String otp) throws Exception {
+		User user = repo.findById(email).orElseThrow(()-> new InvalidIdException("Email not found..!!"+email));
+		if(user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedtime(), LocalDateTime.now()).getSeconds()<(1*60)) {
+			user.setVerified(true);
+			return repo.save(user);
+		}
+		else {
+			 throw new Exception("Inavlid Otp...!!");
+		}
+	}
+
+	@Override
+	public String regenerateOtp(String email) throws MessagingException, InvalidIdException {
+		User user = repo.findById(email).orElseThrow(()-> new InvalidIdException("Email not found..!!"+email));
+		String otp=otpUtil.generateOtp();
+		emailUtil.sendOtpMail(email, otp);
+		user.setOtp(otp);
+		user.setOtpGeneratedtime(LocalDateTime.now());
+		repo.save(user);
+		return "Otp sent....please verify within 1 minute";
+	}
+
+	@Override
+	public User sendOTP(String email) throws InvalidIdException, MessagingException, Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean verifyOTP(String email, String otp) throws InvalidIdException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public User resetPassword(String email, String password) throws InvalidIdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		User user = repo.findByEmail(email);
+		return user;
 	}
 }
