@@ -6,7 +6,6 @@ import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 
 public interface EducationService {
-
 	void addEducations(String userEmail, List<Education> educations) throws InvalidIdException;
 
 }

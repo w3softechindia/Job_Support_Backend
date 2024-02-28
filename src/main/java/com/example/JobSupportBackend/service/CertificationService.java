@@ -8,7 +8,6 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 
 public interface CertificationService {
-
 	void addCertications(String userEmail, List<Certification> certifications) throws InvalidIdException;
 
 }

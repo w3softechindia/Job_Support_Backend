@@ -8,7 +8,6 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 
 public interface ExperienceService {
-
 	void addExperience(String userEmail, List<Experience> experiences) throws InvalidIdException;
 
 }

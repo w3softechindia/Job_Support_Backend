@@ -34,4 +34,5 @@ public interface UserService {
 	User resetPassword(String email, String  password) throws InvalidIdException;
 
 	public User getUserByEmail(String email);
+
 }

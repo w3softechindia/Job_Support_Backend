@@ -22,7 +22,6 @@ public class EducationServiceImple implements EducationService{
 	@Autowired
 	private EducationRepository educationRepository;
 
-
 	@Override
 	public void addEducations(String userEmail, List<Education> educations) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);

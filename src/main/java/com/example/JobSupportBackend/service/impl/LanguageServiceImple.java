@@ -20,7 +20,6 @@ public class LanguageServiceImple implements LanguageService{
 	@Autowired
 	private LanguageRepository languageRepository;
 
-
 	@Override
 	public void addLanguages(String userEmail, List<Language> languages) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDataDTO {
-	
+
     private List<Skills> skills;
     private List<Education> educations;
     private List<Certification> certifications;

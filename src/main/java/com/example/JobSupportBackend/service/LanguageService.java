@@ -8,7 +8,6 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 
 public interface LanguageService {
-
 	void addLanguages(String userEmail, List<Language> languages) throws InvalidIdException;
 
 }

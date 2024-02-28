@@ -80,7 +80,6 @@ public class UserController {
 			throws Exception {
 		return new ResponseEntity<User>(userService.otherinfo(otherinfo, email), HttpStatus.ACCEPTED);
 	}
-
 	
 	@PostMapping("/addUserData/{email}")
 	public ResponseEntity<User> addUserData(@PathVariable String email, @RequestBody UserDataDTO dataDTO) {
@@ -116,6 +115,7 @@ public class UserController {
 //		 }else
 //		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //   }
+
 	 
 	 @PutMapping("/employerInfo/{email}")
 		public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
