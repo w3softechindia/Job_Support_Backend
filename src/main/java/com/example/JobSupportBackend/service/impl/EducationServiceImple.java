@@ -23,18 +23,7 @@ public class EducationServiceImple implements EducationService{
 	private EducationRepository educationRepository;
 
 	@Override
-	public User getUserByEmail(String email) {
-		User user = userRepository.findByEmail(email);
-		if(user!=null) {
-			List<Education> educations = educationRepository.findByUserEmail(email);
-			user.setEducation(educations);
-		}
-		return user;
-	}
-
-
-	@Override
-	public void addEducations(String userEmail, Set<Education> educations) throws InvalidIdException {
+	public void addEducations(String userEmail, List<Education> educations) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			educations.forEach(education->{

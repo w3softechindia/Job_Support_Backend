@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.JobSupportBackend.entity.Experience;
 
 @Repository
-public interface ExperienceRepository extends JpaRepository<Experience, Long>{
+public interface ExperienceRepository extends JpaRepository<Experience, Integer>{
 	List<Experience> findByUserEmail(String email);
 
 }

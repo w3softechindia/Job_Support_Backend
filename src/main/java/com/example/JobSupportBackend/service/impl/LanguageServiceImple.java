@@ -1,8 +1,6 @@
 package com.example.JobSupportBackend.service.impl;
 
 import java.util.List;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,18 +21,7 @@ public class LanguageServiceImple implements LanguageService{
 	private LanguageRepository languageRepository;
 
 	@Override
-	public User getUserByEmail(String email) {
-		User user = userRepository.findByEmail(email);
-		if(user!=null) {
-			List<Language> languages = languageRepository.findByUserEmail(email);
-			user.setLanguage(languages);
-		}
-		return user;
-	}
-
-
-	@Override
-	public void addLanguages(String userEmail, Set<Language> languages) throws InvalidIdException {
+	public void addLanguages(String userEmail, List<Language> languages) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			languages.forEach(language->{

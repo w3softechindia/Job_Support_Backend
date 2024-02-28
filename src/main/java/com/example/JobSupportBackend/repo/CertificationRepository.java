@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.JobSupportBackend.entity.Certification;
 
 @Repository
-public interface CertificationRepository extends JpaRepository<Certification, Long>{
+public interface CertificationRepository extends JpaRepository<Certification, Integer>{
 
 	List<Certification> findByUserEmail(String email);
 	

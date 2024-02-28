@@ -23,17 +23,7 @@ public class ExperienceServiceImple implements ExperienceService{
 	private ExperienceRepository experienceRepository;
 
 	@Override
-	public User getUserByEmail(String email) {
-		User user = userRepository.findByEmail(email);
-		if(user!=null) {
-			List<Experience> experiences = experienceRepository.findByUserEmail(email);
-			user.setExperience(experiences);
-		}
-		return user;
-	}
-
-	@Override
-	public void addExperience(String userEmail, Set<Experience> experiences) throws InvalidIdException {
+	public void addExperience(String userEmail, List<Experience> experiences) throws InvalidIdException {
 		User user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			experiences.forEach(experience->{

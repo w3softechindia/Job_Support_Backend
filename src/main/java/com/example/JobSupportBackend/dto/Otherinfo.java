@@ -10,9 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Otherinfo {
-
-	
-	
 	
 	private String facebook;
 	private String instagram;

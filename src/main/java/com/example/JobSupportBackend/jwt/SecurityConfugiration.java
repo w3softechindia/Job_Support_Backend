@@ -37,7 +37,7 @@ public class SecurityConfugiration {
 		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
-								"/addUserData/*","/getUser/*","/employerInfo/*")
+								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendotp/*")
 						.permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
