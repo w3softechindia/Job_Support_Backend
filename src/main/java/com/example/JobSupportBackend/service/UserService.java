@@ -6,6 +6,7 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 
 import jakarta.mail.MessagingException;
 
@@ -27,7 +28,7 @@ public interface UserService {
 
 	public String regenerateOtp(String email) throws MessagingException, InvalidIdException;
 
-	User sendOTP(String email) throws InvalidIdException, MessagingException, Exception;
+	User sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException;
 
 	boolean verifyOTP(String email, String otp) throws InvalidIdException;
 	
