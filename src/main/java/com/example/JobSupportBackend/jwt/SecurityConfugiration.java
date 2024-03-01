@@ -40,7 +40,7 @@ public class SecurityConfugiration {
 						
 
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
-								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendOTP/*","/verifyOTP/**","/upload/*"
+								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendOTP/*","/verifyOTP/**","/upload/*",
 								"/resetPassword/**","/regenerate-otp/*","/adminRegister")
 
 						.permitAll().anyRequest().authenticated())
