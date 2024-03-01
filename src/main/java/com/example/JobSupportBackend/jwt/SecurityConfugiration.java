@@ -38,7 +38,7 @@ public class SecurityConfugiration {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
 								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendOTP/*","/verifyOTP/**",
-								"/resetPassword/**","/regenerate-otp/*")
+								"/resetPassword/**","/regenerate-otp/*","/adminRegister")
 						.permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
