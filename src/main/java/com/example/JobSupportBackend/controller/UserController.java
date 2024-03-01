@@ -28,7 +28,7 @@ import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
 import com.example.JobSupportBackend.service.LanguageService;
-import com.example.JobSupportBackend.service.PhotoService;
+
 import com.example.JobSupportBackend.service.SkillsService;
 import com.example.JobSupportBackend.service.UserService;
 
@@ -54,8 +54,7 @@ public class UserController {
 	@Autowired
 	private ExperienceService experienceService;
 
-	@Autowired
-	private PhotoService photoService;
+	
 
 	@Autowired
 	private CertificationService certificationService;

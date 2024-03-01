@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.JobSupportBackend.EmailUtil.EmailUtil;
-import com.example.JobSupportBackend.EmailUtil.ImageUtil;
+
 import com.example.JobSupportBackend.EmailUtil.OtpUtil;
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
@@ -55,11 +55,6 @@ public class UserServiceImple implements UserService {
 	
 	
 
-	@Autowired
-	private OtpUtil otpUtil;
-
-	@Autowired
-	private EmailUtil emailUtil;
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
