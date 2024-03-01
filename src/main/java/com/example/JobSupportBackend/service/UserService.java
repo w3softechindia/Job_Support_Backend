@@ -1,5 +1,9 @@
 package com.example.JobSupportBackend.service;
 
+import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
@@ -17,7 +21,8 @@ public interface UserService {
 
 	public User updateRole(String email, String newRole) throws Exception;
 
-	public User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception;
+//	public User updatePersonalInfo(PersonalInfo personalInfo, String emaill) throws Exception;
+
 
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;
 	
@@ -30,9 +35,32 @@ public interface UserService {
 	User sendOTP(String email) throws InvalidIdException, MessagingException, Exception;
 
 	boolean verifyOTP(String email, String otp) throws InvalidIdException;
+	User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception;
 	
 	User resetPassword(String email, String  password) throws InvalidIdException;
 
 	public User getUserByEmail(String email);
+
+	
+
+
+	
+//	 User updatePersonalInfoAndUserImagePath(PersonalInfo personalInfo, String email, MultipartFile file) throws IOException, InvalidIdException;
+
+	void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException;
+
+	
+
+	
+
+		
+	
+	
+	
+	
+	
+	
+	
+	 
 
 }
