@@ -11,24 +11,23 @@ public class JwtController {
 	@Autowired
 	private JwtServiceImplementation jwtServiceImplementation;
 
-	@PostMapping("/freelancerLogin")
+	@PostMapping("/authenticate")
 	public JwtResponse generateToken(@RequestBody JwtRequest jwtRequest) throws Exception {
 
 		return jwtServiceImplementation.createJwtToken(jwtRequest);
 	}
-	
-	
-	@PostMapping("/employerLogin")
-	public JwtResponse generateToken2(@RequestBody JwtRequest jwtRequest) throws Exception {
 
-		return jwtServiceImplementation.createJwtToken(jwtRequest);
-	}
-	
-	
-	@PostMapping("/adminLogin")
-	public JwtResponse generateToken3(@RequestBody JwtRequest jwtRequest) throws Exception {
-
-		return jwtServiceImplementation.createJwtToken(jwtRequest);
-	}
+//	@PostMapping("/employerLogin")
+//	public JwtResponse generateToken2(@RequestBody JwtRequest jwtRequest) throws Exception {
+//
+//		return jwtServiceImplementation.createJwtToken(jwtRequest);
+//	}
+//	
+//	
+//	@PostMapping("/adminLogin")
+//	public JwtResponse generateToken3(@RequestBody JwtRequest jwtRequest) throws Exception {
+//
+//		return jwtServiceImplementation.createJwtToken(jwtRequest);
+//	}
 
 }
