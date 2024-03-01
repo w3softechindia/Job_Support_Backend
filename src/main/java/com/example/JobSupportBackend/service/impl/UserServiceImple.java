@@ -36,12 +36,6 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
-	@Autowired
-	private OtpUtil otpUtil;
-
-	@Autowired
-	private EmailUtil emailUtil;
-
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
 	}
