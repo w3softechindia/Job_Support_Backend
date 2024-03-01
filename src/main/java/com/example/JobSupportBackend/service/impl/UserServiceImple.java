@@ -50,11 +50,6 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 	   private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
-	   
-	   
-	
-	
-
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
 	}
