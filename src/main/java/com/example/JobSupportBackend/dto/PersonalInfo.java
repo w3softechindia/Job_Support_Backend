@@ -18,7 +18,10 @@ public class PersonalInfo {
 	private String lastname;
 	private long phonenumber;
 	
-
+	
+	 private String imagePath;
+	 
+  
 	private String dob;
 	private String jobtitle;
 	private String typeofjob;
