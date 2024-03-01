@@ -142,8 +142,42 @@ public class UserController {
 //		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //   }
 
-	
-	    
+
+	 
+	 @PutMapping("/employerInfo/{email}")
+		public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
+				throws Exception {
+			return new ResponseEntity<User>(userService.employerInfo(employerInfo, email), HttpStatus.ACCEPTED);
+		}
+	 
+	 @PutMapping("/resetPassword/{email}/{password}")
+		public ResponseEntity<User> resetPassword(@PathVariable String email, @PathVariable String password)
+				throws Exception {
+			if (email != null && password != null) {
+				return new ResponseEntity<User>(userService.resetPassword(email, password), HttpStatus.OK);
+			} else {
+				throw new Exception("Credentials cant be null");
+			}
+		}
+	 
+	 @PutMapping("/sendOTP/{email}")
+		public ResponseEntity<User> sendOTP(@PathVariable String email) throws Exception {
+			if (email == null) {
+				throw new Exception("Email cant be null");
+			} else {
+				return new ResponseEntity<User>(userService.sendOTP(email), HttpStatus.OK);
+			}
+		}
+
+		@PutMapping("/verifyOTP/{email}/{otp}")
+		public ResponseEntity<Boolean> verifyOTP(@PathVariable String otp, @PathVariable String email) throws Exception {
+			if (otp == null && email == null) {
+				throw new Exception("Email and Otp cant be null");
+			} else {
+				return new ResponseEntity<Boolean>(userService.verifyOTP(email, otp), HttpStatus.OK);
+			}
+		}
+
 }
 
 	

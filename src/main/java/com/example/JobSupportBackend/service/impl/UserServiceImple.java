@@ -1,9 +1,11 @@
 package com.example.JobSupportBackend.service.impl;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,6 +27,7 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
@@ -51,6 +54,12 @@ public class UserServiceImple implements UserService {
 	   
 	
 	
+
+	@Autowired
+	private OtpUtil otpUtil;
+
+	@Autowired
+	private EmailUtil emailUtil;
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
@@ -242,21 +251,37 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User sendOTP(String email) throws InvalidIdException, MessagingException, Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public User sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException {
+		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		if (user.isVerified()) {
+			String otp = otpUtil.generateOtp();
+			emailUtil.setPassword(email, otp);
+			user.setOtp(otp);
+			user.setOtpGeneratedtime(LocalDateTime.now());
+			return repo.save(user);
+		} else {
+			throw new ResourceNotFoundException("User email is not Verified..!!!");
+		}
 	}
 
 	@Override
 	public boolean verifyOTP(String email, String otp) throws InvalidIdException {
-		// TODO Auto-generated method stub
-		return false;
+		User user = repo.findById(email)
+				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
+		if (user.getOtp().equals(otp)
+				&& Duration.between(user.getOtpGeneratedtime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public User resetPassword(String email, String password) throws InvalidIdException {
-		// TODO Auto-generated method stub
-		return null;
+		User user = repo.findById(email)
+				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
+		user.setPassword(getEncodedPassword(password));
+		return repo.save(user);
 	}
 
 	@Override

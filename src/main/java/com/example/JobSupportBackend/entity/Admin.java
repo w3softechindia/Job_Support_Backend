@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Admin {
 	
-	private String username;
 	@Id
 	private String email;
+	private String username;
 	private String password;
 }

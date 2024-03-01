@@ -36,7 +36,7 @@ public class EmailUtil {
 				+ "            <strong>" + otp + "</strong>\r\n" + "        </div>\r\n" + "\r\n"
 				+ "        <p>This OTP is valid for a single use and will expire in 1 minutes.</p>\r\n"
 				+ "        <p>For security reasons, do not share this OTP with anyone. If you didn't request this OTP, please ignore this message.</p>\r\n"
-				+ "\r\n" + "        <p style=\"margin-top: 30px;\">Safe travels with Railways!</p>\r\n"
+				+ "\r\n" + "       \r\n"
 				+ "    </div>\r\n" + "\r\n" + "</body>", otp);
 		helper.setText(emailBody, true);
 		javaMailSender.send(message);
@@ -54,13 +54,13 @@ public class EmailUtil {
 						+ "\r\n"
 						+ "    <div style=\"max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\r\n"
 						+ "        <h2 style=\"color: #ff5722;\">JobSupport4U OTP Verification</h2>\r\n"
-						+ "        <h2>Dear "+name+",</h2>\r\n" + "        <p>Your OTP for Verification is:</p>\r\n"
+						+ "        <h2>Dear "+name+",</h2>\r\n" + "        <p>Your OTP for Changing Password is:</p>\r\n"
 						+ "        \r\n"
 						+ "        <div style=\"font-size: 36px; color: #ff5722; margin: 20px 0; padding: 10px; border: 2px solid #ff5722; border-radius: 5px;\">\r\n"
 						+ "            <strong>" + otp + "</strong>\r\n" + "        </div>\r\n" + "\r\n"
 						+ "        <p>This OTP is valid for a single use and will expire in 1 minutes.</p>\r\n"
 						+ "        <p>For security reasons, do not share this OTP with anyone. If you didn't request this OTP, please ignore this message.</p>\r\n"
-						+ "\r\n" + "        <p style=\"margin-top: 30px;\">Safe travels with Railways!</p>\r\n"
+						+ "\r\n" + "       \r\n"
 						+ "    </div>\r\n" + "\r\n" + "</body>",
 				otp);
 		helper.setText(emailBody, true);
