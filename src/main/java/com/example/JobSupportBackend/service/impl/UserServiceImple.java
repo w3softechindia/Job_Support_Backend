@@ -1,13 +1,25 @@
 package com.example.JobSupportBackend.service.impl;
 
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import java.util.UUID;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.JobSupportBackend.EmailUtil.EmailUtil;
+import com.example.JobSupportBackend.EmailUtil.ImageUtil;
 import com.example.JobSupportBackend.EmailUtil.OtpUtil;
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
@@ -20,6 +32,8 @@ import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
+
 
 @Service
 public class UserServiceImple implements UserService {
@@ -29,12 +43,17 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private OtpUtil otpUtil;
-	
+
 	@Autowired
 	private EmailUtil emailUtil;
+	   private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
+	   
+	   
+	
+	
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
@@ -65,6 +84,8 @@ public class UserServiceImple implements UserService {
 			throw new InvalidIdException("Email not found..!!!" + email);
 		}
 	}
+	
+	
 
 	@Override
 	public User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception {
@@ -79,6 +100,89 @@ public class UserServiceImple implements UserService {
 
 		return repo.save(uuser);
 	}
+
+	@Override
+	@Transactional
+	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
+	    if (file.isEmpty()) {
+	        throw new IllegalArgumentException("File is empty");
+	    }
+
+	    // Generate a unique filename
+	    String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+	    // Save the image file to a local directory
+	    String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+	    Path directoryPath = Paths.get(uploadDir);
+	    Files.createDirectories(directoryPath);
+	    
+	    String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+	    Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+
+	    // Store the image path in the database
+	    User user = repo.findByEmail(email);
+	    if (user != null) {
+	        user.setImagePath(filePath);
+	        repo.save(user);
+	    } else {
+	        throw new IllegalArgumentException("User with email " + email + " does not exist.");
+	    }
+	}
+	
+	
+	
+//	 @Override
+//	    @Transactional
+//	    public User updatePersonalInfoAndUserImagePath(PersonalInfo personalInfo, String email, MultipartFile file) {
+//	        if (file.isEmpty()) {
+//	            throw new IllegalArgumentException("File is empty");
+//	        }
+//
+//	        try {
+//	            String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+//	            String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+//	            Path directoryPath = Paths.get(uploadDir);
+//	            Files.createDirectories(directoryPath);
+//
+//	            String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+//	            Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+//
+//	            User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
+//	            user.setFirstname(personalInfo.getFirstname());
+//	            user.setLastname(personalInfo.getLastname());
+//	            user.setPhonenumber(personalInfo.getPhonenumber());
+//	            user.setDob(personalInfo.getDob());
+//	            user.setJobtitle(personalInfo.getJobtitle());
+//	            user.setTypeofjob(personalInfo.getTypeofjob());
+//	            user.setDescription(personalInfo.getDescription());
+//	            user.setImagePath(filePath);
+//
+//	            return repo.save(user);
+//	        } catch (IOException | InvalidIdException e) {
+//	            throw new RuntimeException("Failed to update personal info and image path", e);
+//	        }
+//	    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	@Override
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {
@@ -179,4 +283,28 @@ public class UserServiceImple implements UserService {
 		User user = repo.findByEmail(email);
 		return user;
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+
+	
+	
+
+
+
 }
+
+
+	
+	

@@ -36,9 +36,13 @@ public class SecurityConfugiration {
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth
+
+						
+
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
-								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendOTP/*","/verifyOTP/**",
+								"/addUserData/*","/getUser/*","/employerInfo/*","/verify/**","/sendOTP/*","/verifyOTP/**","/upload/*"
 								"/resetPassword/**","/regenerate-otp/*","/adminRegister")
+
 						.permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

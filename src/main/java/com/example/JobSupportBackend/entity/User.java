@@ -12,10 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +45,10 @@ public class User implements UserDetails {
 	private LocalDateTime otpGeneratedtime;
 	private boolean verified;
 
+	
+	 private String imagePath;
+	 
+	
 	private String firstname;
 	private String lastname;
 	private long phonenumber;
@@ -51,7 +58,16 @@ public class User implements UserDetails {
 	private String jobtitle;
 	private String typeofjob;
 	private String description;
-	
+	 
+
+	   @Column(name = "image_bytes", columnDefinition = "LONGBLOB")
+	    private byte[] imageBytes;
+	  
+	  
+	  
+	    @OneToOne
+	    private Photo photo;
+	 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     @JsonManagedReference
 	private List<Skills> skills;
@@ -71,6 +87,10 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     @JsonManagedReference
     private List<Language> language;
+    
+    
+    
+    
 
 	private String facebook;
 	private String instagram;
