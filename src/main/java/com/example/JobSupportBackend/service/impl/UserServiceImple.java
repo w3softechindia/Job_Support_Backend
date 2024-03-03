@@ -55,12 +55,6 @@ public class UserServiceImple implements UserService {
 	
 	
 
-	@Autowired
-	private OtpUtil otpUtil;
-
-	@Autowired
-	private EmailUtil emailUtil;
-
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
 	}
@@ -135,6 +129,28 @@ public class UserServiceImple implements UserService {
 	    }
 	}
 	
+	
+	
+	
+	
+	 @Override
+	    public byte[] getPhotoBytesByEmail(String email) throws IOException {
+	        // Fetch the user entity by email
+	        User user = repo.findByEmail(email);
+	        if (user == null) {
+	            throw new IllegalArgumentException("User with email " + email + " does not exist.");
+	        }
+
+	        // Get the image path from the user object
+	        String imagePath = user.getImagePath();
+	        if (imagePath == null || imagePath.isEmpty()) {
+	            throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+	        }
+
+	        // Read the photo bytes from the file
+	        Path photoPath = Paths.get(imagePath);
+	        return Files.readAllBytes(photoPath);
+	    }
 	
 	
 //	 @Override

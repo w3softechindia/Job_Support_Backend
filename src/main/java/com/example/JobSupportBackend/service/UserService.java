@@ -50,6 +50,8 @@ public interface UserService {
 
 	void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException;
 
+	byte[] getPhotoBytesByEmail(String email) throws IOException;
+
 	
 
 	
