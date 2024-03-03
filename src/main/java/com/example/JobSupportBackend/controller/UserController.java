@@ -1,8 +1,12 @@
 package com.example.JobSupportBackend.controller;
 
+
 import java.awt.PageAttributes.MediaType;
 import java.io.IOException;
 import java.net.http.HttpHeaders;
+
+import java.io.IOException;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +20,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
@@ -29,12 +39,16 @@ import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
 import com.example.JobSupportBackend.service.LanguageService;
+
 import com.example.JobSupportBackend.service.PhotoService;
+
+
 import com.example.JobSupportBackend.service.SkillsService;
 import com.example.JobSupportBackend.service.UserService;
 
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class UserController {
@@ -55,8 +69,8 @@ public class UserController {
 	@Autowired
 	private ExperienceService experienceService;
 
-	@Autowired
-	private PhotoService photoService;
+
+
 
 	@Autowired
 	private CertificationService certificationService;
@@ -100,6 +114,7 @@ public class UserController {
 	                .body("Error uploading photo: " + e.getMessage());
 	    }
 }
+
 	 
 
 	
@@ -124,6 +139,7 @@ public class UserController {
         }
     }
 	
+
 
 	@PutMapping("/otherInfo/{email}")
 	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)

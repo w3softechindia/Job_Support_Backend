@@ -11,8 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.nio.file.Path;
+
 import java.util.Arrays;
 import java.util.List;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,11 +52,9 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private EmailUtil emailUtil;
-	   private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
-	   
-	   
-	
-	
+
+	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
+
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
@@ -104,6 +105,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	@Transactional
 	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
+
 	    if (file.isEmpty()) {
 	        throw new IllegalArgumentException("File is empty");
 	    }
@@ -204,7 +206,32 @@ public class UserServiceImple implements UserService {
 	
 	
 	
-	
+
+		if (file.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
+
+		// Generate a unique filename
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+		// Save the image file to a local directory
+		String uploadDir = "C:\\Users\\91910\\Desktop\\saving photos";
+		Path directoryPath = Paths.get(uploadDir);
+		Files.createDirectories(directoryPath);
+
+		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+		Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+
+		// Store the image path in the database
+		User user = repo.findByEmail(email);
+		if (user != null) {
+			user.setImagePath(filePath);
+			repo.save(user);
+		} else {
+			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+		}
+	}
+
 
 	@Override
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {
@@ -306,6 +333,7 @@ public class UserServiceImple implements UserService {
 		return user;
 	}
 
+
 	
 	
 	
@@ -322,6 +350,7 @@ public class UserServiceImple implements UserService {
 
 	
 	
+
 
 
 
