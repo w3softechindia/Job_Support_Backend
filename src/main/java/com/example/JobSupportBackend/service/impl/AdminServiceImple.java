@@ -18,4 +18,15 @@ public class AdminServiceImple implements AdminService{
 	public Admin register(Admin admin) throws InvalidIdException {
 		return adminRepository.save(admin);
 	}
+
+	@Override
+	public Admin login(String email, String password) throws InvalidIdException {
+		Admin admin = adminRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email Doesn't exist...!!!"+email));
+		if(admin.getPassword().equals(password)) {
+			return admin;
+		}
+		else {
+			throw new InvalidIdException("Invalid Password...!!!");
+		}
+	}
 }
