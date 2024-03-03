@@ -3,6 +3,7 @@ package com.example.JobSupportBackend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,5 +21,10 @@ public class AdminController {
 	@PostMapping("/adminRegister")
 	public ResponseEntity<Admin> register(@RequestBody Admin admin) throws InvalidIdException {
 		return new ResponseEntity<Admin>(adminService.register(admin), HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/adminLogin/{email}/{password}")
+	public ResponseEntity<Admin> adminLogin(@PathVariable String email,@PathVariable String password) throws InvalidIdException{
+		return new ResponseEntity<Admin>(adminService.login(email, password),HttpStatus.OK);
 	}
 }

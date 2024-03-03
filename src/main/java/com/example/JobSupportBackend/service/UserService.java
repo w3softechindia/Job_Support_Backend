@@ -46,9 +46,15 @@ public interface UserService {
 
 
 	
-//	 User updatePersonalInfoAndUserImagePath(PersonalInfo personalInfo, String email, MultipartFile file) throws IOException, InvalidIdException;
+
 
 	void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException;
+
+
+	byte[] getPhotoBytesByEmail(String email) throws IOException;
+
+	void updateUserImagePathAndStoreInDatabase1(String email, MultipartFile file) throws IOException;
+
 
 	
 
