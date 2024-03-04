@@ -39,7 +39,7 @@ public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private String email;
-	private String username;
+	private String name;
 	private String password;
 	private String otp;
 	private LocalDateTime otpGeneratedtime;

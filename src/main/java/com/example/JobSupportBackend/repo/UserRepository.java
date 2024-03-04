@@ -49,10 +49,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
   
 
-	@Modifying
-	@Query(value = "UPDATE User u SET u.imageBytes = :imageBytes WHERE u.email = :email")
-	void saveImageBytes(String email, byte[] imageBytes);
-
 
 }
     
