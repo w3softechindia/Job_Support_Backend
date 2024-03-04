@@ -34,8 +34,6 @@ public class SecurityConfugiration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
-
 		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
@@ -43,8 +41,6 @@ public class SecurityConfugiration {
 								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
 								"/regenerate-otp/*", "/adminRegister", "/adminLogin/**")
 						.permitAll().anyRequest().authenticated())
-
-
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

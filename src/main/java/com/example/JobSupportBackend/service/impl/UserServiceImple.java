@@ -55,6 +55,7 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
+	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
 
 
@@ -431,28 +432,6 @@ public class UserServiceImple implements UserService {
 		User user = repo.findByEmail(email);
 		return user;
 	}
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-
-
-	
-	
-	
-
-	
-	
-
-
-
-
 }
 
 
