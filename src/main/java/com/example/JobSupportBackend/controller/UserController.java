@@ -40,7 +40,6 @@ import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
 import com.example.JobSupportBackend.service.LanguageService;
 
-import com.example.JobSupportBackend.service.PhotoService;
 
 
 import com.example.JobSupportBackend.service.SkillsService;
