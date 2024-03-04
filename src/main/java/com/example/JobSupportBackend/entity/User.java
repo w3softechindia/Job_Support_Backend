@@ -64,8 +64,6 @@ public class User implements UserDetails {
 	  
 	  
 	  
-	    @OneToOne
-	    private Photo photo;
 	 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     @JsonManagedReference
