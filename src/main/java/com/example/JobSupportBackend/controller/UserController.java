@@ -1,7 +1,6 @@
 package com.example.JobSupportBackend.controller;
 
 import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -165,6 +164,7 @@ public class UserController {
 			return new ResponseEntity<User>(userService.resetPassword(email, password), HttpStatus.OK);
 		} else {
 			throw new Exception("Credentials cant be null");
+
 		}
 	}
 
