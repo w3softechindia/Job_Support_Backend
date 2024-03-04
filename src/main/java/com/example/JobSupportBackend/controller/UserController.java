@@ -2,21 +2,17 @@ package com.example.JobSupportBackend.controller;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
@@ -33,12 +29,11 @@ import com.example.JobSupportBackend.service.SkillsService;
 import com.example.JobSupportBackend.service.UserService;
 
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private UserService userService;
 
@@ -131,14 +126,14 @@ public class UserController {
 		}
 	}
 
-//	 @GetMapping("/getUser/{email}")
-//	 public ResponseEntity<?> getUserByEmail(@PathVariable String email){
-//		 User user = skillsService.getUserByEmail(email);
-//		 if(user!=null) {
-//			 return new ResponseEntity<>(user, HttpStatus.OK);
-//		 }else
-//		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//   }
+	 @GetMapping("/getUser/{email}")
+	 public ResponseEntity<User> getUserByEmail(@PathVariable String email){
+		 User user = userService.getUserByEmail(email);
+		 if(user!=null) {
+			 return new ResponseEntity<>(user, HttpStatus.OK);
+		 }else
+		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+   }
 
 
 	 

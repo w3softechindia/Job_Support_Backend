@@ -44,6 +44,7 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private EmailUtil emailUtil;
+	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
 
 	public String getEncodedPassword(String password) {
@@ -58,7 +59,7 @@ public class UserServiceImple implements UserService {
 		} else {
 			String otp = otpUtil.generateOtp();
 			emailUtil.sendOtpMail(register.getEmail(), otp);
-			User user = User.builder().username(register.getUsername()).email(register.getEmail())
+			User user = User.builder().name(register.getUsername()).email(register.getEmail())
 					.password(getEncodedPassword(register.getPassword())).otp(otp).otpGeneratedtime(LocalDateTime.now())
 					.build();
 			return repo.save(user);

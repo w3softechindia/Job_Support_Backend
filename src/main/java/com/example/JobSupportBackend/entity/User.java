@@ -16,7 +16,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -39,7 +38,7 @@ public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	@Id
 	private String email;
-	private String username;
+	private String name;
 	private String password;
 	private String otp;
 	private LocalDateTime otpGeneratedtime;
