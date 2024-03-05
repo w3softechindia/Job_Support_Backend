@@ -17,7 +17,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,10 +43,8 @@ public class User implements UserDetails {
 	private LocalDateTime otpGeneratedtime;
 	private boolean verified;
 
-	
-	 private String imagePath;
-	 
-	
+	private String imagePath;
+
 	private String firstname;
 	private String lastname;
 	private long phonenumber;
@@ -57,37 +54,29 @@ public class User implements UserDetails {
 	private String jobtitle;
 	private String typeofjob;
 	private String description;
-	 
 
-	   @Column(name = "image_bytes", columnDefinition = "LONGBLOB")
-	    private byte[] imageBytes;
-	  
-	  
-	  
-	 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
+	@Column(name = "image_bytes", columnDefinition = "LONGBLOB")
+	private byte[] imageBytes;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
 	private List<Skills> skills;
-  
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
 	private List<Education> education;
-    
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
-    private List<Experience> experience;
-    
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
-    private List<Certification> certification;
-    
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
-    private List<Language> language;
-    
-    
-    
-    
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
+	private List<Experience> experience;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
+	private List<Certification> certification;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
+	private List<Language> language;
 
 	private String facebook;
 	private String instagram;

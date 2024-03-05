@@ -23,6 +23,8 @@ public interface UserService {
 	public User updateRole(String email, String newRole) throws Exception;
 
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;
+	
+	public User updateFreelancerDetails(String email, User user) throws InvalidIdException;
 
 	public User employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException;
 
