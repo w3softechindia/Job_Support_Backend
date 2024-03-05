@@ -39,7 +39,7 @@ public class SecurityConfugiration {
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
 								"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*",
 								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
-								"/regenerate-otp/*", "/adminRegister", "/adminLogin/**")
+								"/regenerate-otp/*", "/adminRegister","/adminLogin/**","/updateFreelancer/*")
 						.permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

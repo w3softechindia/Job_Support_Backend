@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,9 +23,19 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.Certification;
+import com.example.JobSupportBackend.entity.Education;
+import com.example.JobSupportBackend.entity.Experience;
+import com.example.JobSupportBackend.entity.Language;
+import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.CertificationRepository;
+import com.example.JobSupportBackend.repo.EducationRepository;
+import com.example.JobSupportBackend.repo.ExperienceRepository;
+import com.example.JobSupportBackend.repo.LanguageRepository;
+import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
@@ -44,6 +56,21 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private EmailUtil emailUtil;
+
+	@Autowired
+	private SkillsRepository skillsRepository;
+
+	@Autowired
+	private EducationRepository educationRepository;
+
+	@Autowired
+	private CertificationRepository certificationRepository;
+
+	@Autowired
+	private ExperienceRepository experienceRepository;
+
+	@Autowired
+	private LanguageRepository languageRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -143,7 +170,6 @@ public class UserServiceImple implements UserService {
 		return Files.readAllBytes(photoPath);
 	}
 
-
 	@Override
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
@@ -242,5 +268,126 @@ public class UserServiceImple implements UserService {
 	public User getUserByEmail(String email) {
 		User user = repo.findByEmail(email);
 		return user;
+	}
+
+	@Override
+	public User updateFreelancerDetails(String email, User user) throws InvalidIdException {
+		User user1 = repo.findById(email)
+				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
+		user1.setFirstname(user.getFirstname());
+		user1.setLastname(user.getLastname());
+		user1.setPhonenumber(user.getPhonenumber());
+		user1.setDob(user.getDob());
+		user1.setJobtitle(user.getJobtitle());
+		user1.setTypeofjob(user.getTypeofjob());
+		user1.setDescription(user.getDescription());
+
+		// Save or update associated entities
+		if (user.getSkills() != null) {
+			for (Skills skill : user.getSkills()) {
+				// Check if the skill already exists
+				if (skill.getSkillid() != 0) {
+					// If it exists, update it
+					Skills existingSkill = skillsRepository.findById(skill.getSkillid()).orElse(null);
+					if (existingSkill != null) {
+						existingSkill.setSkills(skill.getSkills());
+						existingSkill.setLevel(skill.getLevel());
+						skillsRepository.save(existingSkill);
+					}
+				} else {
+					// If it's a new skill, save it
+					skill.setUser(user1); // Set the user for the skill
+					skillsRepository.save(skill);
+				}
+			}
+		}
+
+		if (user.getEducation() != null) {
+			for (Education education : user.getEducation()) {
+				if (education.getId() != 0) {
+					// If it's an existing education, update it
+					Education existingEducation = educationRepository.findById(education.getId()).orElse(null);
+					if (existingEducation != null) {
+						existingEducation.setDegree(education.getDegree());
+						existingEducation.setUniversity(education.getUniversity());
+						existingEducation.setStartdate(education.getStartdate());
+						existingEducation.setEnddate(education.getEnddate());
+						educationRepository.save(existingEducation);
+					}
+				} else {
+					// If it's a new education, save it
+					education.setUser(user1); // Set the user for the education
+					educationRepository.save(education);
+				}
+			}
+		}
+
+		if (user.getCertification() != null) {
+			for (Certification certification : user.getCertification()) {
+				if (certification.getId() != 0) {
+					// If it's an existing certification, update it
+					Certification existingCertification = certificationRepository.findById(certification.getId())
+							.orElse(null);
+					if (existingCertification != null) {
+						existingCertification.setCertification(certification.getCertification());
+						// Update other fields
+						certificationRepository.save(existingCertification);
+					}
+				} else {
+					// If it's a new certification, save it
+					certification.setUser(user1); // Set the user for the certification
+					certificationRepository.save(certification);
+				}
+			}
+		}
+
+		if (user.getExperience() != null) {
+			for (Experience experience : user.getExperience()) {
+				if (experience.getId() != 0) {
+					// If it's an existing experience, update it
+					Experience existingExperience = experienceRepository.findById(experience.getId()).orElse(null);
+					if (existingExperience != null) {
+						existingExperience.setCompanyname(experience.getCompanyname());
+						existingExperience.setPosition(experience.getPosition());
+						existingExperience.setCompanystartdate(experience.getCompanystartdate());
+						existingExperience.setCompanyenddate(experience.getCompanyenddate());
+						experienceRepository.save(existingExperience);
+					}
+				} else {
+					// If it's a new experience, save it
+					experience.setUser(user1); // Set the user for the experience
+					experienceRepository.save(experience);
+				}
+			}
+		}
+
+		if (user.getLanguage() != null) {
+			for (Language language : user.getLanguage()) {
+				if (language.getId() != 0) {
+					// If it's an existing language, update it
+					Language existingLanguage = languageRepository.findById(language.getId()).orElse(null);
+					if (existingLanguage != null) {
+						existingLanguage.setLanguage(language.getLanguage());
+						existingLanguage.setChooselevel(language.getChooselevel());
+						languageRepository.save(existingLanguage);
+					}
+				} else {
+					// If it's a new language, save it
+					language.setUser(user1); // Set the user for the language
+					languageRepository.save(language);
+				}
+			}
+		}
+
+		user1.setFacebook(user.getFacebook());
+		user1.setInstagram(user.getInstagram());
+		user1.setLinkedin(user.getLinkedin());
+		user1.setPersnolurl(user.getPersnolurl());
+		user1.setAddress(user.getAddress());
+		user1.setCity(user.getCity());
+		user1.setState(user.getState());
+		user1.setPostcode(user.getPostcode());
+		repo.save(user1);
+		return user1;
 	}
 }

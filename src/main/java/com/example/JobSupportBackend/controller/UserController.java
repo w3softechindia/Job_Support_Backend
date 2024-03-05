@@ -185,5 +185,15 @@ public class UserController {
 			return new ResponseEntity<Boolean>(userService.verifyOTP(email, otp), HttpStatus.OK);
 		}
 	}
+	
+	@PutMapping("/updateFreelancer/{email}")
+    public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @RequestBody User updatedUserData) {
+        try {
+            User updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
+            return ResponseEntity.ok(updatedUser);
+        } catch (InvalidIdException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
