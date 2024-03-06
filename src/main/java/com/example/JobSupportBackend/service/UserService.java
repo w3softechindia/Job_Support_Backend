@@ -8,6 +8,7 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
@@ -45,4 +46,8 @@ public interface UserService {
 	void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException;
 
 	byte[] getPhotoBytesByEmail(String email) throws IOException;
+	
+	void changePassword(String email, String password, String newPassword);
+	
+	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException;
 }
