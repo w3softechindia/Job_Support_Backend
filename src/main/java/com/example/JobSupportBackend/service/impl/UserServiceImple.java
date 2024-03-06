@@ -24,14 +24,17 @@ import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.Certification;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.repo.CertificationRepository;
+import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
@@ -71,6 +74,9 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private LanguageRepository languageRepository;
+	
+	@Autowired
+	private DeletedAccountsRepository accountsRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -281,7 +287,27 @@ public class UserServiceImple implements UserService {
 		user1.setJobtitle(user.getJobtitle());
 		user1.setTypeofjob(user.getTypeofjob());
 		user1.setDescription(user.getDescription());
-
+		
+		 if (user1.getSkills() != null) {
+		        user1.getSkills().clear();
+		    }
+	
+		    if (user1.getEducation() != null) {
+		        user1.getEducation().clear();
+		    }
+	
+		    if (user1.getCertification() != null) {
+		        user1.getCertification().clear();
+		    }
+	
+		    if (user1.getExperience() != null) {
+		        user1.getExperience().clear();
+		    }
+	
+		    if (user1.getLanguage() != null) {
+		        user1.getLanguage().clear();
+		    }
+	
 		// Save or update associated entities
 		if (user.getSkills() != null) {
 			for (Skills skill : user.getSkills()) {
@@ -290,7 +316,7 @@ public class UserServiceImple implements UserService {
 					// If it exists, update it
 					Skills existingSkill = skillsRepository.findById(skill.getSkillid()).orElse(null);
 					if (existingSkill != null) {
-						existingSkill.setSkills(skill.getSkills());
+						existingSkill.setSkillName(skill.getSkillName());
 						existingSkill.setLevel(skill.getLevel());
 						skillsRepository.save(existingSkill);
 					}
@@ -389,5 +415,29 @@ public class UserServiceImple implements UserService {
 		user1.setPostcode(user.getPostcode());
 		repo.save(user1);
 		return user1;
+	}
+
+	@Override
+	public void changePassword(String email, String password, String newPassword) {
+		User user = repo.findByEmail(email);
+		
+		 if (!passwordEncoder.matches(password, user.getPassword())) {
+	            throw new InvalidPasswordException("Old password is incorrect");
+	        }
+		 user.setPassword(passwordEncoder.encode(newPassword));
+	     repo.save(user);
+	}
+
+	@Override
+	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException {
+	    User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
+	    if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
+	        deletedAccounts.setEmail(email);
+	        String encodedPassword = getEncodedPassword(deletedAccounts.getPassword());
+	        deletedAccounts.setPassword(encodedPassword);
+	        accountsRepository.save(deletedAccounts);
+	    } else {
+	        throw new InvalidPasswordException("Incorrect password for the given email: " + email);
+	    }
 	}
 }

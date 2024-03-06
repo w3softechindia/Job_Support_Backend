@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,10 @@ import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
@@ -195,5 +198,33 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
+	
+	@DeleteMapping("/deleteSkill/{skillName}")
+	public void deleteSkill(@PathVariable String skillName){
+		skillsService.findByName(skillName);
+	}
+	
+	 @PutMapping("/change-password/{email}/{password}/{newPassword}")
+	    public ResponseEntity<?> changePassword(@PathVariable String email, @PathVariable String password, @PathVariable String newPassword) {
+	        try {
+	            userService.changePassword(email, password, newPassword);
+	            return ResponseEntity.ok().build();
+	        } catch (InvalidPasswordException e) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	        }
+	    }
+	 
+	 @PostMapping("/postReason/{email}")
+	 public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody DeletedAccounts accounts) {
+	     try {
+	         userService.postReason(email, accounts);
+	         return ResponseEntity.ok("Reason posted successfully for email: " + email);
+	     } catch (InvalidIdException e) {
+	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	     } catch (InvalidPasswordException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     }
+	 }
 }
