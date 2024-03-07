@@ -9,67 +9,55 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Photo {
-	
-	
-	
-	      @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
 
-	    @Column(name = "photo_path")
-	    private String photoPath;
-	  
-	    
-		public User getUser() {
-			return user;
-		}
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-		public void setUser(User user) {
-			this.user = user;
-		}
+	@Column(name = "photo_path")
+	private String photoPath;
 
-		@OneToOne(fetch = FetchType.LAZY)
-		@JoinColumn(name = "user_email")
-		@JsonBackReference
-		private User user;
+	public User getUser() {
+		return user;
+	}
 
-		public Long getId() {
-			return id;
-		}
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-		public void setId(Long id) {
-			this.id = id;
-		}
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_email")
+	@JsonBackReference
+	private User user;
 
-		public String getPhotoPath() {
-			return photoPath;
-		}
+	public Long getId() {
+		return id;
+	}
 
-		public void setPhotoPath(String photoPath) {
-			this.photoPath = photoPath;
-		}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-		public Photo() {
-			super();
-		}
+	public String getPhotoPath() {
+		return photoPath;
+	}
 
-		public Photo(Long id, String photoPath) {
-			super();
-			this.id = id;
-			this.photoPath = photoPath;
-		}
-  
+	public void setPhotoPath(String photoPath) {
+		this.photoPath = photoPath;
+	}
 
+	public Photo() {
+		super();
+	}
 
-        
-    
-    
-   
+	public Photo(Long id, String photoPath) {
+		super();
+		this.id = id;
+		this.photoPath = photoPath;
+	}
 
 }
