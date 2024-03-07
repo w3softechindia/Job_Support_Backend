@@ -18,6 +18,6 @@ public interface SkillsRepository extends JpaRepository<Skills, Integer> {
 	
 	@Query(value="select skill from Skills skill where skill.skillName=?1")
 	Skills findByName(String skillName);
-
+  
 	void deleteByUserEmail(String email);
 }

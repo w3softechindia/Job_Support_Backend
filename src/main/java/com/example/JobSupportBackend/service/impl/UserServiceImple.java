@@ -329,6 +329,7 @@ public class UserServiceImple implements UserService {
 	        }
 	    }
 
+
 		user1.setFacebook(user.getFacebook());
 		user1.setInstagram(user.getInstagram());
 		user1.setLinkedin(user.getLinkedin());
