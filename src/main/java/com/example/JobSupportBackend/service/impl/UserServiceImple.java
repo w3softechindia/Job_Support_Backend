@@ -7,11 +7,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -275,7 +272,8 @@ public class UserServiceImple implements UserService {
 		User user = repo.findByEmail(email);
 		return user;
 	}
-
+	
+	@Transactional
 	@Override
 	public User updateFreelancerDetails(String email, User user) throws InvalidIdException {
 		User user1 = repo.findById(email)
@@ -288,122 +286,48 @@ public class UserServiceImple implements UserService {
 		user1.setTypeofjob(user.getTypeofjob());
 		user1.setDescription(user.getDescription());
 		
-		 if (user1.getSkills() != null) {
-		        user1.getSkills().clear();
-		    }
-	
-		    if (user1.getEducation() != null) {
-		        user1.getEducation().clear();
-		    }
-	
-		    if (user1.getCertification() != null) {
-		        user1.getCertification().clear();
-		    }
-	
-		    if (user1.getExperience() != null) {
-		        user1.getExperience().clear();
-		    }
-	
-		    if (user1.getLanguage() != null) {
-		        user1.getLanguage().clear();
-		    }
-	
-		// Save or update associated entities
-		if (user.getSkills() != null) {
-			for (Skills skill : user.getSkills()) {
-				// Check if the skill already exists
-				if (skill.getSkillid() != 0) {
-					// If it exists, update it
-					Skills existingSkill = skillsRepository.findById(skill.getSkillid()).orElse(null);
-					if (existingSkill != null) {
-						existingSkill.setSkillName(skill.getSkillName());
-						existingSkill.setLevel(skill.getLevel());
-						skillsRepository.save(existingSkill);
-					}
-				} else {
-					// If it's a new skill, save it
-					skill.setUser(user1); // Set the user for the skill
-					skillsRepository.save(skill);
-				}
-			}
-		}
+		 // Delete existing skills associated with the user
+	    skillsRepository.deleteByUserEmail(email);
+	    educationRepository.deleteByUserEmail(email); 
+	    certificationRepository.deleteByUserEmail(email);
+	    experienceRepository.deleteByUserEmail(email);
+	    languageRepository.deleteByUserEmail(email);
+	    
+	    // Add new skills
+	    if (user.getSkills() != null) {
+	        for (Skills skill : user.getSkills()) {
+	            skill.setUser(user1); // Set the user for the skill
+	            skillsRepository.save(skill);
+	        }
+	    }
 
-		if (user.getEducation() != null) {
-			for (Education education : user.getEducation()) {
-				if (education.getId() != 0) {
-					// If it's an existing education, update it
-					Education existingEducation = educationRepository.findById(education.getId()).orElse(null);
-					if (existingEducation != null) {
-						existingEducation.setDegree(education.getDegree());
-						existingEducation.setUniversity(education.getUniversity());
-						existingEducation.setStartdate(education.getStartdate());
-						existingEducation.setEnddate(education.getEnddate());
-						educationRepository.save(existingEducation);
-					}
-				} else {
-					// If it's a new education, save it
-					education.setUser(user1); // Set the user for the education
-					educationRepository.save(education);
-				}
-			}
-		}
+	    if (user.getEducation() != null) {
+	        for (Education education : user.getEducation()) {
+	            education.setUser(user1);
+	            educationRepository.save(education);
+	        }
+	    }
 
-		if (user.getCertification() != null) {
-			for (Certification certification : user.getCertification()) {
-				if (certification.getId() != 0) {
-					// If it's an existing certification, update it
-					Certification existingCertification = certificationRepository.findById(certification.getId())
-							.orElse(null);
-					if (existingCertification != null) {
-						existingCertification.setCertification(certification.getCertification());
-						// Update other fields
-						certificationRepository.save(existingCertification);
-					}
-				} else {
-					// If it's a new certification, save it
-					certification.setUser(user1); // Set the user for the certification
-					certificationRepository.save(certification);
-				}
-			}
-		}
+	    if (user.getCertification() != null) {
+	        for (Certification certification : user.getCertification()) {
+	            certification.setUser(user1);
+	            certificationRepository.save(certification);
+	        }
+	    }
 
-		if (user.getExperience() != null) {
-			for (Experience experience : user.getExperience()) {
-				if (experience.getId() != 0) {
-					// If it's an existing experience, update it
-					Experience existingExperience = experienceRepository.findById(experience.getId()).orElse(null);
-					if (existingExperience != null) {
-						existingExperience.setCompanyname(experience.getCompanyname());
-						existingExperience.setPosition(experience.getPosition());
-						existingExperience.setCompanystartdate(experience.getCompanystartdate());
-						existingExperience.setCompanyenddate(experience.getCompanyenddate());
-						experienceRepository.save(existingExperience);
-					}
-				} else {
-					// If it's a new experience, save it
-					experience.setUser(user1); // Set the user for the experience
-					experienceRepository.save(experience);
-				}
-			}
-		}
+	    if (user.getExperience() != null) {
+	        for (Experience experience : user.getExperience()) {
+	            experience.setUser(user1);
+	            experienceRepository.save(experience);
+	        }
+	    }
 
-		if (user.getLanguage() != null) {
-			for (Language language : user.getLanguage()) {
-				if (language.getId() != 0) {
-					// If it's an existing language, update it
-					Language existingLanguage = languageRepository.findById(language.getId()).orElse(null);
-					if (existingLanguage != null) {
-						existingLanguage.setLanguage(language.getLanguage());
-						existingLanguage.setChooselevel(language.getChooselevel());
-						languageRepository.save(existingLanguage);
-					}
-				} else {
-					// If it's a new language, save it
-					language.setUser(user1); // Set the user for the language
-					languageRepository.save(language);
-				}
-			}
-		}
+	    if (user.getLanguage() != null) {
+	        for (Language language : user.getLanguage()) {
+	            language.setUser(user1);
+	            languageRepository.save(language);
+	        }
+	    }
 
 		user1.setFacebook(user.getFacebook());
 		user1.setInstagram(user.getInstagram());
