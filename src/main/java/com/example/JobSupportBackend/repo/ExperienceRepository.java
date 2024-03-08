@@ -11,4 +11,6 @@ import com.example.JobSupportBackend.entity.Experience;
 public interface ExperienceRepository extends JpaRepository<Experience, Integer>{
 	List<Experience> findByUserEmail(String email);
 
+	void deleteByUserEmail(String email);
+
 }

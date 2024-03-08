@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+
 import java.nio.file.Path;
 
 import java.util.Arrays;
 import java.util.List;
+
 
 
 
@@ -30,9 +32,22 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.Certification;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
+import com.example.JobSupportBackend.entity.Education;
+import com.example.JobSupportBackend.entity.Experience;
+import com.example.JobSupportBackend.entity.Language;
+import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.CertificationRepository;
+import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
+import com.example.JobSupportBackend.repo.EducationRepository;
+import com.example.JobSupportBackend.repo.ExperienceRepository;
+import com.example.JobSupportBackend.repo.LanguageRepository;
+import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
@@ -55,6 +70,25 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
+	@Autowired
+	private SkillsRepository skillsRepository;
+
+	@Autowired
+	private EducationRepository educationRepository;
+
+	@Autowired
+	private CertificationRepository certificationRepository;
+
+	@Autowired
+	private ExperienceRepository experienceRepository;
+
+	@Autowired
+	private LanguageRepository languageRepository;
+	
+	@Autowired
+	private DeletedAccountsRepository accountsRepository;
+
+	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
 
 
@@ -115,6 +149,7 @@ public class UserServiceImple implements UserService {
 		}
 
 
+
 //	    if (file.isEmpty()) {
 //	        throw new IllegalArgumentException("File is empty");
 //	    }
@@ -123,10 +158,19 @@ public class UserServiceImple implements UserService {
 	    // Generate a unique filename
 	    String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
+		if (file.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
+
+		// Generate a unique filename
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+
 		// Save the image file to a local directory
-		String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+		String uploadDir = "C:\\Users\\91910\\Desktop\\saving photos";
 		Path directoryPath = Paths.get(uploadDir);
 		Files.createDirectories(directoryPath);
+
 
 
 //	    // Save the image file to a local directory
@@ -308,6 +352,35 @@ public class UserServiceImple implements UserService {
 
 
 
+		// Store the image path in the database
+		User user = repo.findByEmail(email);
+		if (user != null) {
+			user.setImagePath(filePath);
+			repo.save(user);
+		} else {
+			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+		}
+	}
+
+	public byte[] getPhotoBytesByEmail(String email) throws IOException {
+		// Fetch the user entity by email
+		User user = repo.findByEmail(email);
+		if (user == null) {
+			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+		}
+
+		// Get the image path from the user object
+		String imagePath = user.getImagePath();
+		if (imagePath == null || imagePath.isEmpty()) {
+			throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+		}
+
+		// Read the photo bytes from the file
+		Path photoPath = Paths.get(imagePath);
+		return Files.readAllBytes(photoPath);
+	}
+
+
 	@Override
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
@@ -407,27 +480,122 @@ public class UserServiceImple implements UserService {
 		User user = repo.findByEmail(email);
 		return user;
 	}
+	
+	@Transactional
+	@Override
+	public User updateFreelancerDetails(String email, User user) throws InvalidIdException {
+		User user1 = repo.findById(email)
+				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
+		user1.setFirstname(user.getFirstname());
+		user1.setLastname(user.getLastname());
+		user1.setPhonenumber(user.getPhonenumber());
+		user1.setDob(user.getDob());
+		user1.setJobtitle(user.getJobtitle());
+		user1.setTypeofjob(user.getTypeofjob());
+		user1.setDescription(user.getDescription());
+		
+		 // Delete existing skills associated with the user
+	    skillsRepository.deleteByUserEmail(email);
+	    educationRepository.deleteByUserEmail(email); 
+	    certificationRepository.deleteByUserEmail(email);
+	    experienceRepository.deleteByUserEmail(email);
+	    languageRepository.deleteByUserEmail(email);
+	    
+	    // Add new skills
+	    if (user.getSkills() != null) {
+	        for (Skills skill : user.getSkills()) {
+	            skill.setUser(user1); // Set the user for the skill
+	            skillsRepository.save(skill);
+	        }
+	    }
+
+	    if (user.getEducation() != null) {
+	        for (Education education : user.getEducation()) {
+	            education.setUser(user1);
+	            educationRepository.save(education);
+	        }
+	    }
+
+	    if (user.getCertification() != null) {
+	        for (Certification certification : user.getCertification()) {
+	            certification.setUser(user1);
+	            certificationRepository.save(certification);
+	        }
+	    }
+
+	    if (user.getExperience() != null) {
+	        for (Experience experience : user.getExperience()) {
+	            experience.setUser(user1);
+	            experienceRepository.save(experience);
+	        }
+	    }
+
+	    if (user.getLanguage() != null) {
+	        for (Language language : user.getLanguage()) {
+	            language.setUser(user1);
+	            languageRepository.save(language);
+	        }
+	    }
+
+
+		user1.setFacebook(user.getFacebook());
+		user1.setInstagram(user.getInstagram());
+		user1.setLinkedin(user.getLinkedin());
+		user1.setPersnolurl(user.getPersnolurl());
+		user1.setAddress(user.getAddress());
+		user1.setCity(user.getCity());
+		user1.setState(user.getState());
+		user1.setPostcode(user.getPostcode());
+		repo.save(user1);
+		return user1;
+	}
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 	
 	
 	
-	
-	
-	
-	
-	
-
-
-	
-	
-	
 
 	
 	
 
 
 
+
+
+	@Override
+	public void changePassword(String email, String password, String newPassword) {
+		User user = repo.findByEmail(email);
+		
+		 if (!passwordEncoder.matches(password, user.getPassword())) {
+	            throw new InvalidPasswordException("Old password is incorrect");
+	        }
+		 user.setPassword(passwordEncoder.encode(newPassword));
+	     repo.save(user);
+	}
+
+	@Override
+	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException {
+	    User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
+	    if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
+	        deletedAccounts.setEmail(email);
+	        String encodedPassword = getEncodedPassword(deletedAccounts.getPassword());
+	        deletedAccounts.setPassword(encodedPassword);
+	        accountsRepository.save(deletedAccounts);
+	    } else {
+	        throw new InvalidPasswordException("Incorrect password for the given email: " + email);
+	    }
+	}
 
 }
 

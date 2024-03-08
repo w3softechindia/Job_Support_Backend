@@ -1,7 +1,6 @@
 package com.example.JobSupportBackend.service.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,13 @@ public class SkillsServiceImple implements SkillsService {
 		}else {
 			throw new InvalidIdException("Email not found..!!"+userEmail);
 		}
+	}
+
+	@Override
+	public Skills findByName(String skillName) {
+		Skills skills = skillsRepository.findByName(skillName);
+		skillsRepository.delete(skills);
+		return skills;
 	}
 
 }

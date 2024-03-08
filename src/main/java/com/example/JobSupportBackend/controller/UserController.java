@@ -1,58 +1,43 @@
 package com.example.JobSupportBackend.controller;
 
-
-import java.awt.PageAttributes.MediaType;
 import java.io.IOException;
-import java.net.http.HttpHeaders;
-
-import java.io.IOException;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
+import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
 import com.example.JobSupportBackend.service.LanguageService;
 
-
-
 import com.example.JobSupportBackend.service.SkillsService;
 import com.example.JobSupportBackend.service.UserService;
 
-import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+//	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private UserService userService;
 
@@ -67,8 +52,6 @@ public class UserController {
 
 	@Autowired
 	private ExperienceService experienceService;
-
-
 
 
 	@Autowired
@@ -101,8 +84,7 @@ public class UserController {
 			throws Exception {
 		return new ResponseEntity<User>(userService.updatePersonalInfo(personalInfo, email), HttpStatus.ACCEPTED);
 	}
-	
-	
+
 	@PostMapping("/upload/{email}")
 	public ResponseEntity<String> uploadPhoto(@PathVariable String email, @RequestParam("file") MultipartFile file) {
 	    try {
@@ -114,31 +96,23 @@ public class UserController {
 	    }
 }
 
-	 
-
-	
-	
 	@GetMapping("/photo/{email}")
-    public ResponseEntity<ByteArrayResource> getPhoto(@PathVariable String email) {
-        try {
-            // Get the photo bytes for the given email
-            byte[] photoBytes = userService.getPhotoBytesByEmail(email);
+	public ResponseEntity<ByteArrayResource> getPhoto(@PathVariable String email) {
+		try {
+			// Get the photo bytes for the given email
+			byte[] photoBytes = userService.getPhotoBytesByEmail(email);
 
-            // Create a ByteArrayResource from the photo bytes
-            ByteArrayResource resource = new ByteArrayResource(photoBytes);
+			// Create a ByteArrayResource from the photo bytes
+			ByteArrayResource resource = new ByteArrayResource(photoBytes);
 
-            // Return ResponseEntity with the resource
-            return ResponseEntity.ok()
-                    .header("Content-Type", "image/jpeg")
-                    .body(resource);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-	
-
+			// Return ResponseEntity with the resource
+			return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(resource);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 	@PutMapping("/otherInfo/{email}")
 	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
@@ -173,61 +147,86 @@ public class UserController {
 		}
 	}
 
-//	 @GetMapping("/getUser/{email}")
-//	 public ResponseEntity<?> getUserByEmail(@PathVariable String email){
-//		 User user = skillsService.getUserByEmail(email);
-//		 if(user!=null) {
-//			 return new ResponseEntity<>(user, HttpStatus.OK);
-//		 }else
-//		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//   }
+	@GetMapping("/getUser/{email}")
+	public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+		User user = userService.getUserByEmail(email);
+		if (user != null) {
+			return new ResponseEntity<>(user, HttpStatus.OK);
+		} else
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
 
+	@PutMapping("/employerInfo/{email}")
+	public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
+			throws Exception {
+		return new ResponseEntity<User>(userService.employerInfo(employerInfo, email), HttpStatus.ACCEPTED);
+	}
 
+	@PutMapping("/resetPassword/{email}/{password}")
+	public ResponseEntity<User> resetPassword(@PathVariable String email, @PathVariable String password)
+			throws Exception {
+		if (email != null && password != null) {
+			return new ResponseEntity<User>(userService.resetPassword(email, password), HttpStatus.OK);
+		} else {
+			throw new Exception("Credentials cant be null");
+
+		}
+	}
+
+	@PutMapping("/sendOTP/{email}")
+	public ResponseEntity<User> sendOTP(@PathVariable String email) throws Exception {
+		if (email == null) {
+			throw new Exception("Email cant be null");
+		} else {
+			return new ResponseEntity<User>(userService.sendOTP(email), HttpStatus.OK);
+		}
+	}
+
+	@PutMapping("/verifyOTP/{email}/{otp}")
+	public ResponseEntity<Boolean> verifyOTP(@PathVariable String otp, @PathVariable String email) throws Exception {
+		if (otp == null && email == null) {
+			throw new Exception("Email and Otp cant be null");
+		} else {
+			return new ResponseEntity<Boolean>(userService.verifyOTP(email, otp), HttpStatus.OK);
+		}
+	}
+	
+	@PutMapping("/updateFreelancer/{email}")
+    public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @RequestBody User updatedUserData) {
+        try {
+            User updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
+            return ResponseEntity.ok(updatedUser);
+        } catch (InvalidIdException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+	
+	@DeleteMapping("/deleteSkill/{skillName}")
+	public void deleteSkill(@PathVariable String skillName){
+		skillsService.findByName(skillName);
+	}
+	
+	 @PutMapping("/change-password/{email}/{password}/{newPassword}")
+	    public ResponseEntity<?> changePassword(@PathVariable String email, @PathVariable String password, @PathVariable String newPassword) {
+	        try {
+	            userService.changePassword(email, password, newPassword);
+	            return ResponseEntity.ok().build();
+	        } catch (InvalidPasswordException e) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+	        }
+	    }
 	 
-	 @PutMapping("/employerInfo/{email}")
-		public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
-				throws Exception {
-			return new ResponseEntity<User>(userService.employerInfo(employerInfo, email), HttpStatus.ACCEPTED);
-		}
-	 
-	 @PutMapping("/resetPassword/{email}/{password}")
-		public ResponseEntity<User> resetPassword(@PathVariable String email, @PathVariable String password)
-				throws Exception {
-			if (email != null && password != null) {
-				return new ResponseEntity<User>(userService.resetPassword(email, password), HttpStatus.OK);
-			} else {
-				throw new Exception("Credentials cant be null");
-			}
-		}
-	 
-	 @PutMapping("/sendOTP/{email}")
-		public ResponseEntity<User> sendOTP(@PathVariable String email) throws Exception {
-			if (email == null) {
-				throw new Exception("Email cant be null");
-			} else {
-				return new ResponseEntity<User>(userService.sendOTP(email), HttpStatus.OK);
-			}
-		}
-
-		@PutMapping("/verifyOTP/{email}/{otp}")
-		public ResponseEntity<Boolean> verifyOTP(@PathVariable String otp, @PathVariable String email) throws Exception {
-			if (otp == null && email == null) {
-				throw new Exception("Email and Otp cant be null");
-			} else {
-				return new ResponseEntity<Boolean>(userService.verifyOTP(email, otp), HttpStatus.OK);
-			}
-		}
-
+	 @PostMapping("/postReason/{email}")
+	 public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody DeletedAccounts accounts) {
+	     try {
+	         userService.postReason(email, accounts);
+	         return ResponseEntity.ok("Reason posted successfully for email: " + email);
+	     } catch (InvalidIdException e) {
+	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+	     } catch (InvalidPasswordException e) {
+	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+	     }
+	 }
 }
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

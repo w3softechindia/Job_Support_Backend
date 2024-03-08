@@ -24,7 +24,7 @@ public class Skills {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int skillid;
-	private String skills;
+	private String skillName;
 	private String level;
 
 	@ManyToOne(fetch = FetchType.LAZY)
