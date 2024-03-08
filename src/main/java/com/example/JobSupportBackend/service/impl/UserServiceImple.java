@@ -115,9 +115,9 @@ public class UserServiceImple implements UserService {
 		}
 
 
-	    if (file.isEmpty()) {
-	        throw new IllegalArgumentException("File is empty");
-	    }
+//	    if (file.isEmpty()) {
+//	        throw new IllegalArgumentException("File is empty");
+//	    }
 
 
 	    // Generate a unique filename
@@ -129,10 +129,10 @@ public class UserServiceImple implements UserService {
 		Files.createDirectories(directoryPath);
 
 
-	    // Save the image file to a local directory
-	    String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
-	    Path directoryPath = Paths.get(uploadDir);
-	    Files.createDirectories(directoryPath);
+//	    // Save the image file to a local directory
+//	    String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+//	    Path directoryPath = Paths.get(uploadDir);
+//	    Files.createDirectories(directoryPath);
 	    
 	    String filePath = Paths.get(uploadDir, uniqueFileName).toString();
 	    Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
@@ -252,83 +252,59 @@ public class UserServiceImple implements UserService {
 	 }
 
 
-
-	@Override
-	public byte[] getPhotoBytesByEmail(String email) throws IOException {
-		// Fetch the user entity by email
-		User user = repo.findByEmail(email);
-		if (user == null) {
-			throw new IllegalArgumentException("User with email " + email + " does not exist.");
-		}
-
-		// Get the image path from the user object
-		String imagePath = user.getImagePath();
-		if (imagePath == null || imagePath.isEmpty()) {
-			throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
-		}
-
-		// Read the photo bytes from the file
-		Path photoPath = Paths.get(imagePath);
-		return Files.readAllBytes(photoPath);
-
-	}
-
-	
-	
-//		if (file.isEmpty()) {
-//			throw new IllegalArgumentException("File is empty");
-//		}
 //
-//		// Generate a unique filename
-//		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-//
-//		// Save the image file to a local directory
-//		String uploadDir = "C:\\Users\\91910\\Desktop\\saving photos";
-//		Path directoryPath = Paths.get(uploadDir);
-//		Files.createDirectories(directoryPath);
-//
-//		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
-//		Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-//
-//		// Store the image path in the database
+//	@Override
+//	public byte[] getPhotoBytesByEmail(String email) throws IOException {
+//		// Fetch the user entity by email
 //		User user = repo.findByEmail(email);
-//		if (user != null) {
-//			user.setImagePath(filePath);
-//			repo.save(user);
-//		} else {
+//		if (user == null) {
 //			throw new IllegalArgumentException("User with email " + email + " does not exist.");
 //		}
+//
+//		// Get the image path from the user object
+//		String imagePath = user.getImagePath();
+//		if (imagePath == null || imagePath.isEmpty()) {
+//			throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+//		}
+//
+//		// Read the photo bytes from the file
+//		Path photoPath = Paths.get(imagePath);
+//		return Files.readAllBytes(photoPath);
+//
 //	}
+
+	
+
 	
 	
-	@Override
-	@Transactional
-	public void updateUserImagePathAndStoreInDatabase1(String email, MultipartFile file) throws IOException {
-
-	    if (file.isEmpty()) {
-	        throw new IllegalArgumentException("File is empty");
-	    }
-
-	    // Generate a unique filename
-	    String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
-	    // Save the image file to a local directory
-	    String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
-	    Path directoryPath = Paths.get(uploadDir);
-	    Files.createDirectories(directoryPath);
-
-	    String filePath = Paths.get(uploadDir, uniqueFileName).toString();
-	    Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-
-	    // Store the image path in the database
-	    User user = repo.findByEmail(email);
-	    if (user != null) {
-	        user.setImagePath(filePath);
-	        repo.save(user);
-	    } else {
-	        throw new IllegalArgumentException("User with email " + email + " does not exist.");
-	    }
-	}
+//	@Override
+//	@Transactional
+//	public void updateUserImagePathAndStoreInDatabase1(String email, MultipartFile file) throws IOException {
+//
+//	    if (file.isEmpty()) {
+//	        throw new IllegalArgumentException("File is empty");
+//	    }
+//
+//	    // Generate a unique filename
+//	    String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+//
+//	    // Save the image file to a local directory
+//	    String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+//	    Path directoryPath = Paths.get(uploadDir);
+//	    Files.createDirectories(directoryPath);
+//
+//	    String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+//	    Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+//
+//	    // Store the image path in the database
+//	    User user = repo.findByEmail(email);
+//	    if (user != null) {
+//	        user.setImagePath(filePath);
+//	        repo.save(user);
+//	    } else {
+//	        throw new IllegalArgumentException("User with email " + email + " does not exist.");
+//	    }
+//	}
 
 
 
