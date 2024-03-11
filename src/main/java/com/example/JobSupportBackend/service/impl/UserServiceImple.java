@@ -84,7 +84,7 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private LanguageRepository languageRepository;
-	
+
 	@Autowired
 	private DeletedAccountsRepository accountsRepository;
 
@@ -480,7 +480,7 @@ public class UserServiceImple implements UserService {
 		User user = repo.findByEmail(email);
 		return user;
 	}
-	
+
 	@Transactional
 	@Override
 	public User updateFreelancerDetails(String email, User user) throws InvalidIdException {
@@ -493,50 +493,49 @@ public class UserServiceImple implements UserService {
 		user1.setJobtitle(user.getJobtitle());
 		user1.setTypeofjob(user.getTypeofjob());
 		user1.setDescription(user.getDescription());
-		
-		 // Delete existing skills associated with the user
-	    skillsRepository.deleteByUserEmail(email);
-	    educationRepository.deleteByUserEmail(email); 
-	    certificationRepository.deleteByUserEmail(email);
-	    experienceRepository.deleteByUserEmail(email);
-	    languageRepository.deleteByUserEmail(email);
-	    
-	    // Add new skills
-	    if (user.getSkills() != null) {
-	        for (Skills skill : user.getSkills()) {
-	            skill.setUser(user1); // Set the user for the skill
-	            skillsRepository.save(skill);
-	        }
-	    }
 
-	    if (user.getEducation() != null) {
-	        for (Education education : user.getEducation()) {
-	            education.setUser(user1);
-	            educationRepository.save(education);
-	        }
-	    }
+		// Delete existing skills associated with the user
+		skillsRepository.deleteByUserEmail(email);
+		educationRepository.deleteByUserEmail(email);
+		certificationRepository.deleteByUserEmail(email);
+		experienceRepository.deleteByUserEmail(email);
+		languageRepository.deleteByUserEmail(email);
 
-	    if (user.getCertification() != null) {
-	        for (Certification certification : user.getCertification()) {
-	            certification.setUser(user1);
-	            certificationRepository.save(certification);
-	        }
-	    }
+		// Add new skills
+		if (user.getSkills() != null) {
+			for (Skills skill : user.getSkills()) {
+				skill.setUser(user1); // Set the user for the skill
+				skillsRepository.save(skill);
+			}
+		}
 
-	    if (user.getExperience() != null) {
-	        for (Experience experience : user.getExperience()) {
-	            experience.setUser(user1);
-	            experienceRepository.save(experience);
-	        }
-	    }
+		if (user.getEducation() != null) {
+			for (Education education : user.getEducation()) {
+				education.setUser(user1);
+				educationRepository.save(education);
+			}
+		}
 
-	    if (user.getLanguage() != null) {
-	        for (Language language : user.getLanguage()) {
-	            language.setUser(user1);
-	            languageRepository.save(language);
-	        }
-	    }
+		if (user.getCertification() != null) {
+			for (Certification certification : user.getCertification()) {
+				certification.setUser(user1);
+				certificationRepository.save(certification);
+			}
+		}
 
+		if (user.getExperience() != null) {
+			for (Experience experience : user.getExperience()) {
+				experience.setUser(user1);
+				experienceRepository.save(experience);
+			}
+		}
+
+		if (user.getLanguage() != null) {
+			for (Language language : user.getLanguage()) {
+				language.setUser(user1);
+				languageRepository.save(language);
+			}
+		}
 
 		user1.setFacebook(user.getFacebook());
 		user1.setInstagram(user.getInstagram());
@@ -576,25 +575,25 @@ public class UserServiceImple implements UserService {
 	@Override
 	public void changePassword(String email, String password, String newPassword) {
 		User user = repo.findByEmail(email);
-		
-		 if (!passwordEncoder.matches(password, user.getPassword())) {
-	            throw new InvalidPasswordException("Old password is incorrect");
-	        }
-		 user.setPassword(passwordEncoder.encode(newPassword));
-	     repo.save(user);
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new InvalidPasswordException("Old password is incorrect");
+		}
+		user.setPassword(passwordEncoder.encode(newPassword));
+		repo.save(user);
 	}
 
 	@Override
 	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException {
-	    User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
-	    if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
-	        deletedAccounts.setEmail(email);
-	        String encodedPassword = getEncodedPassword(deletedAccounts.getPassword());
-	        deletedAccounts.setPassword(encodedPassword);
-	        accountsRepository.save(deletedAccounts);
-	    } else {
-	        throw new InvalidPasswordException("Incorrect password for the given email: " + email);
-	    }
+		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
+		if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
+			deletedAccounts.setEmail(email);
+			String encodedPassword = getEncodedPassword(deletedAccounts.getPassword());
+			deletedAccounts.setPassword(encodedPassword);
+			accountsRepository.save(deletedAccounts);
+		} else {
+			throw new InvalidPasswordException("Incorrect password for the given email: " + email);
+		}
 	}
 
 }

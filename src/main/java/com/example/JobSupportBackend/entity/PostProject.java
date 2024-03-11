@@ -1,6 +1,9 @@
 package com.example.JobSupportBackend.entity;
 
+
 import java.nio.file.Files;
+
+
 import java.util.Date;
 import java.util.List;
 
