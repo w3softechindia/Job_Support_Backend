@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
+import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
@@ -36,6 +38,7 @@ import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
+import com.example.JobSupportBackend.repo.PortfolioRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
@@ -76,8 +79,13 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private DeletedAccountsRepository accountsRepository;
 
+	@Autowired
+	private PortfolioRepository portfolioRepository;
+
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
+	
+	String uploadDir = "C:\\Users\\91910\\Desktop\\PortfolioImages";
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
@@ -126,10 +134,6 @@ public class UserServiceImple implements UserService {
 	@Override
 	@Transactional
 	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
-
-		if (file.isEmpty()) {
-			throw new IllegalArgumentException("File is empty");
-		}
 
 		// Generate a unique filename
 		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
@@ -365,6 +369,134 @@ public class UserServiceImple implements UserService {
 		} else {
 			throw new InvalidPasswordException("Incorrect password for the given email: " + email);
 		}
+	}
+
+	@Override
+	public Portfolio addPortfolio(String email, Portfolio portfolio, MultipartFile multipartFile)
+			throws ResourceNotFoundException, IOException {
+
+		String photoPath = addPortfolioImage(multipartFile);
+		User user = repo.findByEmail(email);
+		if (user.isVerified()) {
+			portfolio.setUser(user);
+			portfolio.setPhoto_path(photoPath);
+			return portfolioRepository.save(portfolio);
+		} else {
+			throw new ResourceNotFoundException("Account is not Verified...!!!");
+		}
+	}
+
+	private String addPortfolioImage(MultipartFile multipartFile) throws IOException {
+		// Generate a unique filename
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+
+		if (multipartFile.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
+																			
+		Path directoryPath = Paths.get(uploadDir);
+		Files.createDirectories(directoryPath);
+
+		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+		Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+
+		return filePath; // Return the file path
+	}
+
+	 @Override
+	    public List<Portfolio> getPortfoliosByEmail(String email) {
+	        List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+	        portfolios.forEach(portfolio -> {
+	            try {
+	                // Set the image data for each portfolio
+//	                byte[] imageData = getImageData(portfolio.getPhoto_path());
+	            	String path = portfolio.getPhoto_path();
+//	                portfolio.setImageData(imageData);
+	            	Path imageFilePath = Paths.get(path);
+	    	        Files.readAllBytes(imageFilePath);
+	            } catch (IOException e) {
+	                // Handle image retrieval error
+	                e.printStackTrace();
+	            }
+	        });
+	        return portfolios;
+	    }
+
+//	    private byte[] getImageData(String imagePath) throws IOException {
+//	        Path imageFilePath = Paths.get(imagePath);
+//	        return Files.readAllBytes(imageFilePath);
+//	    }
+//	    
+//	    @Override
+//		public byte[] getPhotoBytesByEmail(String email) throws IOException {
+//			// Fetch the user entity by email
+//			User user = repo.findByEmail(email);
+//			if (user == null) {
+//				throw new IllegalArgumentException("User with email " + email + " does not exist.");
+//			}
+//
+//			// Get the image path from the user object
+//			String imagePath = user.getImagePath();
+//			if (imagePath == null || imagePath.isEmpty()) {
+//				throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+//			}
+//
+//			// Read the photo bytes from the file
+//			Path photoPath = Paths.get(imagePath);
+//			return Files.readAllBytes(photoPath);
+//		}
+	 
+	 @Override
+	 public Portfolio updatePortfolio(String email, String title1, Portfolio portfolio, MultipartFile photo) throws InvalidIdException, IOException {
+	     List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+	     String photoPath = updatePortfolioImage(photo);
+
+	     for (Portfolio port : portfolios) {
+	         if (port.getTitle().equals(title1)) {
+	             port.setTitle(portfolio.getTitle());
+	             port.setLink(portfolio.getLink());
+	             port.setPhoto_path(photoPath);
+	             return portfolioRepository.save(port);
+	         }
+	     }
+
+	     throw new InvalidIdException("Title not found: " + title1);
+	 }
+
+	 
+	 private String updatePortfolioImage(MultipartFile multipartFile) throws IOException {
+			// Generate a unique filename
+			String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+
+			if (multipartFile.isEmpty()) {
+				throw new IllegalArgumentException("File is empty");
+			}
+																				
+			Path directoryPath = Paths.get(uploadDir);
+			Files.createDirectories(directoryPath);
+
+			String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+			Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+
+			return filePath; // Return the file path
+		}
+
+	 @Override
+	 public String deletePortfolio(String email, String title) throws ResourceNotFoundException {
+	     List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+	     for (Portfolio portfolio : portfolios) {
+	         if (portfolio.getTitle().equals(title)) {
+	             portfolioRepository.delete(portfolio);
+	             return "Portfolio is deleted";
+	         }
+	     }
+	     throw new ResourceNotFoundException("Title not found: " + title);
+	 }
+
+	@Override
+	public Portfolio getPortfolioByEmailAndTitle(String email, String title) {
+		Portfolio portfolio = portfolioRepository.findByUserEmailAndTitle(email, title);
+		return portfolio;
 	}
 
 }

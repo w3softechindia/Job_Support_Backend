@@ -1,6 +1,8 @@
 package com.example.JobSupportBackend.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,11 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
+import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
+import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
@@ -52,7 +56,6 @@ public class UserController {
 
 	@Autowired
 	private ExperienceService experienceService;
-
 
 	@Autowired
 	private CertificationService certificationService;
@@ -87,14 +90,14 @@ public class UserController {
 
 	@PostMapping("/upload/{email}")
 	public ResponseEntity<String> uploadPhoto(@PathVariable String email, @RequestParam("file") MultipartFile file) {
-	    try {
-	        userService.updateUserImagePathAndStoreInDatabase(email, file);
-	        return ResponseEntity.ok("Photo uploaded successfully for user with email: " + email);
-	    } catch (IOException e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error uploading photo: " + e.getMessage());
-	    }
-}
+		try {
+			userService.updateUserImagePathAndStoreInDatabase(email, file);
+			return ResponseEntity.ok("Photo uploaded successfully for user with email: " + email);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error uploading photo: " + e.getMessage());
+		}
+	}
 
 	@GetMapping("/photo/{email}")
 	public ResponseEntity<ByteArrayResource> getPhoto(@PathVariable String email) {
@@ -190,43 +193,106 @@ public class UserController {
 			return new ResponseEntity<Boolean>(userService.verifyOTP(email, otp), HttpStatus.OK);
 		}
 	}
-	
+
 	@PutMapping("/updateFreelancer/{email}")
-    public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @RequestBody User updatedUserData) {
-        try {
-            User updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
-            return ResponseEntity.ok(updatedUser);
-        } catch (InvalidIdException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-	
+	public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @RequestBody User updatedUserData) {
+		try {
+			User updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
+			return ResponseEntity.ok(updatedUser);
+		} catch (InvalidIdException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
+
 	@DeleteMapping("/deleteSkill/{skillName}")
-	public void deleteSkill(@PathVariable String skillName){
+	public void deleteSkill(@PathVariable String skillName) {
 		skillsService.findByName(skillName);
 	}
+
+	@PutMapping("/change-password/{email}/{password}/{newPassword}")
+	public ResponseEntity<?> changePassword(@PathVariable String email, @PathVariable String password,
+			@PathVariable String newPassword) {
+		try {
+			userService.changePassword(email, password, newPassword);
+			return ResponseEntity.ok().build();
+		} catch (InvalidPasswordException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+
+	@PostMapping("/postReason/{email}")
+	public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody DeletedAccounts accounts) {
+		try {
+			userService.postReason(email, accounts);
+			return ResponseEntity.ok("Reason posted successfully for email: " + email);
+		} catch (InvalidIdException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		} catch (InvalidPasswordException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+		}
+	}
+
+	@PostMapping("/postPortfolio/{email}")
+	public ResponseEntity<Portfolio> postPortfolio(@PathVariable String email, @RequestParam("title") String title,
+			@RequestParam("link") String link, @RequestParam("photo") MultipartFile photo)
+			throws ResourceNotFoundException, IOException {
+		// Create a new Portfolio object
+		Portfolio portfolio = new Portfolio();
+		portfolio.setTitle(title);
+		portfolio.setLink(link);
+
+		// Call service method to handle the portfolio
+		Portfolio addedPortfolio = userService.addPortfolio(email, portfolio, photo);
+
+		// Return response
+		return new ResponseEntity<>(addedPortfolio, HttpStatus.OK);
+	}
+
+	@GetMapping("/portfolios/{email}")
+	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) {
+		List<Portfolio> portfolios = userService.getPortfoliosByEmail(email);
+		return new ResponseEntity<>(portfolios, HttpStatus.OK);
+	}
+
+//	 @GetMapping("/portfolios/{email}")
+//	    public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) {
+//	        List<Portfolio> portfolios = userService.getPortfoliosByEmail(email);
+//	        portfolios.forEach(portfolio -> {
+//	            try {
+//	                byte[] imageData = userService.getImageDataByEmail(email);
+//	                portfolio.setImageData(imageData);
+//	            } catch (IOException e) {
+//	                // Handle error
+//	                e.printStackTrace();
+//	            }
+//	        });
+//	        return new ResponseEntity<>(portfolios, HttpStatus.OK);
+//	    }
+
+	@PutMapping("/updatePortfolio/{email}/{title1}")
+	public ResponseEntity<Portfolio> updatePortfolio(@PathVariable String email, @PathVariable String title1,
+	        @RequestParam("title") String title, @RequestParam("link") String link,
+	        @RequestParam("photo") MultipartFile photo) throws InvalidIdException, IOException {
+	    Portfolio portfolio = new Portfolio();
+	    portfolio.setTitle(title);
+	    portfolio.setLink(link);
+
+	    Portfolio updatedPortfolio = userService.updatePortfolio(email, title1, portfolio, photo);
+	    return ResponseEntity.ok(updatedPortfolio);
+	}
+
 	
-	 @PutMapping("/change-password/{email}/{password}/{newPassword}")
-	    public ResponseEntity<?> changePassword(@PathVariable String email, @PathVariable String password, @PathVariable String newPassword) {
-	        try {
-	            userService.changePassword(email, password, newPassword);
-	            return ResponseEntity.ok().build();
-	        } catch (InvalidPasswordException e) {
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-	        }
-	    }
-	 
-	 @PostMapping("/postReason/{email}")
-	 public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody DeletedAccounts accounts) {
-	     try {
-	         userService.postReason(email, accounts);
-	         return ResponseEntity.ok("Reason posted successfully for email: " + email);
-	     } catch (InvalidIdException e) {
-	         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-	     } catch (InvalidPasswordException e) {
-	         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-	     }
-	 }
+	@DeleteMapping("/deletePortfolio/{email}/{title}")
+	public ResponseEntity<String> deletePortfolio(@PathVariable String email, @PathVariable String title) throws ResourceNotFoundException {
+	    String deletePortfolio = userService.deletePortfolio(email, title);
+	    return ResponseEntity.accepted().body(deletePortfolio);
+	}
+	
+	@GetMapping("/getPortByEmail&Title/{email}/{title}")
+	public ResponseEntity<Portfolio> getPortfolioByTitleAndEmail(@PathVariable String email,@PathVariable String title){
+		Portfolio portfolioByEmailAndTitle = userService.getPortfolioByEmailAndTitle(email, title);
+		return ResponseEntity.ok(portfolioByEmailAndTitle);
+	}
 }
