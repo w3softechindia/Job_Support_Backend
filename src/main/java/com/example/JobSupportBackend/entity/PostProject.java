@@ -1,9 +1,5 @@
 package com.example.JobSupportBackend.entity;
 
-
-import java.nio.file.Files;
-
-
 import java.util.Date;
 import java.util.List;
 
@@ -35,10 +31,6 @@ public class PostProject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	
-	
-
-	
 	@Column(name = "project_title")
 	private String project_title;
 
@@ -50,11 +42,8 @@ public class PostProject {
 
 	@Column(name = "deadline_date")
 //	    @Temporal(TemporalType.TIMESTAMP) // Adjust according to the temporal type
-	  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
 	private Date deadline_date;
-	
-	
-	
 
 	@Column(name = "freelancer_type")
 	private String freelancer_type;
@@ -89,24 +78,17 @@ public class PostProject {
 	@Column(name = "number_of_files")
 	private Integer number_of_files;
 
-	
+	@ElementCollection
+	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
+	@Column(name = "skill")
+	private List<String> skills;
 
 	@ElementCollection
-	    @CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
-	    @Column(name = "skill")
-	    private List<String> skills;
+	@CollectionTable(name = "postproject_tags", joinColumns = @JoinColumn(name = "postproject_id"))
+	@Column(name = "tag")
+	private List<String> tags;
 
-	@ElementCollection
-	    @CollectionTable(name = "postproject_tags", joinColumns = @JoinColumn(name = "postproject_id"))
-	    @Column(name = "tag")
-	    private List<String> tags;
-	
-	
-	  @OneToMany(mappedBy = "postProject", cascade = CascadeType.ALL)
-	    private List<ProjectFile> files;
-	
-	
-	
-	
+	@OneToMany(mappedBy = "postProject", cascade = CascadeType.ALL)
+	private List<ProjectFile> files;
 
 }
