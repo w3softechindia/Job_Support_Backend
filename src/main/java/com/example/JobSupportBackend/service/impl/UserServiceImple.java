@@ -84,7 +84,7 @@ public class UserServiceImple implements UserService {
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
-	
+
 	String uploadDir = "C:\\Users\\91910\\Desktop\\PortfolioImages";
 
 	public String getEncodedPassword(String password) {
@@ -498,5 +498,4 @@ public class UserServiceImple implements UserService {
 		Portfolio portfolio = portfolioRepository.findByUserEmailAndTitle(email, title);
 		return portfolio;
 	}
-
 }
