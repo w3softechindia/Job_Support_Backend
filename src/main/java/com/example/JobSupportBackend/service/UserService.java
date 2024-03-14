@@ -22,6 +22,10 @@ public interface UserService {
 	public User register(Register register) throws InvalidIdException, MessagingException;
 
 	public User getDetails(String email);
+	
+	public List<User> getAllUsers(String role);
+	
+	public List<User> getAllUsersByStatus(String role,String status);
 
 	public User updateRole(String email, String newRole) throws Exception;
 

@@ -42,6 +42,7 @@ public class User implements UserDetails {
 	private String otp;
 	private LocalDateTime otpGeneratedtime;
 	private boolean verified;
+	private String status;
 
 	private String imagePath;
 

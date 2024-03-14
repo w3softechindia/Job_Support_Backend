@@ -295,4 +295,16 @@ public class UserController {
 		Portfolio portfolioByEmailAndTitle = userService.getPortfolioByEmailAndTitle(email, title);
 		return ResponseEntity.ok(portfolioByEmailAndTitle);
 	}
+	
+	@GetMapping("/getAllUsers/{role}")
+	public ResponseEntity<List<User>> getAllUsers(@PathVariable String role){
+		List<User> allUsers = userService.getAllUsers(role);
+		return ResponseEntity.ok(allUsers);
+	}
+	
+	@GetMapping("/getAllUsersByStatus/{role}/{status}")
+	public ResponseEntity<List<User>> getUserByStatus(@PathVariable String role,@PathVariable String status){
+		List<User> allUsersByStatus = userService.getAllUsersByStatus(role, status);
+		return ResponseEntity.ok(allUsersByStatus);
+	}
 }

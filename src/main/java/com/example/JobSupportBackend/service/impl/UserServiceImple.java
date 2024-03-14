@@ -102,6 +102,7 @@ public class UserServiceImple implements UserService {
 			User user = User.builder().name(register.getUsername()).email(register.getEmail())
 					.password(getEncodedPassword(register.getPassword())).otp(otp).otpGeneratedtime(LocalDateTime.now())
 					.build();
+			user.setStatus("Yet To Be");
 			return repo.save(user);
 		}
 	}
@@ -497,5 +498,15 @@ public class UserServiceImple implements UserService {
 	public Portfolio getPortfolioByEmailAndTitle(String email, String title) {
 		Portfolio portfolio = portfolioRepository.findByUserEmailAndTitle(email, title);
 		return portfolio;
+	}
+
+	@Override
+	public List<User> getAllUsers(String role) {
+		return repo.findByRole(role);
+	}
+
+	@Override
+	public List<User> getAllUsersByStatus(String role, String status) {
+		return repo.findByRoleAndStatus(role,status);
 	}
 }
