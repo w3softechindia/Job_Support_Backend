@@ -13,4 +13,6 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Integer>{
 	List<Portfolio> findByUserEmail(String email);
 	
 	Portfolio findByUserEmailAndTitle(String email, String title);
+
+	void deleteByUserEmail(String email);
 }
