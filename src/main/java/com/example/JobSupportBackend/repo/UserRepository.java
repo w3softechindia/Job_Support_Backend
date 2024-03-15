@@ -26,5 +26,4 @@ public interface UserRepository extends JpaRepository<User, String> {
 	int countByRole(String role);
 
 	int countByRoleAndStatus(String role, String status);
-
 }
