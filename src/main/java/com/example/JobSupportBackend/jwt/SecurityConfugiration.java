@@ -44,7 +44,8 @@ public class SecurityConfugiration {
 								"/change-password/***", "/postReason/*", "/files/*", "/addproject", "/regenerate-otp/*",
 								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**",
 								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*",
-								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**")
+								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*",
+								"/totalUsersByRole/*","/accountStatus/*")
 						.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))

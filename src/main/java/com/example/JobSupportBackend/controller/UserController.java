@@ -273,38 +273,63 @@ public class UserController {
 
 	@PutMapping("/updatePortfolio/{email}/{title1}")
 	public ResponseEntity<Portfolio> updatePortfolio(@PathVariable String email, @PathVariable String title1,
-	        @RequestParam("title") String title, @RequestParam("link") String link,
-	        @RequestParam("photo") MultipartFile photo) throws InvalidIdException, IOException {
-	    Portfolio portfolio = new Portfolio();
-	    portfolio.setTitle(title);
-	    portfolio.setLink(link);
+			@RequestParam("title") String title, @RequestParam("link") String link,
+			@RequestParam("photo") MultipartFile photo) throws InvalidIdException, IOException {
+		Portfolio portfolio = new Portfolio();
+		portfolio.setTitle(title);
+		portfolio.setLink(link);
 
-	    Portfolio updatedPortfolio = userService.updatePortfolio(email, title1, portfolio, photo);
-	    return ResponseEntity.ok(updatedPortfolio);
+		Portfolio updatedPortfolio = userService.updatePortfolio(email, title1, portfolio, photo);
+		return ResponseEntity.ok(updatedPortfolio);
 	}
 
-	
 	@DeleteMapping("/deletePortfolio/{email}/{title}")
-	public ResponseEntity<String> deletePortfolio(@PathVariable String email, @PathVariable String title) throws ResourceNotFoundException {
-	    String deletePortfolio = userService.deletePortfolio(email, title);
-	    return ResponseEntity.accepted().body(deletePortfolio);
+	public ResponseEntity<String> deletePortfolio(@PathVariable String email, @PathVariable String title)
+			throws ResourceNotFoundException {
+		String deletePortfolio = userService.deletePortfolio(email, title);
+		return ResponseEntity.accepted().body(deletePortfolio);
 	}
-	
+
 	@GetMapping("/getPortByEmail&Title/{email}/{title}")
-	public ResponseEntity<Portfolio> getPortfolioByTitleAndEmail(@PathVariable String email,@PathVariable String title){
+	public ResponseEntity<Portfolio> getPortfolioByTitleAndEmail(@PathVariable String email,
+			@PathVariable String title) {
 		Portfolio portfolioByEmailAndTitle = userService.getPortfolioByEmailAndTitle(email, title);
 		return ResponseEntity.ok(portfolioByEmailAndTitle);
 	}
-	
+
 	@GetMapping("/getAllUsers/{role}")
-	public ResponseEntity<List<User>> getAllUsers(@PathVariable String role){
+	public ResponseEntity<List<User>> getAllUsers(@PathVariable String role) {
 		List<User> allUsers = userService.getAllUsers(role);
 		return ResponseEntity.ok(allUsers);
 	}
-	
+
 	@GetMapping("/getAllUsersByStatus/{role}/{status}")
-	public ResponseEntity<List<User>> getUserByStatus(@PathVariable String role,@PathVariable String status){
+	public ResponseEntity<List<User>> getUserByStatus(@PathVariable String role, @PathVariable String status) {
 		List<User> allUsersByStatus = userService.getAllUsersByStatus(role, status);
 		return ResponseEntity.ok(allUsersByStatus);
+	}
+
+	@GetMapping("/totalUsersByRole/{role}")
+	public ResponseEntity<Integer> getTotalFreelancersCount(@PathVariable String role) {
+		int totalCount = userService.getTotalUsersByRole(role);
+		return ResponseEntity.ok(totalCount);
+	}
+
+	@GetMapping("/active/{role}")
+	public ResponseEntity<Integer> getActiveFreelancersCount(@PathVariable String role) {
+		int activeCount = userService.getActiveUsersCount(role);
+		return ResponseEntity.ok(activeCount);
+	}
+
+	@GetMapping("/deactivated/{role}")
+	public ResponseEntity<Integer> getDeactivatedFreelancersCount(@PathVariable String role) {
+		int deactivatedCount = userService.getDeactivatedUsersCount(role);
+		return ResponseEntity.ok(deactivatedCount);
+	}
+	
+	@GetMapping("/accountStatus/{email}")
+	public ResponseEntity<String> getUserAccountStatus(@PathVariable String email) throws InvalidIdException{
+		String status = userService.getUserAccountStatus(email);
+		return ResponseEntity.ok().body(status);
 	}
 }

@@ -99,7 +99,7 @@ public class UserServiceImple implements UserService {
 		} else {
 			String otp = otpUtil.generateOtp();
 			emailUtil.sendOtpMail(register.getEmail(), otp);
-			User user = User.builder().name(register.getUsername()).email(register.getEmail())
+			User user = User.builder().name(register.getName()).email(register.getEmail())
 					.password(getEncodedPassword(register.getPassword())).otp(otp).otpGeneratedtime(LocalDateTime.now())
 					.build();
 			user.setStatus("Yet To Be");
@@ -394,7 +394,7 @@ public class UserServiceImple implements UserService {
 		if (multipartFile.isEmpty()) {
 			throw new IllegalArgumentException("File is empty");
 		}
-																			
+
 		Path directoryPath = Paths.get(uploadDir);
 		Files.createDirectories(directoryPath);
 
@@ -404,24 +404,24 @@ public class UserServiceImple implements UserService {
 		return filePath; // Return the file path
 	}
 
-	 @Override
-	    public List<Portfolio> getPortfoliosByEmail(String email) {
-	        List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-	        portfolios.forEach(portfolio -> {
-	            try {
-	                // Set the image data for each portfolio
+	@Override
+	public List<Portfolio> getPortfoliosByEmail(String email) {
+		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		portfolios.forEach(portfolio -> {
+			try {
+				// Set the image data for each portfolio
 //	                byte[] imageData = getImageData(portfolio.getPhoto_path());
-	            	String path = portfolio.getPhoto_path();
+				String path = portfolio.getPhoto_path();
 //	                portfolio.setImageData(imageData);
-	            	Path imageFilePath = Paths.get(path);
-	    	        Files.readAllBytes(imageFilePath);
-	            } catch (IOException e) {
-	                // Handle image retrieval error
-	                e.printStackTrace();
-	            }
-	        });
-	        return portfolios;
-	    }
+				Path imageFilePath = Paths.get(path);
+				Files.readAllBytes(imageFilePath);
+			} catch (IOException e) {
+				// Handle image retrieval error
+				e.printStackTrace();
+			}
+		});
+		return portfolios;
+	}
 
 //	    private byte[] getImageData(String imagePath) throws IOException {
 //	        Path imageFilePath = Paths.get(imagePath);
@@ -446,53 +446,53 @@ public class UserServiceImple implements UserService {
 //			Path photoPath = Paths.get(imagePath);
 //			return Files.readAllBytes(photoPath);
 //		}
-	 
-	 @Override
-	 public Portfolio updatePortfolio(String email, String title1, Portfolio portfolio, MultipartFile photo) throws InvalidIdException, IOException {
-	     List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-	     String photoPath = updatePortfolioImage(photo);
 
-	     for (Portfolio port : portfolios) {
-	         if (port.getTitle().equals(title1)) {
-	             port.setTitle(portfolio.getTitle());
-	             port.setLink(portfolio.getLink());
-	             port.setPhoto_path(photoPath);
-	             return portfolioRepository.save(port);
-	         }
-	     }
+	@Override
+	public Portfolio updatePortfolio(String email, String title1, Portfolio portfolio, MultipartFile photo)
+			throws InvalidIdException, IOException {
+		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		String photoPath = updatePortfolioImage(photo);
 
-	     throw new InvalidIdException("Title not found: " + title1);
-	 }
-
-	 
-	 private String updatePortfolioImage(MultipartFile multipartFile) throws IOException {
-			// Generate a unique filename
-			String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
-
-			if (multipartFile.isEmpty()) {
-				throw new IllegalArgumentException("File is empty");
+		for (Portfolio port : portfolios) {
+			if (port.getTitle().equals(title1)) {
+				port.setTitle(portfolio.getTitle());
+				port.setLink(portfolio.getLink());
+				port.setPhoto_path(photoPath);
+				return portfolioRepository.save(port);
 			}
-																				
-			Path directoryPath = Paths.get(uploadDir);
-			Files.createDirectories(directoryPath);
-
-			String filePath = Paths.get(uploadDir, uniqueFileName).toString();
-			Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-
-			return filePath; // Return the file path
 		}
 
-	 @Override
-	 public String deletePortfolio(String email, String title) throws ResourceNotFoundException {
-	     List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-	     for (Portfolio portfolio : portfolios) {
-	         if (portfolio.getTitle().equals(title)) {
-	             portfolioRepository.delete(portfolio);
-	             return "Portfolio is deleted";
-	         }
-	     }
-	     throw new ResourceNotFoundException("Title not found: " + title);
-	 }
+		throw new InvalidIdException("Title not found: " + title1);
+	}
+
+	private String updatePortfolioImage(MultipartFile multipartFile) throws IOException {
+		// Generate a unique filename
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+
+		if (multipartFile.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
+
+		Path directoryPath = Paths.get(uploadDir);
+		Files.createDirectories(directoryPath);
+
+		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+		Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+
+		return filePath; // Return the file path
+	}
+
+	@Override
+	public String deletePortfolio(String email, String title) throws ResourceNotFoundException {
+		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		for (Portfolio portfolio : portfolios) {
+			if (portfolio.getTitle().equals(title)) {
+				portfolioRepository.delete(portfolio);
+				return "Portfolio is deleted";
+			}
+		}
+		throw new ResourceNotFoundException("Title not found: " + title);
+	}
 
 	@Override
 	public Portfolio getPortfolioByEmailAndTitle(String email, String title) {
@@ -507,6 +507,32 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public List<User> getAllUsersByStatus(String role, String status) {
-		return repo.findByRoleAndStatus(role,status);
+		return repo.findByRoleAndStatus(role, status);
+	}
+
+	@Override
+	public int getTotalUsersByRole(String role){
+		return repo.countByRole(role);
+	}
+
+	@Override
+	public int getActiveUsersCount(String role) {
+		return repo.countByRoleAndStatus(role, "Active");
+	}
+
+	@Override
+	public int getDeactivatedUsersCount(String role) {
+		return repo.countByRoleAndStatus(role, "De-Activated");
+	}
+
+	@Override
+	public String getUserAccountStatus(String email) throws InvalidIdException {
+		User byEmail = repo.findByEmail(email);
+		if(byEmail!=null) {
+			return byEmail.getStatus();
+		}
+		else {
+			throw new InvalidIdException("Email not found with "+email);
+		}
 	}
 }
