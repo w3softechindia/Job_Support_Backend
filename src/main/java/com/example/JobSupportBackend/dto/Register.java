@@ -16,7 +16,7 @@ import lombok.Setter;
 public class Register {
 
 	private String email;
-	private String username;
+	private String name;
 	private String password;
 	private String otp;
 	private LocalDateTime otpGeneratedtime;

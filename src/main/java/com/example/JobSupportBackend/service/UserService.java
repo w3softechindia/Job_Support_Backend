@@ -27,6 +27,10 @@ public interface UserService {
 	
 	public List<User> getAllUsersByStatus(String role,String status);
 
+	public List<User> getAllUsers(String role);
+
+	public List<User> getAllUsersByStatus(String role, String status);
+
 	public User updateRole(String email, String newRole) throws Exception;
 
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;
@@ -61,12 +65,21 @@ public interface UserService {
 			throws ResourceNotFoundException, IOException;
 
 	public List<Portfolio> getPortfoliosByEmail(String email);
+
+	public Portfolio getPortfolioByEmailAndTitle(String email, String title);
+
+	public Portfolio updatePortfolio(String email, String title, Portfolio portfolio, MultipartFile photo)
+			throws InvalidIdException, IOException;
+
+	public String deletePortfolio(String email, String title) throws ResourceNotFoundException;
+
+	int getTotalUsersByRole(String role);
+
+	int getActiveUsersCount(String role);
+
+	int getDeactivatedUsersCount(String role);
 	
-	public Portfolio getPortfolioByEmailAndTitle(String email,String title);
-	
-	public Portfolio updatePortfolio(String email,String title,Portfolio portfolio,MultipartFile photo) throws InvalidIdException, IOException;
-	
-	public String deletePortfolio(String email,String title) throws ResourceNotFoundException;
+	public String getUserAccountStatus(String email) throws InvalidIdException;
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }
