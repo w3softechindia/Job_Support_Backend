@@ -42,6 +42,7 @@ public class User implements UserDetails {
 	private String otp;
 	private LocalDateTime otpGeneratedtime;
 	private boolean verified;
+	private String status;
 
 	private String imagePath;
 
@@ -77,6 +78,10 @@ public class User implements UserDetails {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	@JsonManagedReference
 	private List<Language> language;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
+	private List<Portfolio> portfolio;
 
 	private String facebook;
 	private String instagram;

@@ -35,9 +35,11 @@ public class PostProject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private User user;
+
 
 	@Column(name = "project_title")
 	private String project_title;
@@ -86,12 +88,8 @@ public class PostProject {
 	@Column(name = "number_of_files")
 	private Integer number_of_files;
 
-	@ElementCollection
-	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
-	@Column(name = "skill")
-	private List<String> skills;
-	
-	
+
+
 	
 	
 	
@@ -100,6 +98,12 @@ public class PostProject {
 	 
 
 	@ElementCollection
+	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
+	@Column(name = "skill")
+	private List<String> skills;
+
+	@ElementCollection
+
 	@CollectionTable(name = "postproject_tags", joinColumns = @JoinColumn(name = "postproject_id"))
 	@Column(name = "tag")
 	private List<String> tags;
