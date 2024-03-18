@@ -144,7 +144,7 @@ public class UserServiceImple implements UserService {
 		}
 
 		// Save the image file to a local directory
-		String uploadDir = "C:\\Users\\91910\\Desktop\\saving photos";
+		String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
 		Path directoryPath = Paths.get(uploadDir);
 		Files.createDirectories(directoryPath);
 

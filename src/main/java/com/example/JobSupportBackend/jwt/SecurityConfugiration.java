@@ -39,12 +39,13 @@ public class SecurityConfugiration {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
 								"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*",
+
 								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*", "/regenerate-otp/*",
-								"/adminRegister", "/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*",
-								"/change-password/***", "/postReason/*", "/files/*", "/addproject", "/regenerate-otp/*",
-								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**",
-								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*",
-								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*",
+								"/adminRegister", "/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*","/email/*",
+								"/change-password/***", "/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*","/updateFreelancer/*",
+								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
+								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*","/getAllAdminProjects","/filesGet/*","/files/*","/projects/*",
+								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*",
 								"/totalUsersByRole/*","/accountStatus/*")
 						.permitAll().anyRequest().authenticated())
 
