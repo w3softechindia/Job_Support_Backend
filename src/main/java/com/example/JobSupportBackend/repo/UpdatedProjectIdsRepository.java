@@ -4,20 +4,23 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.JobSupportBackend.entity.PostProject;
+import com.example.JobSupportBackend.entity.UpdatedProjectIds;
 
 @Repository
-public interface ProjectRepo  extends JpaRepository<PostProject, Long>{
-
-	List<PostProject> findByUserEmail(String userEmail);
+public interface UpdatedProjectIdsRepository  extends JpaRepository<UpdatedProjectIds, Long>{
 
 	
+	@Query("SELECT projectId FROM UpdatedProjectIds")
+	List<Long> getAllUpdatedProjectIds();
+
+
+
 	
 	
-	  
-	  
-	  
+
+
+	
+
 }

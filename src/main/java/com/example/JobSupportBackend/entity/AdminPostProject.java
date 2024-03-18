@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -16,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,19 +25,23 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "postproject")
+@Table(name = "Admin_postproject")
 @Builder
-public class PostProject {
+public class AdminPostProject {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	  @Column(name = "project_id") // Define the column for projectId
+	    private Long project_id; // Declare projectId property
+	  
+	  
 
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private User user;
-
 
 	@Column(name = "project_title")
 	private String project_title;
@@ -51,7 +53,7 @@ public class PostProject {
 	private String project_duration;
 
 	@Column(name = "deadline_date")
-//	    @Temporal(TemporalType.TIMESTAMP) // Adjust according to the temporal type
+//		    @Temporal(TemporalType.TIMESTAMP) // Adjust according to the temporal type
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
 	private Date deadline_date;
 
@@ -88,27 +90,21 @@ public class PostProject {
 	@Column(name = "number_of_files")
 	private Integer number_of_files;
 
-
-
-	
-	
-	
+	@ElementCollection
+	@CollectionTable(name = "admin_postproject_skills", joinColumns = @JoinColumn(name = "admin_postproject_id"))
+	@Column(name = "skill")
+	private List<String> skills;
 	
 	
 	 
+	
 
 	@ElementCollection
-	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
-	@Column(name = "skill")
-	private List<String> skills;
-
-	@ElementCollection
-
-	@CollectionTable(name = "postproject_tags", joinColumns = @JoinColumn(name = "postproject_id"))
+	@CollectionTable(name = "Admin_postproject_tags", joinColumns = @JoinColumn(name = "Admin_postproject_id"))
 	@Column(name = "tag")
 	private List<String> tags;
 
-	@OneToMany(mappedBy = "postProject", cascade = CascadeType.ALL)
-	private List<ProjectFile> files;
+//	@OneToMany(mappedBy = "Admin_postproject", cascade = CascadeType.ALL)
+//	private List<ProjectFile> files;
 
 }
