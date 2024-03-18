@@ -27,10 +27,6 @@ public interface UserService {
 	
 	public List<User> getAllUsersByStatus(String role,String status);
 
-	public List<User> getAllUsers(String role);
-
-	public List<User> getAllUsersByStatus(String role, String status);
-
 	public User updateRole(String email, String newRole) throws Exception;
 
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;

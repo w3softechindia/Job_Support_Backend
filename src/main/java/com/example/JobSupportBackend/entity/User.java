@@ -82,6 +82,10 @@ public class User implements UserDetails {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	@JsonManagedReference
 	private List<Portfolio> portfolio;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@JsonManagedReference
+	private List<SendProposal> sendProposals;
 
 	private String facebook;
 	private String instagram;

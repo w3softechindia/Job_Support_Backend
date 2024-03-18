@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.JobSupportBackend.entity.PostProject;
-import com.example.JobSupportBackend.entity.ProjectFile;
 
 public interface ProjectService {
 
@@ -12,11 +11,6 @@ public interface ProjectService {
 
 	List<PostProject> getAllProjects();
 
-	  Optional<PostProject> findById(Long id);
-	
-	
-	
-	
-	
-   
+	Optional<PostProject> findById(Long id);
+
 }
