@@ -5,12 +5,10 @@ import java.util.Optional;
 
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.PostProject;
-import com.example.JobSupportBackend.entity.ProjectFile;
 
 public interface ProjectService {
 
 	PostProject save(PostProject project);
-
 	
 
 	Optional<PostProject> findById(Long id);
@@ -28,8 +26,5 @@ public interface ProjectService {
 
 
 	List<PostProject> findAll();
-
-
-
 
 }
