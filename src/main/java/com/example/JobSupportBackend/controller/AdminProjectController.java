@@ -22,11 +22,6 @@ public class AdminProjectController {
 
 	@Autowired
 	private AdminPostProjectRpository repoo;
-	
-	
-	
-	
-	
 
 	@GetMapping("/getAllAdminProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
@@ -68,47 +63,22 @@ public class AdminProjectController {
 		projectDTO.setState(adminPostProject.getUser().getState());
 		return projectDTO;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@GetMapping("/getAdminProjectById/{projectId}")
 	public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
-	    try {
-	        Optional<AdminPostProject> optionalProject = repoo.findById(projectId);
-	        if (optionalProject.isPresent()) {
-	            AdminPostProject adminPostProject = optionalProject.get();
-	            ProjectDTO projectDTO = convertToProjectDetailsResponse(adminPostProject);
-	            return ResponseEntity.ok(projectDTO);
-	        } else {
-	            return ResponseEntity.notFound().build();
-	        }
-	    } catch (Exception ex) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	    }
+		try {
+			Optional<AdminPostProject> optionalProject = repoo.findById(projectId);
+			if (optionalProject.isPresent()) {
+				AdminPostProject adminPostProject = optionalProject.get();
+				ProjectDTO projectDTO = convertToProjectDetailsResponse(adminPostProject);
+				return ResponseEntity.ok(projectDTO);
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	@PutMapping("/updateAdminProject/{projectId}")
 	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
