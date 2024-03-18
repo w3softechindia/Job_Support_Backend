@@ -39,10 +39,10 @@ public class SecurityConfugiration {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
 								"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*",
-								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
-              "/regenerate-otp/*", "/adminRegister","/adminLogin/**","/updateFreelancer/*",
-								"/deleteSkill/*","/change-password/***","/postReason/*",
-						"/files/*","/addproject","/regenerate-otp/*", "/adminRegister", "/adminLogin/**")
+								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*","/email/*",
+          "/regenerate-otp/*", "/adminRegister","/adminLogin/**","/updateFreelancer/*","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
+								"/deleteSkill/*","/change-password/***","/postReason/*","/filesGet/*","/getAllAdminProjects",
+				"/getAdminProjectById/*","/updateAdminProject/*","/files/*","/addproject/*","/regenerate-otp/*", "/adminRegister", "/adminLogin/**","/projects/*")
 						.permitAll().anyRequest().authenticated())
 
 
