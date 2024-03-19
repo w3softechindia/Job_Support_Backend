@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -15,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,12 +35,9 @@ public class AdminPostProject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	  @Column(name = "project_id") // Define the column for projectId
-	    private Long project_id; // Declare projectId property
-	  
-	  
 
+	@Column(name = "project_id") // Define the column for projectId
+	private Long project_id; // Declare projectId property
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
@@ -94,10 +94,6 @@ public class AdminPostProject {
 	@CollectionTable(name = "admin_postproject_skills", joinColumns = @JoinColumn(name = "admin_postproject_id"))
 	@Column(name = "skill")
 	private List<String> skills;
-	
-	
-	 
-	
 
 	@ElementCollection
 	@CollectionTable(name = "Admin_postproject_tags", joinColumns = @JoinColumn(name = "Admin_postproject_id"))
@@ -106,5 +102,8 @@ public class AdminPostProject {
 
 //	@OneToMany(mappedBy = "Admin_postproject", cascade = CascadeType.ALL)
 //	private List<ProjectFile> files;
-
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "adminPostProject")
+	@JsonManagedReference
+	private List<SendProposal> sendProposal;
 }

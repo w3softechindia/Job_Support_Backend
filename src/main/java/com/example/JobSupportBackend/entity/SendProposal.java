@@ -26,7 +26,7 @@ public class SendProposal {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int proposedId;
+	private int proposalId;
 	
 	private String proposedPrice;
 	
@@ -40,6 +40,10 @@ public class SendProposal {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email")
-	@JsonBackReference
 	private User user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "adminProjectId")
+	@JsonBackReference
+	private AdminPostProject adminPostProject;
 }

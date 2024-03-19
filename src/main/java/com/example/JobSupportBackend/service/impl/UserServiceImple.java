@@ -22,28 +22,33 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.Certification;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.CertificationRepository;
 import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
+import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -81,6 +86,12 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private PortfolioRepository portfolioRepository;
+
+	@Autowired
+	private ProposalsRepository proposalsRepository;
+	
+	@Autowired
+	private AdminPostProjectRpository adminPostProjectRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -511,7 +522,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public int getTotalUsersByRole(String role){
+	public int getTotalUsersByRole(String role) {
 		return repo.countByRole(role);
 	}
 
@@ -528,11 +539,31 @@ public class UserServiceImple implements UserService {
 	@Override
 	public String getUserAccountStatus(String email) throws InvalidIdException {
 		User byEmail = repo.findByEmail(email);
-		if(byEmail!=null) {
+		if (byEmail != null) {
 			return byEmail.getStatus();
-		}
-		else {
-			throw new InvalidIdException("Email not found with "+email);
+		} else {
+			throw new InvalidIdException("Email not found with " + email);
 		}
 	}
+
+	@Override
+	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal) {
+	    // Find the admin project and user entities by their IDs
+	    Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
+	    Optional<User> userOptional = repo.findById(email);
+
+	    // Check if both entities are present
+	    if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
+	        // Set the admin project and user for the proposal
+	        proposal.setAdminPostProject(adminProjectOptional.get());
+	        proposal.setUser(userOptional.get());
+
+	        // Save the proposal and return the saved instance
+	        return proposalsRepository.save(proposal);
+	    } else {
+	        // If either the admin project or user is not found, handle the error accordingly
+	        throw new EntityNotFoundException("Admin project or user not found");
+	    }
+	}
+
 }

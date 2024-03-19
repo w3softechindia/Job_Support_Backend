@@ -19,5 +19,6 @@ public interface ProjectService {
 	List<ProjectDTO> getAllProjects();
 
 	List<PostProject> findAll();
-
+	
+	PostProject getProjectById(long id);
 }

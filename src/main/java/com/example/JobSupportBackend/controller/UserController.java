@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
@@ -64,12 +66,6 @@ public class UserController {
 	public ResponseEntity<User> register(@RequestBody Register register) throws InvalidIdException, MessagingException {
 		return new ResponseEntity<User>(userService.register(register), HttpStatus.CREATED);
 	}
-	
-	
-	
-	
-	
-	
 
 	@PutMapping("/verify/{email}/{otp}")
 	public ResponseEntity<User> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {
@@ -332,10 +328,16 @@ public class UserController {
 		int deactivatedCount = userService.getDeactivatedUsersCount(role);
 		return ResponseEntity.ok(deactivatedCount);
 	}
-	
+
 	@GetMapping("/accountStatus/{email}")
-	public ResponseEntity<String> getUserAccountStatus(@PathVariable String email) throws InvalidIdException{
+	public ResponseEntity<String> getUserAccountStatus(@PathVariable String email) throws InvalidIdException {
 		String status = userService.getUserAccountStatus(email);
 		return ResponseEntity.ok().body(status);
 	}
+	
+	 @PostMapping("/sendProposal/{adminProjectId}/{email}")
+	    public ResponseEntity<SendProposal> postProposal(@PathVariable long adminProjectId, @PathVariable String email, @RequestBody SendProposal proposal) {
+	        SendProposal savedProposal = userService.sendProposal(adminProjectId, email, proposal);
+	        return new ResponseEntity<>(savedProposal, HttpStatus.CREATED);
+	    }
 }
