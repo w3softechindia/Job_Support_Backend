@@ -6,6 +6,5 @@ public interface UpdatedProjectIdsService {
 
 	void saveUpdatedProjectIds(List<Long> projectIds);
 
-	  
 	List<Long> getAllUpdatedProjectIds();
 }

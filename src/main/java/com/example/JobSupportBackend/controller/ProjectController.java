@@ -50,11 +50,10 @@ public class ProjectController {
 	private AdminPostProjectRpository adminPostProjectRpository;
 
 	@PostMapping("/addproject/{userEmail}")
-	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project,
-			@PathVariable String userEmail)
+	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project, @PathVariable String userEmail)
 			throws ParseException, java.text.ParseException {
 
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 //		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String deadlineDateString = sdf.format(project.getDeadline_date());
 
@@ -76,7 +75,6 @@ public class ProjectController {
 					String budgetAmount = hourlyRateFrom + " - " + hourlyRateTo;
 					project.setBudget_amount(budgetAmount);
 				} catch (NumberFormatException e) {
-
 					e.printStackTrace();
 				}
 			} else {
@@ -85,63 +83,34 @@ public class ProjectController {
 		}
 
 		PostProject savedProject = postProjectService.saveProject(project, userEmail);
-		
-		
-		
-        AdminPostProject adminProject = new AdminPostProject();
-        
-        adminProject.setProject_id(savedProject.getId());
-        adminProject.setUser(savedProject.getUser());
-        adminProject.setProject_title(savedProject.getProject_title());
-        adminProject.setProject_category(savedProject.getProject_category());
-        adminProject.setProject_duration(savedProject.getProject_duration());
-        adminProject.setDeadline_date(savedProject.getDeadline_date());
-        adminProject.setFreelancer_type(savedProject.getFreelancer_type());
-        adminProject.setFreelancer_level(savedProject.getFreelancer_level());
-        adminProject.setActive_rate(savedProject.getActive_rate());
-        adminProject.setHourly_rate_from(savedProject.getHourly_rate_from());
-        adminProject.setHourly_rate_to(savedProject.getHourly_rate_to());
-        adminProject.setFixed_rate(savedProject.getFixed_rate());
-        adminProject.setLanguages(savedProject.getLanguages());
-        adminProject.setLanguage_fluency(savedProject.getLanguage_fluency());
-        adminProject.setBudget_amount(savedProject.getBudget_amount());
-        adminProject.setDescription(savedProject.getDescription());
-        adminProject.setNumber_of_files(savedProject.getNumber_of_files());
-        
-        
-        
-        
-        
-        
-        
-        adminProject.setSkills(new ArrayList<>(savedProject.getSkills()));
-        adminProject.setTags(new ArrayList<>(savedProject.getTags()) );
-        AdminPostProject savedAdminProject = adminPostProjectRpository.save(adminProject);
-        
-		
-		
-		
+
+		AdminPostProject adminProject = new AdminPostProject();
+
+		adminProject.setProject_id(savedProject.getId());
+		adminProject.setUser(savedProject.getUser());
+		adminProject.setProject_title(savedProject.getProject_title());
+		adminProject.setProject_category(savedProject.getProject_category());
+		adminProject.setProject_duration(savedProject.getProject_duration());
+		adminProject.setDeadline_date(savedProject.getDeadline_date());
+		adminProject.setFreelancer_type(savedProject.getFreelancer_type());
+		adminProject.setFreelancer_level(savedProject.getFreelancer_level());
+		adminProject.setActive_rate(savedProject.getActive_rate());
+		adminProject.setHourly_rate_from(savedProject.getHourly_rate_from());
+		adminProject.setHourly_rate_to(savedProject.getHourly_rate_to());
+		adminProject.setFixed_rate(savedProject.getFixed_rate());
+		adminProject.setLanguages(savedProject.getLanguages());
+		adminProject.setLanguage_fluency(savedProject.getLanguage_fluency());
+		adminProject.setBudget_amount(savedProject.getBudget_amount());
+		adminProject.setDescription(savedProject.getDescription());
+		adminProject.setNumber_of_files(savedProject.getNumber_of_files());
+
+		adminProject.setSkills(new ArrayList<>(savedProject.getSkills()));
+		adminProject.setTags(new ArrayList<>(savedProject.getTags()));
+		AdminPostProject savedAdminProject = adminPostProjectRpository.save(adminProject);
+
 		return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@GetMapping("/projects/{userEmail}")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByUserEmail(@PathVariable String userEmail) {
 		try {
@@ -178,16 +147,6 @@ public class ProjectController {
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@PostMapping("/files/{projectId}")
 	public ResponseEntity<String> uploadFile(@PathVariable Long projectId, @RequestParam("file") MultipartFile file) {
 		try {
@@ -261,7 +220,6 @@ public class ProjectController {
 		response.setId(project.getId());
 		response.setProjectTitle(project.getProject_title());
 		response.setUserEmail(project.getUser().getEmail());
-		
 
 		response.setProjectCategory(project.getProject_category());
 		response.setProject_duration(project.getProject_duration());
@@ -279,7 +237,6 @@ public class ProjectController {
 		response.setNumber_of_files(project.getNumber_of_files());
 		response.setSkills(project.getSkills());
 		response.setTags(project.getTags());
-		
 
 		return response;
 	}
