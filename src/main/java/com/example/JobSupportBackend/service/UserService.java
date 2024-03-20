@@ -79,6 +79,12 @@ public interface UserService {
 	public String getUserAccountStatus(String email) throws InvalidIdException;
 	
 	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal);
+	
+	public List<SendProposal> getProposals(String email);
+	
+	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException;
+	
+	public SendProposal updateProposals(int proposalId, SendProposal sendProposal) throws ResourceNotFoundException;
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }

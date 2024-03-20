@@ -103,7 +103,7 @@ public class AdminPostProject {
 //	@OneToMany(mappedBy = "Admin_postproject", cascade = CascadeType.ALL)
 //	private List<ProjectFile> files;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "adminPostProject")
-	@JsonManagedReference
-	private List<SendProposal> sendProposal;
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "adminPostProject")
+//	@JsonManagedReference
+//	private List<SendProposal> sendProposal;
 }

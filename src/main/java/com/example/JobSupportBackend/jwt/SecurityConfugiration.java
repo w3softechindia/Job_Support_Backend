@@ -45,7 +45,7 @@ public class SecurityConfugiration {
 								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
 								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*","/getAllAdminProjects","/filesGet/*","/files/*","/projects/*",
 								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*",
-								"/totalUsersByRole/*","/accountStatus/*","/getProjectById/*","/sendProposal/**")
+								"/totalUsersByRole/*","/accountStatus/*","/getProjectById/*","/sendProposal/**","/getProposals/*","/getProposalById/*")
 						.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))

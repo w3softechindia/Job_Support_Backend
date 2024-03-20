@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -28,11 +29,15 @@ public class SendProposal {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int proposalId;
 	
+	@JsonProperty("proposedPrice")
 	private String proposedPrice;
-	
+
+	@JsonProperty("estimatedDelivery")
 	private String estimatedDelivery;
-	
+
+	@JsonProperty("coverLetter")
 	private String coverLetter;
+
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sendProposal")
 	@JsonManagedReference
@@ -43,7 +48,6 @@ public class SendProposal {
 	private User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "adminProjectId")
-	@JsonBackReference
+	@JoinColumn(name = "admin_project_id")
 	private AdminPostProject adminPostProject;
 }

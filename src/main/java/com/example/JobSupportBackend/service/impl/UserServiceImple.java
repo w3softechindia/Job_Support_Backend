@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +29,7 @@ import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
+import com.example.JobSupportBackend.entity.Milestone;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
@@ -41,6 +43,7 @@ import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
+import com.example.JobSupportBackend.repo.MilestoneRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
 import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
@@ -92,6 +95,9 @@ public class UserServiceImple implements UserService {
 	
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
+	
+	@Autowired
+	private MilestoneRepository milestoneRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -548,22 +554,64 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal) {
-	    // Find the admin project and user entities by their IDs
+	  
 	    Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
 	    Optional<User> userOptional = repo.findById(email);
 
 	    // Check if both entities are present
 	    if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
-	        // Set the admin project and user for the proposal
-	        proposal.setAdminPostProject(adminProjectOptional.get());
-	        proposal.setUser(userOptional.get());
+	    	SendProposal proposal1 = new SendProposal();
+            proposal1.setProposedPrice(proposal.getProposedPrice());
+            proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
+            proposal1.setCoverLetter(proposal.getCoverLetter());
+            proposal1.setAdminPostProject(adminProjectOptional.get());
+            proposal1.setUser(userOptional.get());
 
-	        // Save the proposal and return the saved instance
-	        return proposalsRepository.save(proposal);
-	    } else {
-	        // If either the admin project or user is not found, handle the error accordingly
-	        throw new EntityNotFoundException("Admin project or user not found");
-	    }
+            SendProposal savedProposal = proposalsRepository.save(proposal1);
+
+            // Save milestones
+            List<Milestone> milestones = new ArrayList<>();
+            for (Milestone milestone : proposal.getMilestones()) {
+                milestone.setMilestoneName(milestone.getMilestoneName());
+                milestone.setPrice(milestone.getPrice());
+                milestone.setStartdate(milestone.getStartdate());
+                milestone.setEnddate(milestone.getEnddate());
+                milestone.setSendProposal(savedProposal); // Associate milestone with the saved proposal
+                milestones.add(milestone);
+            }
+            milestoneRepository.saveAll(milestones);
+
+            // Associate milestones with proposal
+            savedProposal.setMilestones(milestones);
+            return savedProposal;
+        } else {
+            throw new EntityNotFoundException("Admin project or user not found");
+        }
 	}
 
+	 @Override
+	    public List<SendProposal> getProposals(String email) {
+	        return proposalsRepository.findByUserEmail(email);
+	    }
+
+	@Override
+	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException {
+		Optional<SendProposal> byId = proposalsRepository.findById(proposalId);
+		if(byId.isPresent()) {
+			return byId.get();
+		}
+		else {
+			throw new ResourceNotFoundException("Proposal doesnot exists...!!!");
+		}
+	}
+
+	@Override
+	public SendProposal updateProposals(int proposalId,SendProposal sendProposal) throws ResourceNotFoundException {
+		SendProposal proposal = proposalsRepository.findById(proposalId).orElseThrow(()-> new ResourceNotFoundException("Proposal not exists..!!"));
+		proposal.setCoverLetter(sendProposal.getCoverLetter());
+		proposal.setProposedPrice(sendProposal.getProposedPrice());
+		proposal.setEstimatedDelivery(sendProposal.getEstimatedDelivery());
+		proposal.setMilestones(sendProposal.getMilestones());
+		return proposalsRepository.save(proposal);	
+	}
 }

@@ -334,10 +334,23 @@ public class UserController {
 		String status = userService.getUserAccountStatus(email);
 		return ResponseEntity.ok().body(status);
 	}
+
+	@PostMapping("/sendProposal/{adminProjectId}/{email}")
+	public ResponseEntity<SendProposal> postProposal(@PathVariable long adminProjectId, @PathVariable String email,
+			@RequestBody SendProposal proposal) {
+		SendProposal savedProposal = userService.sendProposal(adminProjectId, email, proposal);
+		return new ResponseEntity<>(savedProposal, HttpStatus.CREATED);
+	}
 	
-	 @PostMapping("/sendProposal/{adminProjectId}/{email}")
-	    public ResponseEntity<SendProposal> postProposal(@PathVariable long adminProjectId, @PathVariable String email, @RequestBody SendProposal proposal) {
-	        SendProposal savedProposal = userService.sendProposal(adminProjectId, email, proposal);
-	        return new ResponseEntity<>(savedProposal, HttpStatus.CREATED);
-	    }
+	@GetMapping("/getProposals/{email}")
+	public ResponseEntity<List<SendProposal>> getProposals(@PathVariable String email){
+		List<SendProposal> proposals = userService.getProposals(email);
+		return new ResponseEntity<List<SendProposal>>(proposals,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getProposalById/{proposalId}")
+	public ResponseEntity<SendProposal> getProposalById(@PathVariable int proposalId) throws ResourceNotFoundException{
+		SendProposal proposalById = userService.getProposalById(proposalId);
+		return new ResponseEntity<SendProposal>(proposalById,HttpStatus.OK);
+	}
 }
