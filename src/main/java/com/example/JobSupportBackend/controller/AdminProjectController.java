@@ -114,5 +114,16 @@ public class AdminProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-
+	
+	@GetMapping("/getProjectById/{id}")
+	public ResponseEntity<AdminPostProject> getProjectById(@PathVariable long id){
+		AdminPostProject projectById = adminProjectService.getProjectById(id);
+		return ResponseEntity.ok(projectById);
+	}
+	
+	@GetMapping("/getProjectsOfAdmin")
+	public ResponseEntity<List<AdminPostProject>> getAll(){
+		List<AdminPostProject> allProjects = adminProjectService.getAllProjects();
+		return new ResponseEntity<List<AdminPostProject>>(allProjects,HttpStatus.OK);
+	}
 }

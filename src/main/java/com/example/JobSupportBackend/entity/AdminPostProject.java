@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -106,5 +105,8 @@ public class AdminPostProject {
 
 //	@OneToMany(mappedBy = "Admin_postproject", cascade = CascadeType.ALL)
 //	private List<ProjectFile> files;
-
+	
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "adminPostProject")
+//	@JsonManagedReference
+//	private List<SendProposal> sendProposal;
 }

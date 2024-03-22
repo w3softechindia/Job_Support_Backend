@@ -85,6 +85,10 @@ public interface UserService {
 	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException;
 	
 	public SendProposal updateProposals(int proposalId, SendProposal sendProposal) throws ResourceNotFoundException;
+	
+	public String deleteProposal(int proposalId);
+	
+	List<SendProposal> getProposalsByProjectId(Long id);
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }

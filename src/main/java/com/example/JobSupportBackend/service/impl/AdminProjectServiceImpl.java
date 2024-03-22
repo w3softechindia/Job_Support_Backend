@@ -1,5 +1,7 @@
 package com.example.JobSupportBackend.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.JobSupportBackend.entity.AdminPostProject;
@@ -15,11 +17,13 @@ public class AdminProjectServiceImpl  implements AdminProjectService{
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRpository;
 	
+	@Override
+	public AdminPostProject getProjectById(Long id) {
+		return adminPostProjectRpository.findById(id).get();
+	}
 
-	@Autowired
-	private UserRepository urp;
-	
-	
-	
-	
+	@Override
+	public List<AdminPostProject> getAllProjects() {
+		return adminPostProjectRpository.findAll();
+	}
 }

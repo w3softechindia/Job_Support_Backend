@@ -36,20 +36,19 @@ public class SecurityConfugiration {
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
 		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
-								"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*",
-
-								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*", "/regenerate-otp/*",
-								"/adminRegister", "/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*","/email/*",
-								"/change-password/***", "/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*","/updateFreelancer/*",
-								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
-								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*","/getAllAdminProjects","/filesGet/*","/files/*","/projects/*",
-
-
-								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*",
-								"/totalUsersByRole/*","/accountStatus/*","/getProjectById/*","/sendProposal/**","/getProposals/*","/getProposalById/*")
-
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/authenticate", "/register", "/update/*",
+						"/persnolInfo/*", "/otherInfo/*", "/addUserData/*", "/getUser/*", "/employerInfo/*",
+						"/verify/**", "/sendOTP/*", "/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
+						"/regenerate-otp/*", "/adminRegister", "/adminLogin/**", "/updateFreelancer/*",
+						"/deleteSkill/*", "/email/*", "/change-password/***", "/postReason/*", "/files/*",
+						"/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*", "/adminRegister", "/adminLogin/**",
+						"/postPortfolio/*", "/portfolios/*", "/images/**", "getallProjects", "/updatedprojectIds",
+						"gettingupdatedprojectIds", "/updatePortfolio/**", "/deletePortfolio/**",
+						"/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects", "/filesGet/*", "/files/*",
+						"/projects/*", "/changeStatus/*", "/deleteUser/*", "/getAllUsersByStatus/**", "/active/*",
+						"/deactivated/*", "/getAdminProjectById/*", "/updateAdminProject/*", "/totalUsersByRole/*",
+						"/accountStatus/*", "/getProjectById/*", "/sendProposal/**", "/getProposals/*",
+						"/getProposalById/*", "/updateProposal/*", "/deleteProposal/*", "/getProjectsOfAdmin","/getProposalsByProjectId/*")
 						.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
