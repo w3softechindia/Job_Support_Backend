@@ -6,5 +6,10 @@ public interface UpdatedProjectIdsService {
 
 	void saveUpdatedProjectIds(List<Long> projectIds);
 
+	  
 	List<Long> getAllUpdatedProjectIds();
+	
+	
+	
+	 void deleteProjectById(Long projectId);
 }

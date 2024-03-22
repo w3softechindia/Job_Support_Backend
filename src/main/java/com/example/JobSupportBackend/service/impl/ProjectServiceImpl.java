@@ -27,6 +27,7 @@ public class ProjectServiceImpl implements ProjectService {
 		return postProjectRepository.save(project);
 	}
 
+	
 	@Override
 	public Optional<PostProject> findById(Long id) {
 		return postProjectRepository.findById(id);
@@ -55,19 +56,17 @@ public class ProjectServiceImpl implements ProjectService {
 		return postProjectRepository.findByUserEmail(userEmail);
 	}
 
-	@Override
-	public List<ProjectDTO> getAllProjects() {
-		return null;
-	}
+	 @Override
+	    public List<ProjectDTO> getAllProjects() {
+	        return null;
+	    }
 
-	@Override
-	public List<PostProject> findAll() {
-		return postProjectRepository.findAll();
-	}
 
-	@Override
-	public PostProject getProjectById(long id) {
-		return postProjectRepository.findById(id).get();
-	}
+	 @Override
+	    public List<PostProject> findAll() {
+	        return postProjectRepository.findAll();
+	    }
 
+	
+	
 }

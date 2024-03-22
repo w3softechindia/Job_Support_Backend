@@ -30,4 +30,17 @@ public class UpdatedProjectIdsServiceImpl implements UpdatedProjectIdsService {
 	        return idsRepository.getAllUpdatedProjectIds();
 	    }
 
+	 
+	 @Override
+	    public void deleteProjectById(Long projectId) {
+	        List<UpdatedProjectIds> projects = idsRepository.findAllByProjectId(projectId);
+	        if (!projects.isEmpty()) {
+	        	idsRepository.deleteAll(projects);
+	        } else {
+	            throw new IllegalArgumentException("Project with ID " + projectId + " not found.");
+	        }
+	    }
+	 
+	 
+	 
 }

@@ -66,6 +66,12 @@ public class UserController {
 	public ResponseEntity<User> register(@RequestBody Register register) throws InvalidIdException, MessagingException {
 		return new ResponseEntity<User>(userService.register(register), HttpStatus.CREATED);
 	}
+	
+	
+	
+	
+	
+	
 
 	@PutMapping("/verify/{email}/{otp}")
 	public ResponseEntity<User> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {

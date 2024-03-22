@@ -16,21 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
-import com.example.JobSupportBackend.service.AdminProjectService;
 
 @RestController
 public class AdminProjectController {
 
 	@Autowired
-	private AdminPostProjectRpository adminPostProjectRpository;
-	
-	@Autowired
-	private AdminProjectService adminProjectService;
+	private AdminPostProjectRpository repoo;
 
 	@GetMapping("/getAllAdminProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
 		try {
-			List<AdminPostProject> projects = adminPostProjectRpository.findAll();
+			List<AdminPostProject> projects = repoo.findAll();
 			List<ProjectDTO> projectDetailsResponses = projects.stream().map(this::convertToProjectDetailsResponse)
 					.collect(Collectors.toList());
 			return ResponseEntity.ok(projectDetailsResponses);
@@ -71,7 +67,7 @@ public class AdminProjectController {
 	@GetMapping("/getAdminProjectById/{projectId}")
 	public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
 		try {
-			Optional<AdminPostProject> optionalProject = adminPostProjectRpository.findById(projectId);
+			Optional<AdminPostProject> optionalProject = repoo.findById(projectId);
 			if (optionalProject.isPresent()) {
 				AdminPostProject adminPostProject = optionalProject.get();
 				ProjectDTO projectDTO = convertToProjectDetailsResponse(adminPostProject);
@@ -88,7 +84,7 @@ public class AdminProjectController {
 	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
 			@RequestBody ProjectDTO updatedProjectDTO) {
 		try {
-			Optional<AdminPostProject> optionalProject = adminPostProjectRpository.findById(projectId);
+			Optional<AdminPostProject> optionalProject = repoo.findById(projectId);
 			if (optionalProject.isPresent()) {
 				AdminPostProject adminPostProject = optionalProject.get();
 
@@ -106,7 +102,7 @@ public class AdminProjectController {
 					adminPostProject.setDeadline_date(updatedProjectDTO.getDeadline_date());
 
 				// Save the updated project
-				AdminPostProject updatedProject = adminPostProjectRpository.save(adminPostProject);
+				AdminPostProject updatedProject = repoo.save(adminPostProject);
 
 				// Convert to DTO and return
 				ProjectDTO updatedProjectDTO1 = convertToProjectDetailsResponse(updatedProject);
@@ -118,10 +114,5 @@ public class AdminProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-	
-	@GetMapping("/getProjectById/{id}")
-	public ResponseEntity<AdminPostProject> getProjectById(@PathVariable long id){
-		AdminPostProject projectById = adminProjectService.getProjectById(id);
-		return ResponseEntity.ok(projectById);
-	}
+
 }
