@@ -31,9 +31,12 @@ public class AdminPostProject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	  @Column(name = "project_id") // Define the column for projectId
+	    private Long project_id; // Declare projectId property
+	  
+	  
 
-	@Column(name = "project_id") // Define the column for projectId
-	private Long project_id; // Declare projectId property
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
@@ -90,6 +93,10 @@ public class AdminPostProject {
 	@CollectionTable(name = "admin_postproject_skills", joinColumns = @JoinColumn(name = "admin_postproject_id"))
 	@Column(name = "skill")
 	private List<String> skills;
+	
+	
+	 
+	
 
 	@ElementCollection
 	@CollectionTable(name = "Admin_postproject_tags", joinColumns = @JoinColumn(name = "Admin_postproject_id"))

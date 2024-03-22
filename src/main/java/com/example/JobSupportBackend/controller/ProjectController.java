@@ -45,10 +45,11 @@ public class ProjectController {
 	private AdminPostProjectRpository adminPostProjectRpository;
 
 	@PostMapping("/addproject/{userEmail}")
-	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project, @PathVariable String userEmail)
+	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project,
+			@PathVariable String userEmail)
 			throws ParseException, java.text.ParseException {
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 //		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String deadlineDateString = sdf.format(project.getDeadline_date());
 
@@ -70,6 +71,7 @@ public class ProjectController {
 					String budgetAmount = hourlyRateFrom + " - " + hourlyRateTo;
 					project.setBudget_amount(budgetAmount);
 				} catch (NumberFormatException e) {
+
 					e.printStackTrace();
 				}
 			} else {
@@ -168,13 +170,15 @@ public class ProjectController {
 	}
 
 	private String saveFileLocally(MultipartFile file) throws IOException {
-		String folderPath = "C:\\Users\\91910\\Desktop\\Project Files"; // Set your folder path here
+		String folderPath = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving files"; // Set your folder path here
 		String fileName = file.getOriginalFilename();
 		Path filePath = Paths.get(folderPath + File.separator + fileName);
 		Files.write(filePath, file.getBytes());
 		return filePath.toString();
 	}
 
+	
+	
 	@GetMapping("/filesGet/{projectId}")
 	public ResponseEntity<List<FileDTO>> getFilesByProjectId(@PathVariable Long projectId) {
 		try {
@@ -197,6 +201,8 @@ public class ProjectController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
 
 	@GetMapping("/getallProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
@@ -215,6 +221,7 @@ public class ProjectController {
 		response.setId(project.getId());
 		response.setProjectTitle(project.getProject_title());
 		response.setUserEmail(project.getUser().getEmail());
+		
 
 		response.setProjectCategory(project.getProject_category());
 		response.setProject_duration(project.getProject_duration());
@@ -232,6 +239,7 @@ public class ProjectController {
 		response.setNumber_of_files(project.getNumber_of_files());
 		response.setSkills(project.getSkills());
 		response.setTags(project.getTags());
+		
 
 		return response;
 	}

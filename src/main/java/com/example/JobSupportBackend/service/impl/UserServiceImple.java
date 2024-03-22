@@ -95,6 +95,9 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
+	
+	@Autowired
+	private MilestoneRepository milestoneRepository;
 
 	@Autowired
 	private MilestoneRepository milestoneRepository;

@@ -1,9 +1,14 @@
 package com.example.JobSupportBackend.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 
@@ -24,4 +29,5 @@ public class UpdatedProjectIds {
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
+
 }
