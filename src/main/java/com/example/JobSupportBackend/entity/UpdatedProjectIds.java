@@ -13,27 +13,21 @@ import lombok.NoArgsConstructor;
 @Entity
 
 public class UpdatedProjectIds {
-	
-	  @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
 
-	    private Long projectId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	    // Constructors, getters, and setters
-	    
-	    
-	    
+	private Long projectId;
 
-	    public Long getProjectId() {
-	        return projectId;
-	    }
+	// Constructors, getters, and setters
 
-	    
+	public Long getProjectId() {
+		return projectId;
+	}
 
-		public void setProjectId(Long projectId) {
-	        this.projectId = projectId;
-	    }
-	
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
 
 }

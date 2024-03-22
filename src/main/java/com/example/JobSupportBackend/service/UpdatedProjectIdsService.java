@@ -8,4 +8,8 @@ public interface UpdatedProjectIdsService {
 
 	  
 	List<Long> getAllUpdatedProjectIds();
+	
+	
+	
+	 void deleteProjectById(Long projectId);
 }

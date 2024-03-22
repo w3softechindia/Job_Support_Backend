@@ -42,10 +42,10 @@ public class SecurityConfugiration {
 
 								"/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*", "/regenerate-otp/*",
 								"/adminRegister", "/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*","/email/*",
-								"/change-password/***", "/postReason/*", "/files/*", "/addproject", "/regenerate-otp/*","/updateFreelancer/*",
+								"/change-password/***", "/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*","/updateFreelancer/*",
 								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
 								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*","/getAllAdminProjects","/filesGet/*","/files/*","/projects/*",
-								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*",
+								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*","/removeProjectFromPublish/*",
 								"/totalUsersByRole/*","/accountStatus/*")
 
 						.permitAll().anyRequest().authenticated())

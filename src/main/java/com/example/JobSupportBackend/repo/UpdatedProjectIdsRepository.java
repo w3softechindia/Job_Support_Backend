@@ -15,6 +15,10 @@ public interface UpdatedProjectIdsRepository  extends JpaRepository<UpdatedProje
 	@Query("SELECT projectId FROM UpdatedProjectIds")
 	List<Long> getAllUpdatedProjectIds();
 
+	List<UpdatedProjectIds> findAllByProjectId(Long projectId);
+
+	
+
 
 
 	
