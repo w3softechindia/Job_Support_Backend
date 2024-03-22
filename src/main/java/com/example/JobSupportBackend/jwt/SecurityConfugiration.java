@@ -45,8 +45,10 @@ public class SecurityConfugiration {
 								"/change-password/***", "/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*","/updateFreelancer/*",
 								"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/portfolios/*", "/images/**","getallProjects","/updatedprojectIds","gettingupdatedprojectIds",
 								"/updatePortfolio/**","/deletePortfolio/**","/getPortByEmail&Title/**","/getAllUsers/*","/getAllAdminProjects","/filesGet/*","/files/*","/projects/*",
-								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*","/removeProjectFromPublish/*",
-								"/totalUsersByRole/*","/accountStatus/*")
+
+
+								"/changeStatus/*","/deleteUser/*","/getAllUsersByStatus/**","/active/*","/deactivated/*","/getAdminProjectById/*","/updateAdminProject/*",
+								"/totalUsersByRole/*","/accountStatus/*","/getProjectById/*","/sendProposal/**","/getProposals/*","/getProposalById/*")
 
 						.permitAll().anyRequest().authenticated())
 

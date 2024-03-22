@@ -11,6 +11,7 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
@@ -76,6 +77,14 @@ public interface UserService {
 	int getDeactivatedUsersCount(String role);
 	
 	public String getUserAccountStatus(String email) throws InvalidIdException;
+	
+	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal);
+	
+	public List<SendProposal> getProposals(String email);
+	
+	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException;
+	
+	public SendProposal updateProposals(int proposalId, SendProposal sendProposal) throws ResourceNotFoundException;
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }

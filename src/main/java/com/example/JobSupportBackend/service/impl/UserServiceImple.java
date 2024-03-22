@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,28 +23,35 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.Certification;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
+import com.example.JobSupportBackend.entity.Milestone;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.CertificationRepository;
 import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
+import com.example.JobSupportBackend.repo.MilestoneRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
+import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
 
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -81,6 +89,15 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private PortfolioRepository portfolioRepository;
+
+	@Autowired
+	private ProposalsRepository proposalsRepository;
+	
+	@Autowired
+	private AdminPostProjectRpository adminPostProjectRepository;
+	
+	@Autowired
+	private MilestoneRepository milestoneRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -511,7 +528,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public int getTotalUsersByRole(String role){
+	public int getTotalUsersByRole(String role) {
 		return repo.countByRole(role);
 	}
 
@@ -528,11 +545,73 @@ public class UserServiceImple implements UserService {
 	@Override
 	public String getUserAccountStatus(String email) throws InvalidIdException {
 		User byEmail = repo.findByEmail(email);
-		if(byEmail!=null) {
+		if (byEmail != null) {
 			return byEmail.getStatus();
+		} else {
+			throw new InvalidIdException("Email not found with " + email);
+		}
+	}
+
+	@Override
+	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal) {
+	  
+	    Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
+	    Optional<User> userOptional = repo.findById(email);
+
+	    // Check if both entities are present
+	    if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
+	    	SendProposal proposal1 = new SendProposal();
+            proposal1.setProposedPrice(proposal.getProposedPrice());
+            proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
+            proposal1.setCoverLetter(proposal.getCoverLetter());
+            proposal1.setAdminPostProject(adminProjectOptional.get());
+            proposal1.setUser(userOptional.get());
+
+            SendProposal savedProposal = proposalsRepository.save(proposal1);
+
+            // Save milestones
+            List<Milestone> milestones = new ArrayList<>();
+            for (Milestone milestone : proposal.getMilestones()) {
+                milestone.setMilestoneName(milestone.getMilestoneName());
+                milestone.setPrice(milestone.getPrice());
+                milestone.setStartdate(milestone.getStartdate());
+                milestone.setEnddate(milestone.getEnddate());
+                milestone.setSendProposal(savedProposal); // Associate milestone with the saved proposal
+                milestones.add(milestone);
+            }
+            milestoneRepository.saveAll(milestones);
+
+            // Associate milestones with proposal
+            savedProposal.setMilestones(milestones);
+            return savedProposal;
+        } else {
+            throw new EntityNotFoundException("Admin project or user not found");
+        }
+	}
+
+	 @Override
+	    public List<SendProposal> getProposals(String email) {
+	        return proposalsRepository.findByUserEmail(email);
+	    }
+
+	@Override
+	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException {
+		Optional<SendProposal> byId = proposalsRepository.findById(proposalId);
+		if(byId.isPresent()) {
+			return byId.get();
 		}
 		else {
-			throw new InvalidIdException("Email not found with "+email);
+			throw new ResourceNotFoundException("Proposal doesnot exists...!!!");
 		}
+	}
+
+	@Override
+	public SendProposal updateProposals(int proposalId,SendProposal sendProposal) throws ResourceNotFoundException {
+		SendProposal proposal = proposalsRepository.findById(proposalId).orElseThrow(()-> new ResourceNotFoundException("Proposal not exists..!!"));
+		proposal.setCoverLetter(sendProposal.getCoverLetter());
+		proposal.setProposedPrice(sendProposal.getProposedPrice());
+		proposal.setEstimatedDelivery(sendProposal.getEstimatedDelivery());
+		proposal.setMilestones(sendProposal.getMilestones());
+		return proposalsRepository.save(proposal);	
 	}
 }
