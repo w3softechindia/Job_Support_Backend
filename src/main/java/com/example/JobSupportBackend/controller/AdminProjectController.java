@@ -124,4 +124,10 @@ public class AdminProjectController {
 		AdminPostProject projectById = adminProjectService.getProjectById(id);
 		return ResponseEntity.ok(projectById);
 	}
+	
+	@GetMapping("/getProjectsOfAdmin")
+	public ResponseEntity<List<AdminPostProject>> getAll(){
+		List<AdminPostProject> allProjects = adminProjectService.getAllProjects();
+		return new ResponseEntity<List<AdminPostProject>>(allProjects,HttpStatus.OK);
+	}
 }

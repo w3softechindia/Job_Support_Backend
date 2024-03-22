@@ -92,10 +92,10 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private ProposalsRepository proposalsRepository;
-	
+
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
-	
+
 	@Autowired
 	private MilestoneRepository milestoneRepository;
 
@@ -554,64 +554,85 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal) {
-	  
-	    Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
-	    Optional<User> userOptional = repo.findById(email);
 
-	    // Check if both entities are present
-	    if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
-	    	SendProposal proposal1 = new SendProposal();
-            proposal1.setProposedPrice(proposal.getProposedPrice());
-            proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
-            proposal1.setCoverLetter(proposal.getCoverLetter());
-            proposal1.setAdminPostProject(adminProjectOptional.get());
-            proposal1.setUser(userOptional.get());
+		Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
+		Optional<User> userOptional = repo.findById(email);
 
-            SendProposal savedProposal = proposalsRepository.save(proposal1);
+		// Check if both entities are present
+		if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
+			SendProposal proposal1 = new SendProposal();
+			proposal1.setProposedPrice(proposal.getProposedPrice());
+			proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
+			proposal1.setCoverLetter(proposal.getCoverLetter());
+			proposal1.setAdminPostProject(adminProjectOptional.get());
+			proposal1.setUser(userOptional.get());
 
-            // Save milestones
-            List<Milestone> milestones = new ArrayList<>();
-            for (Milestone milestone : proposal.getMilestones()) {
-                milestone.setMilestoneName(milestone.getMilestoneName());
-                milestone.setPrice(milestone.getPrice());
-                milestone.setStartdate(milestone.getStartdate());
-                milestone.setEnddate(milestone.getEnddate());
-                milestone.setSendProposal(savedProposal); // Associate milestone with the saved proposal
-                milestones.add(milestone);
-            }
-            milestoneRepository.saveAll(milestones);
+			SendProposal savedProposal = proposalsRepository.save(proposal1);
 
-            // Associate milestones with proposal
-            savedProposal.setMilestones(milestones);
-            return savedProposal;
-        } else {
-            throw new EntityNotFoundException("Admin project or user not found");
-        }
+			// Save milestones
+			List<Milestone> milestones = new ArrayList<>();
+			for (Milestone milestone : proposal.getMilestones()) {
+				milestone.setMilestoneName(milestone.getMilestoneName());
+				milestone.setPrice(milestone.getPrice());
+				milestone.setStartdate(milestone.getStartdate());
+				milestone.setEnddate(milestone.getEnddate());
+				milestone.setSendProposal(savedProposal); // Associate milestone with the saved proposal
+				milestones.add(milestone);
+			}
+			milestoneRepository.saveAll(milestones);
+
+			// Associate milestones with proposal
+			savedProposal.setMilestones(milestones);
+			return savedProposal;
+		} else {
+			throw new EntityNotFoundException("Admin project or user not found");
+		}
 	}
 
-	 @Override
-	    public List<SendProposal> getProposals(String email) {
-	        return proposalsRepository.findByUserEmail(email);
-	    }
+	@Override
+	public List<SendProposal> getProposals(String email) {
+		return proposalsRepository.findByUserEmail(email);
+	}
 
 	@Override
 	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException {
 		Optional<SendProposal> byId = proposalsRepository.findById(proposalId);
-		if(byId.isPresent()) {
+		if (byId.isPresent()) {
 			return byId.get();
-		}
-		else {
+		} else {
 			throw new ResourceNotFoundException("Proposal doesnot exists...!!!");
 		}
 	}
 
 	@Override
-	public SendProposal updateProposals(int proposalId,SendProposal sendProposal) throws ResourceNotFoundException {
-		SendProposal proposal = proposalsRepository.findById(proposalId).orElseThrow(()-> new ResourceNotFoundException("Proposal not exists..!!"));
+	public SendProposal updateProposals(int proposalId, SendProposal sendProposal) throws ResourceNotFoundException {
+		SendProposal proposal = proposalsRepository.findById(proposalId)
+				.orElseThrow(() -> new ResourceNotFoundException("Proposal not exists..!!"));
 		proposal.setCoverLetter(sendProposal.getCoverLetter());
 		proposal.setProposedPrice(sendProposal.getProposedPrice());
 		proposal.setEstimatedDelivery(sendProposal.getEstimatedDelivery());
-		proposal.setMilestones(sendProposal.getMilestones());
-		return proposalsRepository.save(proposal);	
+		
+		milestoneRepository.deleteByProposalId(proposalId);
+		if (sendProposal.getMilestones() != null) {
+			for (Milestone ml : sendProposal.getMilestones()) {
+				ml.setSendProposal(proposal);
+				milestoneRepository.save(ml);
+			}
+		}
+		return proposalsRepository.save(proposal);
+	}
+
+	@Override
+	public String deleteProposal(int proposalId) {
+		SendProposal sendProposal = proposalsRepository.findById(proposalId).get();
+		milestoneRepository.deleteByProposalId(sendProposal.getProposalId());
+		proposalsRepository.delete(sendProposal);
+		return "Proposal Deleted..!!!";
+	}
+
+	@Override
+	public List<SendProposal> getProposalsByProjectId(Long id) {
+		List<SendProposal> proposals = proposalsRepository.findByAdminPostProjectId(id);
+		return proposals;
 	}
 }

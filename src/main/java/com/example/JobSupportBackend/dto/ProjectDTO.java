@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.JobSupportBackend.entity.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

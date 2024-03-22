@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +30,6 @@ import com.example.JobSupportBackend.entity.PostProject;
 import com.example.JobSupportBackend.entity.ProjectFile;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.ProjectFileRepository;
-import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.ProjectService;
 
 import jakarta.mail.internet.ParseException;
@@ -40,9 +38,6 @@ import jakarta.mail.internet.ParseException;
 public class ProjectController {
 	@Autowired
 	private ProjectService postProjectService;
-
-	@Autowired
-	private UserRepository userRepository;
 
 	@Autowired
 	private ProjectFileRepository projectFileRepository;
@@ -106,7 +101,7 @@ public class ProjectController {
 
 		adminProject.setSkills(new ArrayList<>(savedProject.getSkills()));
 		adminProject.setTags(new ArrayList<>(savedProject.getTags()));
-		AdminPostProject savedAdminProject = adminPostProjectRpository.save(adminProject);
+		adminPostProjectRpository.save(adminProject);
 
 		return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
 	}

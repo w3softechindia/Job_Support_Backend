@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -352,5 +351,23 @@ public class UserController {
 	public ResponseEntity<SendProposal> getProposalById(@PathVariable int proposalId) throws ResourceNotFoundException{
 		SendProposal proposalById = userService.getProposalById(proposalId);
 		return new ResponseEntity<SendProposal>(proposalById,HttpStatus.OK);
+	}
+	
+	@PutMapping("/updateProposal/{proposalId}")
+	public ResponseEntity<SendProposal> updateProposalById(@PathVariable int proposalId,@RequestBody SendProposal proposal) throws ResourceNotFoundException{
+		SendProposal updateProposals = userService.updateProposals(proposalId, proposal);
+		return new ResponseEntity<SendProposal>(updateProposals,HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/deleteProposal/{proposalId}")
+	public ResponseEntity<String> deleteProposal(@PathVariable int proposalId){
+		String deleteProposal = userService.deleteProposal(proposalId);
+		return new ResponseEntity<String>(deleteProposal,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getProposalsByProjectId/{projectId}")
+	public ResponseEntity<List<SendProposal>> getProposalsByProjectId(@PathVariable Long projectId){
+		List<SendProposal> proposalsByProjectId = userService.getProposalsByProjectId(projectId);
+		return new ResponseEntity<List<SendProposal>>(proposalsByProjectId,HttpStatus.OK);
 	}
 }

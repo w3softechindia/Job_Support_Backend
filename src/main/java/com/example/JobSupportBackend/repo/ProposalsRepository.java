@@ -11,4 +11,6 @@ import com.example.JobSupportBackend.entity.SendProposal;
 public interface ProposalsRepository extends JpaRepository<SendProposal, Integer> {
 
 	List<SendProposal> findByUserEmail(String email);
+
+	List<SendProposal> findByAdminPostProjectId(Long projectId);
 }
