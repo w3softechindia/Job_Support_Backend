@@ -2,6 +2,7 @@ package com.example.JobSupportBackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +26,9 @@ public class Portfolio {
 	private String title;
 	private String link;
 	private String photo_path;
+	
+	@Column(name = "image_bytes", columnDefinition = "LONGBLOB")
+	private byte[] imageBytes;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email")

@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
+import com.example.JobSupportBackend.service.AdminProjectService;
 
 @RestController
 public class AdminProjectController {
 
 	@Autowired
 	private AdminPostProjectRpository repoo;
+	
+	@Autowired
+	private AdminProjectService adminProjectService;
 
 	@GetMapping("/getAllAdminProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
