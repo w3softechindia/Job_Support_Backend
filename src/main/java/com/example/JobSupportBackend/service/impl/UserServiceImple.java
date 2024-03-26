@@ -105,7 +105,7 @@ public class UserServiceImple implements UserService {
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
 
-	String uploadDir = "C:\\Users\\91910\\Desktop\\PortfolioImages";
+	String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Portfolio Images";
 
 	public String getEncodedPassword(String password) {
 		return passwordEncoder.encode(password);
@@ -164,7 +164,7 @@ public class UserServiceImple implements UserService {
 		}
 
 		// Save the image file to a local directory
-		String uploadDir = "C:\\Users\\PURNA\\OneDrive\\Desktop\\saving photos";
+		String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
 		Path directoryPath = Paths.get(uploadDir);
 		Files.createDirectories(directoryPath);
 
@@ -423,50 +423,24 @@ public class UserServiceImple implements UserService {
 
 		return filePath; // Return the file path
 	}
-
+	
 	@Override
-	public List<Portfolio> getPortfoliosByEmail(String email) {
-		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-		portfolios.forEach(portfolio -> {
-			try {
-				// Set the image data for each portfolio
-//	                byte[] imageData = getImageData(portfolio.getPhoto_path());
-				String path = portfolio.getPhoto_path();
-//	                portfolio.setImageData(imageData);
-				Path imageFilePath = Paths.get(path);
-				Files.readAllBytes(imageFilePath);
-			} catch (IOException e) {
-				// Handle image retrieval error
-				e.printStackTrace();
-			}
-		});
-		return portfolios;
-	}
+	 public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
+	        List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+	        for (Portfolio portfolio : portfolios) {
+	            loadPortfolioImage(portfolio);
+	        }
+	        return portfolios;
+	    }
 
-//	    private byte[] getImageData(String imagePath) throws IOException {
-//	        Path imageFilePath = Paths.get(imagePath);
-//	        return Files.readAllBytes(imageFilePath);
-//	    }
-//	    
-//	    @Override
-//		public byte[] getPhotoBytesByEmail(String email) throws IOException {
-//			// Fetch the user entity by email
-//			User user = repo.findByEmail(email);
-//			if (user == null) {
-//				throw new IllegalArgumentException("User with email " + email + " does not exist.");
-//			}
-//
-//			// Get the image path from the user object
-//			String imagePath = user.getImagePath();
-//			if (imagePath == null || imagePath.isEmpty()) {
-//				throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
-//			}
-//
-//			// Read the photo bytes from the file
-//			Path photoPath = Paths.get(imagePath);
-//			return Files.readAllBytes(photoPath);
-//		}
-
+	    private void loadPortfolioImage(Portfolio portfolio) throws IOException {
+	        if (portfolio.getPhoto_path() != null && !portfolio.getPhoto_path().isEmpty()) {
+	            String filePath = Paths.get(uploadDir, portfolio.getPhoto_path()).toString();
+	            byte[] imageBytes = Files.readAllBytes(Paths.get(filePath));
+	            portfolio.setImageBytes(imageBytes);
+	        }
+	    }
+	
 	@Override
 	public Portfolio updatePortfolio(String email, String title1, Portfolio portfolio, MultipartFile photo)
 			throws InvalidIdException, IOException {

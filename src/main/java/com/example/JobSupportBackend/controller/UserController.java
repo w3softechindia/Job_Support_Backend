@@ -258,25 +258,10 @@ public class UserController {
 	}
 
 	@GetMapping("/portfolios/{email}")
-	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) {
-		List<Portfolio> portfolios = userService.getPortfoliosByEmail(email);
+	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) throws IOException {
+		List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
 		return new ResponseEntity<>(portfolios, HttpStatus.OK);
 	}
-
-//	 @GetMapping("/portfolios/{email}")
-//	    public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) {
-//	        List<Portfolio> portfolios = userService.getPortfoliosByEmail(email);
-//	        portfolios.forEach(portfolio -> {
-//	            try {
-//	                byte[] imageData = userService.getImageDataByEmail(email);
-//	                portfolio.setImageData(imageData);
-//	            } catch (IOException e) {
-//	                // Handle error
-//	                e.printStackTrace();
-//	            }
-//	        });
-//	        return new ResponseEntity<>(portfolios, HttpStatus.OK);
-//	    }
 
 	@PutMapping("/updatePortfolio/{email}/{title1}")
 	public ResponseEntity<Portfolio> updatePortfolio(@PathVariable String email, @PathVariable String title1,

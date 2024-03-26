@@ -61,7 +61,7 @@ public interface UserService {
 	public Portfolio addPortfolio(String email, Portfolio portfolio, MultipartFile multipartFile)
 			throws ResourceNotFoundException, IOException;
 
-	public List<Portfolio> getPortfoliosByEmail(String email);
+	List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException;
 
 	public Portfolio getPortfolioByEmailAndTitle(String email, String title);
 
