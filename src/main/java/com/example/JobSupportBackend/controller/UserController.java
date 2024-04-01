@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,12 +67,6 @@ public class UserController {
 		return new ResponseEntity<User>(userService.register(register), HttpStatus.CREATED);
 	}
 	
-	
-	
-	
-	
-	
-
 	@PutMapping("/verify/{email}/{otp}")
 	public ResponseEntity<User> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {
 		return new ResponseEntity<User>(userService.verifyAccount(email, otp), HttpStatus.OK);
@@ -156,7 +151,7 @@ public class UserController {
 																						// necessary data
 		}
 	}
-
+	
 	@GetMapping("/getUser/{email}")
 	public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
 		User user = userService.getUserByEmail(email);
@@ -240,7 +235,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
 	}
-
+	
 	@PostMapping("/postPortfolio/{email}")
 	public ResponseEntity<Portfolio> postPortfolio(@PathVariable String email, @RequestParam("title") String title,
 			@RequestParam("link") String link, @RequestParam("photo") MultipartFile photo)
@@ -257,10 +252,14 @@ public class UserController {
 		return new ResponseEntity<>(addedPortfolio, HttpStatus.OK);
 	}
 
-	@GetMapping("/portfolios/{email}")
+	@GetMapping("/getPortfolios/{email}")
 	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) throws IOException {
-		List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
-		return new ResponseEntity<>(portfolios, HttpStatus.OK);
+		 try {
+	            List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
+	            return new ResponseEntity<>(portfolios, HttpStatus.OK);
+	        } catch (IOException e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
 	}
 
 	@PutMapping("/updatePortfolio/{email}/{title1}")

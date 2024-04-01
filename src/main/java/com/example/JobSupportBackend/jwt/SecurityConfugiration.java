@@ -42,7 +42,7 @@ public class SecurityConfugiration {
 						"/regenerate-otp/*", "/adminRegister", "/adminLogin/**", "/updateFreelancer/*",
 						"/deleteSkill/*", "/email/*", "/change-password/***", "/postReason/*", "/files/*",
 						"/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*", "/adminRegister", "/adminLogin/**",
-						"/postPortfolio/*", "/portfolios/*", "/images/**", "getallProjects", "/updatedprojectIds",
+						"/postPortfolio/*", "/getPortfolios/*", "/images/**", "getallProjects", "/updatedprojectIds",
 						"gettingupdatedprojectIds", "/updatePortfolio/**", "/deletePortfolio/**",
 						"/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects", "/filesGet/*", "/files/*",
 						"/projects/*", "/changeStatus/*", "/deleteUser/*", "/getAllUsersByStatus/**", "/active/*",
