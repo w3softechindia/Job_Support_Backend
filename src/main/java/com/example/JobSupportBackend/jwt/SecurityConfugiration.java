@@ -48,8 +48,9 @@ public class SecurityConfugiration {
 						"/projects/*", "/changeStatus/*", "/deleteUser/*", "/getAllUsersByStatus/**", "/active/*",
 						"/deactivated/*", "/getAdminProjectById/*", "/updateAdminProject/*", "/totalUsersByRole/*",
 						"/accountStatus/*", "/getProjectById/*", "/sendProposal/**", "/getProposals/*",
-						"/getProposalById/*", "/updateProposal/*", "/deleteProposal/*", "/getProjectsOfAdmin","/getProposalsByProjectId/*")
-						.permitAll().anyRequest().authenticated())
+						"/getProposalById/*", "/updateProposal/*", "/deleteProposal/*", "/getProjectsOfAdmin",
+						"/getProposalsByProjectId/*", "/updateInfoForEmployeerDashBoard/*","/photoUpdate/*").permitAll().anyRequest()
+						.authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

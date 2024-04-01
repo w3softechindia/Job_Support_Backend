@@ -89,6 +89,10 @@ public interface UserService {
 	public String deleteProposal(int proposalId);
 	
 	List<SendProposal> getProposalsByProjectId(Long id);
+	
+	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
+	
+	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }
