@@ -100,6 +100,9 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private MilestoneRepository milestoneRepository;
 
+	@Autowired
+	private MilestoneRepository milestoneRepository;
+
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
 
@@ -426,7 +429,7 @@ public class UserServiceImple implements UserService {
 
 	    return uniqueFileName; // Return the relative file path
 	}
-
+	
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
 	    List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
