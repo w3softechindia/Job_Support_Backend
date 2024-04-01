@@ -100,8 +100,6 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private MilestoneRepository milestoneRepository;
 
-	@Autowired
-	private MilestoneRepository milestoneRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
