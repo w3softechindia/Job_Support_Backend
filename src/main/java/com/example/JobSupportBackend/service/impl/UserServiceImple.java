@@ -97,8 +97,6 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
 
-	@Autowired
-	private MilestoneRepository milestoneRepository;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -392,17 +390,17 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public Portfolio addPortfolio(String email, Portfolio portfolio, MultipartFile multipartFile)
-			throws ResourceNotFoundException, IOException {
+	        throws ResourceNotFoundException, IOException {
 
-		String photoPath = addPortfolioImage(multipartFile);
-		User user = repo.findByEmail(email);
-		if (user.isVerified()) {
-			portfolio.setUser(user);
-			portfolio.setPhoto_path(photoPath);
-			return portfolioRepository.save(portfolio);
-		} else {
-			throw new ResourceNotFoundException("Account is not Verified...!!!");
-		}
+	    String photoPath = addPortfolioImage(multipartFile);
+	    User user = repo.findByEmail(email);
+	    if (user.isVerified()) {
+	        portfolio.setUser(user);
+	        portfolio.setPhoto_path(photoPath);
+	        return portfolioRepository.save(portfolio);
+	    } else {
+	        throw new ResourceNotFoundException("Account is not Verified...!!!");
+	    }
 	}
 
 	private String addPortfolioImage(MultipartFile multipartFile) throws IOException {
