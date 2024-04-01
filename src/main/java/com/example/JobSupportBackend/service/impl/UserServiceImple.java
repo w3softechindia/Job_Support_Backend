@@ -96,9 +96,6 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
-	
-	@Autowired
-	private MilestoneRepository milestoneRepository;
 
 
 	@SuppressWarnings("unused")
@@ -407,34 +404,34 @@ public class UserServiceImple implements UserService {
 	}
 
 	private String addPortfolioImage(MultipartFile multipartFile) throws IOException {
-	    if (multipartFile.isEmpty()) {
-	        throw new IllegalArgumentException("File is empty");
-	    }
+		if (multipartFile.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
 
-	    String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
 
-	    Path directoryPath = Paths.get(uploadDir);
-	    Files.createDirectories(directoryPath);
+		Path directoryPath = Paths.get(uploadDir);
+		Files.createDirectories(directoryPath);
 
-	    String filePath = Paths.get(uploadDir, uniqueFileName).toString();
-	    try {
-	        Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-	    } catch (IOException e) {
-	        // Handle file upload failure
-	        System.err.println("Error uploading portfolio image: " + e.getMessage());
-	        throw e; // Re-throw the exception to propagate the error to the caller
-	    }
+		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+		try {
+			Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// Handle file upload failure
+			System.err.println("Error uploading portfolio image: " + e.getMessage());
+			throw e; // Re-throw the exception to propagate the error to the caller
+		}
 
-	    return uniqueFileName; // Return the relative file path
+		return uniqueFileName; // Return the relative file path
 	}
-	
+
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
-	    List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-	    for (Portfolio portfolio : portfolios) {
-	        loadPortfolioImage(portfolio);
-	    }
-	    return portfolios;
+		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		for (Portfolio portfolio : portfolios) {
+			loadPortfolioImage(portfolio);
+		}
+		return portfolios;
 	}
 
 //	private ByteArrayResource loadPortfolioImage(Portfolio portfolio) {
@@ -454,23 +451,23 @@ public class UserServiceImple implements UserService {
 //	        }
 //	    }
 //	}
-	
+
 	private ByteArrayResource loadPortfolioImage(Portfolio portfolio) {
-	    if (portfolio.getPhoto_path() != null && !portfolio.getPhoto_path().isEmpty()) {
-	        String filePath = Paths.get(uploadDir, portfolio.getPhoto_path()).toString();
-	        try {
-	            byte[] imageBytes = Files.readAllBytes(Paths.get(filePath));
-	            return new ByteArrayResource(imageBytes);
-	        } catch (IOException e) {
-	            // Handle file not found or other IO errors
-	            System.err.println("Error loading image for portfolio: " + portfolio.getPortfolio_Id());
-	            e.printStackTrace();
-	            return null;
-	        }
-	    }
-	    return null;
+		if (portfolio.getPhoto_path() != null && !portfolio.getPhoto_path().isEmpty()) {
+			String filePath = Paths.get(uploadDir, portfolio.getPhoto_path()).toString();
+			try {
+				byte[] imageBytes = Files.readAllBytes(Paths.get(filePath));
+				return new ByteArrayResource(imageBytes);
+			} catch (IOException e) {
+				// Handle file not found or other IO errors
+				System.err.println("Error loading image for portfolio: " + portfolio.getPortfolio_Id());
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
 	}
-	
+
 	@Override
 	public Portfolio updatePortfolio(String email, String title1, Portfolio portfolio, MultipartFile photo)
 			throws InvalidIdException, IOException {
@@ -618,7 +615,7 @@ public class UserServiceImple implements UserService {
 		proposal.setCoverLetter(sendProposal.getCoverLetter());
 		proposal.setProposedPrice(sendProposal.getProposedPrice());
 		proposal.setEstimatedDelivery(sendProposal.getEstimatedDelivery());
-		
+
 		milestoneRepository.deleteByProposalId(proposalId);
 		if (sendProposal.getMilestones() != null) {
 			for (Milestone ml : sendProposal.getMilestones()) {
@@ -642,4 +639,125 @@ public class UserServiceImple implements UserService {
 		List<SendProposal> proposals = proposalsRepository.findByAdminPostProjectId(id);
 		return proposals;
 	}
+
+	@Override
+	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception {
+		User existingUser = repo.findByEmail(email);
+
+		if (existingUser == null) {
+			throw new Exception("User not found");
+		}
+
+		// Update only the properties that are provided in the updatedUser object
+		if (updatedUser.getFirstname() != null && !updatedUser.getFirstname().isEmpty()) {
+			existingUser.setFirstname(updatedUser.getFirstname());
+		}
+		if (updatedUser.getLastname() != null && !updatedUser.getLastname().isEmpty()) {
+			existingUser.setLastname(updatedUser.getLastname());
+		}
+
+		if (updatedUser.getPhonenumber() != 0) {
+			existingUser.setPhonenumber(updatedUser.getPhonenumber());
+		}
+
+		if (updatedUser.getEcompany() != null && !updatedUser.getEcompany().isEmpty()) {
+			existingUser.setEcompany(updatedUser.getEcompany());
+		}
+		if (updatedUser.getEtagline() != null && !updatedUser.getEtagline().isEmpty()) {
+			existingUser.setEtagline(updatedUser.getEtagline());
+		}
+		if (updatedUser.getEstablishdate() != null && !updatedUser.getEstablishdate().isEmpty()) {
+			existingUser.setEstablishdate(updatedUser.getEstablishdate());
+		}
+		if (updatedUser.getEcompanyownername() != null && !updatedUser.getEcompanyownername().isEmpty()) {
+			existingUser.setEcompanyownername(updatedUser.getEcompanyownername());
+		}
+		if (updatedUser.getIndustry() != null && !updatedUser.getIndustry().isEmpty()) {
+			existingUser.setIndustry(updatedUser.getIndustry());
+		}
+		if (updatedUser.getEwebsite() != null && !updatedUser.getEwebsite().isEmpty()) {
+			existingUser.setEwebsite(updatedUser.getEwebsite());
+		}
+		if (updatedUser.getEteamsize() != null && !updatedUser.getEteamsize().isEmpty()) {
+			existingUser.setEteamsize(updatedUser.getEteamsize());
+		}
+		if (updatedUser.getEdescribe() != null && !updatedUser.getEdescribe().isEmpty()) {
+			existingUser.setEdescribe(updatedUser.getEdescribe());
+		}
+
+		if (updatedUser.getFacebook() != null) {
+			existingUser.setFacebook(updatedUser.getFacebook());
+		}
+		if (updatedUser.getInstagram() != null) {
+			existingUser.setInstagram(updatedUser.getInstagram());
+		}
+		if (updatedUser.getLinkedin() != null) {
+			existingUser.setLinkedin(updatedUser.getLinkedin());
+		}
+		if (updatedUser.getPersnolurl() != null) {
+			existingUser.setPersnolurl(updatedUser.getPersnolurl());
+		}
+		if (updatedUser.getAddress() != null) {
+			existingUser.setAddress(updatedUser.getAddress());
+		}
+		if (updatedUser.getCity() != null) {
+			existingUser.setCity(updatedUser.getCity());
+		}
+		if (updatedUser.getState() != null) {
+			existingUser.setState(updatedUser.getState());
+		}
+		if (updatedUser.getPostcode() != null) {
+			existingUser.setPostcode(updatedUser.getPostcode());
+		}
+
+		if (updatedUser.getDocumenttype() != null) {
+			existingUser.setDocumenttype(updatedUser.getDocumenttype());
+		}
+		if (updatedUser.getDocumentnumber() != null) {
+			existingUser.setDocumentnumber(updatedUser.getDocumentnumber());
+		}
+
+		// Similarly update other properties as needed
+
+		return repo.save(existingUser);
+	}
+	
+	@Override
+    @Transactional
+    public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
+        // Fetch the user from the database
+        User user = repo.findByEmail(email);
+        if (user != null) {
+            // Delete the old photo from the folder
+            deletePhotoFromFileSystem(user.getImagePath());
+            
+            // Save the new photo to the folder and update the user's photo path in the database
+            String imagePath = savePhotoToFileSystem(photo);
+            user.setImagePath(imagePath);
+            repo.save(user);
+        } else {
+            throw new IllegalArgumentException("User with email " + email + " does not exist.");
+        }
+    }
+
+    private void deletePhotoFromFileSystem(String imagePath) throws IOException {
+        if (imagePath != null) {
+            Path path = Paths.get(imagePath);
+            Files.deleteIfExists(path);
+        }
+    }
+
+    private String savePhotoToFileSystem(MultipartFile photo) throws IOException {
+        // Generate a unique filename for the new photo
+        String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
+        // Define the upload directory
+        String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
+        // Create the directory if it doesn't exist
+        Path directoryPath = Paths.get(uploadDir);
+        Files.createDirectories(directoryPath);
+        // Save the photo to the upload directory
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.write(filePath, photo.getBytes());
+        return filePath.toString();
+    }
 }
