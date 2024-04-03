@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +33,6 @@ import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
 import com.example.JobSupportBackend.service.LanguageService;
-
 import com.example.JobSupportBackend.service.SkillsService;
 import com.example.JobSupportBackend.service.UserService;
 
@@ -66,7 +64,7 @@ public class UserController {
 	public ResponseEntity<User> register(@RequestBody Register register) throws InvalidIdException, MessagingException {
 		return new ResponseEntity<User>(userService.register(register), HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/verify/{email}/{otp}")
 	public ResponseEntity<User> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {
 		return new ResponseEntity<User>(userService.verifyAccount(email, otp), HttpStatus.OK);
@@ -90,14 +88,25 @@ public class UserController {
 		return new ResponseEntity<User>(userService.updatePersonalInfo(personalInfo, email), HttpStatus.ACCEPTED);
 	}
 
+//	@PostMapping("/upload/{email}")
+//	public ResponseEntity<String> uploadPhoto(@PathVariable String email, @RequestParam("file") MultipartFile file) {
+//		try {
+//			userService.updateUserImagePathAndStoreInDatabase(email, file);
+//			return ResponseEntity.ok("Photo uploaded successfully for user with email: " + email);
+//		} catch (IOException e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//					.body("Error uploading photo: " + e.getMessage());
+//		}
+//	}
+
 	@PostMapping("/upload/{email}")
-	public ResponseEntity<String> uploadPhoto(@PathVariable String email, @RequestParam("file") MultipartFile file) {
+	public ResponseEntity<?> uploadImage(@PathVariable String email, @RequestParam("file") MultipartFile file) {
 		try {
 			userService.updateUserImagePathAndStoreInDatabase(email, file);
-			return ResponseEntity.ok("Photo uploaded successfully for user with email: " + email);
+			return ResponseEntity.ok("Image uploaded successfully");
 		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error uploading photo: " + e.getMessage());
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("Failed to upload image");
 		}
 	}
 
@@ -141,6 +150,30 @@ public class UserController {
 	        }
 	    }
 
+	@PutMapping("/updateInfoForEmployeerDashBoard/{email}")
+	public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email,
+			@RequestBody User updatedUser) {
+		try {
+			User updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
+			return new ResponseEntity<>(updatedUserInfo, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping("/photoUpdate/{email}")
+	public ResponseEntity<?> updatePhoto(@PathVariable String email, @RequestParam("photo") MultipartFile photo) {
+		try {
+			if (photo.isEmpty()) {
+				return ResponseEntity.badRequest().build(); // Return 400 Bad Request if photo is empty
+			}
+			userService.updatePhotoByEmail(email, photo);
+			return ResponseEntity.ok().build(); // Return 200 OK if photo is updated successfully
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
 	@PutMapping("/otherInfo/{email}")
 	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
 			throws Exception {
@@ -173,7 +206,7 @@ public class UserController {
 																						// necessary data
 		}
 	}
-	
+
 	@GetMapping("/getUser/{email}")
 	public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
 		User user = userService.getUserByEmail(email);
@@ -257,7 +290,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
 	}
-	
+
 	@PostMapping("/postPortfolio/{email}")
 	public ResponseEntity<Portfolio> postPortfolio(@PathVariable String email, @RequestParam("title") String title,
 			@RequestParam("link") String link, @RequestParam("photo") MultipartFile photo)
@@ -276,12 +309,12 @@ public class UserController {
 
 	@GetMapping("/getPortfolios/{email}")
 	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) throws IOException {
-		 try {
-	            List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
-	            return new ResponseEntity<>(portfolios, HttpStatus.OK);
-	        } catch (IOException e) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
+		try {
+			List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
+			return new ResponseEntity<>(portfolios, HttpStatus.OK);
+		} catch (IOException e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PutMapping("/updatePortfolio/{email}/{title1}")
@@ -352,34 +385,35 @@ public class UserController {
 		SendProposal savedProposal = userService.sendProposal(adminProjectId, email, proposal);
 		return new ResponseEntity<>(savedProposal, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/getProposals/{email}")
-	public ResponseEntity<List<SendProposal>> getProposals(@PathVariable String email){
+	public ResponseEntity<List<SendProposal>> getProposals(@PathVariable String email) {
 		List<SendProposal> proposals = userService.getProposals(email);
-		return new ResponseEntity<List<SendProposal>>(proposals,HttpStatus.OK);
+		return new ResponseEntity<List<SendProposal>>(proposals, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getProposalById/{proposalId}")
-	public ResponseEntity<SendProposal> getProposalById(@PathVariable int proposalId) throws ResourceNotFoundException{
+	public ResponseEntity<SendProposal> getProposalById(@PathVariable int proposalId) throws ResourceNotFoundException {
 		SendProposal proposalById = userService.getProposalById(proposalId);
-		return new ResponseEntity<SendProposal>(proposalById,HttpStatus.OK);
+		return new ResponseEntity<SendProposal>(proposalById, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/updateProposal/{proposalId}")
-	public ResponseEntity<SendProposal> updateProposalById(@PathVariable int proposalId,@RequestBody SendProposal proposal) throws ResourceNotFoundException{
+	public ResponseEntity<SendProposal> updateProposalById(@PathVariable int proposalId,
+			@RequestBody SendProposal proposal) throws ResourceNotFoundException {
 		SendProposal updateProposals = userService.updateProposals(proposalId, proposal);
-		return new ResponseEntity<SendProposal>(updateProposals,HttpStatus.OK);
+		return new ResponseEntity<SendProposal>(updateProposals, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/deleteProposal/{proposalId}")
-	public ResponseEntity<String> deleteProposal(@PathVariable int proposalId){
+	public ResponseEntity<String> deleteProposal(@PathVariable int proposalId) {
 		String deleteProposal = userService.deleteProposal(proposalId);
-		return new ResponseEntity<String>(deleteProposal,HttpStatus.OK);
+		return new ResponseEntity<String>(deleteProposal, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getProposalsByProjectId/{projectId}")
-	public ResponseEntity<List<SendProposal>> getProposalsByProjectId(@PathVariable Long projectId){
+	public ResponseEntity<List<SendProposal>> getProposalsByProjectId(@PathVariable Long projectId) {
 		List<SendProposal> proposalsByProjectId = userService.getProposalsByProjectId(projectId);
-		return new ResponseEntity<List<SendProposal>>(proposalsByProjectId,HttpStatus.OK);
+		return new ResponseEntity<List<SendProposal>>(proposalsByProjectId, HttpStatus.OK);
 	}
 }

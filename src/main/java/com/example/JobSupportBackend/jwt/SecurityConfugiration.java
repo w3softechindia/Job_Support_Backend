@@ -25,32 +25,32 @@ public class SecurityConfugiration {
 	@Autowired
 	private JwtRequsetFilter jwtRequestFilter;
 	@Autowired
-	private UserDetailsService service;
+	private UserDetailsService userDetailsService;
 
 	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
+	public static AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
 		return builder.getAuthenticationManager();
 	}
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/authenticate", "/register", "/update/*",
-						"/persnolInfo/*", "/otherInfo/*", "/addUserData/*", "/getUser/*", "/employerInfo/*",
-						"/verify/**", "/sendOTP/*", "/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
-						"/regenerate-otp/*", "/adminRegister", "/adminLogin/**", "/updateFreelancer/*",
-						"/deleteSkill/*", "/email/*", "/change-password/***", "/postReason/*", "/files/*",
-						"/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*", "/adminRegister", "/adminLogin/**",
-						"/postPortfolio/*", "/getPortfolios/*", "/images/**", "getallProjects", "/updatedprojectIds",
-						"gettingupdatedprojectIds", "/updatePortfolio/**", "/deletePortfolio/**",
-						"/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects", "/filesGet/*", "/files/*",
-						"/projects/*", "/changeStatus/*", "/deleteUser/*", "/getAllUsersByStatus/**", "/active/*",
-						"/deactivated/*", "/getAdminProjectById/*", "/updateAdminProject/*", "/totalUsersByRole/*",
-						"/accountStatus/*", "/getProjectById/*", "/sendProposal/**", "/getProposals/*",
-						"/getProposalById/*", "/updateProposal/*", "/deleteProposal/*", "/getProjectsOfAdmin",
-						"/getProposalsByProjectId/*", "/updateInfoForEmployeerDashBoard/*","/photoUpdate/*").permitAll().anyRequest()
-						.authenticated())
+		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
+						"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*", "/verifyOTP/**",
+						"/upload/*", "/resetPassword/**", "/photo/*", "/regenerate-otp/*", "/adminRegister",
+						"/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*", "/email/*", "/change-password/***",
+						"/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*",
+						"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/getPortfolios/*", "/images/**",
+						"getallProjects", "/updatedprojectIds", "gettingupdatedprojectIds", "/updatePortfolio/**",
+						"/deletePortfolio/**", "/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects",
+						"/filesGet/*", "/files/*", "/projects/*", "/changeStatus/*", "/deleteUser/*",
+						"/getAllUsersByStatus/**", "/active/*", "/deactivated/*", "/getAdminProjectById/*",
+						"/updateAdminProject/*", "/totalUsersByRole/*", "/accountStatus/*", "/getProjectById/*",
+						"/sendProposal/**", "/getProposals/*", "/getProposalById/*", "/updateProposal/*",
+						"/deleteProposal/*", "/getProjectsOfAdmin", "/getProposalsByProjectId/*",
+						"/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*", "/uploadPhotoToS3")
+				.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -67,13 +67,13 @@ public class SecurityConfugiration {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder.userDetailsService(service).passwordEncoder(passwordEncoder());
+		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean
-	DaoAuthenticationProvider daoAuthenticationProvider() {
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(service);
+		provider.setUserDetailsService(userDetailsService);
 		provider.setPasswordEncoder(passwordEncoder());
 		return provider;
 	}
@@ -83,4 +83,7 @@ public class SecurityConfugiration {
 		return new CorsFilter();
 	}
 
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(daoAuthenticationProvider());
+	}
 }
