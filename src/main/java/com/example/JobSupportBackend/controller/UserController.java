@@ -150,30 +150,6 @@ public class UserController {
 	        }
 	    }
 
-	@PutMapping("/updateInfoForEmployeerDashBoard/{email}")
-	public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email,
-			@RequestBody User updatedUser) {
-		try {
-			User updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
-			return new ResponseEntity<>(updatedUserInfo, HttpStatus.ACCEPTED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@PutMapping("/photoUpdate/{email}")
-	public ResponseEntity<?> updatePhoto(@PathVariable String email, @RequestParam("photo") MultipartFile photo) {
-		try {
-			if (photo.isEmpty()) {
-				return ResponseEntity.badRequest().build(); // Return 400 Bad Request if photo is empty
-			}
-			userService.updatePhotoByEmail(email, photo);
-			return ResponseEntity.ok().build(); // Return 200 OK if photo is updated successfully
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}
-
 	@PutMapping("/otherInfo/{email}")
 	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
 			throws Exception {
