@@ -93,6 +93,8 @@ public interface UserService {
 	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
 	
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
+	
+//	public String uploadFileToS3(MultipartFile file) throws IOException;
 
 //	 byte[] getImageDataByEmail(String email) throws IOException;
 }

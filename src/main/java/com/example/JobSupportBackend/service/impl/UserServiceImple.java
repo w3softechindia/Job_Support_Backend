@@ -1,6 +1,7 @@
 package com.example.JobSupportBackend.service.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,11 +14,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.JobSupportBackend.EmailUtil.EmailUtil;
 import com.example.JobSupportBackend.EmailUtil.OtpUtil;
 import com.example.JobSupportBackend.dto.EmployerInfo;
@@ -97,6 +105,14 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRepository;
 
+	@Autowired
+	private MilestoneRepository milestoneRepository;
+
+	@Value("${aws.s3.bucketName}")
+	private String bucketName;
+
+	@Value("${aws.s3.folderName}")
+	private String folderName;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -147,7 +163,7 @@ public class UserServiceImple implements UserService {
 
 		return repo.save(uuser);
 	}
-
+	
 	@Override
 	@Transactional
 	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
@@ -159,23 +175,54 @@ public class UserServiceImple implements UserService {
 			throw new IllegalArgumentException("File is empty");
 		}
 
-		// Save the image file to a local directory
-		String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
-		Path directoryPath = Paths.get(uploadDir);
-		Files.createDirectories(directoryPath);
-
-		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
-		Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+		// Upload the image file to AWS S3
+		try (InputStream inputStream = file.getInputStream()) {
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(file.getSize());
+			AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
+			String s3Key = folderName + "/" + uniqueFileName;
+			s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
+		}
 
 		// Store the image path in the database
+		String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
 		User user = repo.findByEmail(email);
 		if (user != null) {
-			user.setImagePath(filePath);
+			user.setImagePath(imagePath);
 			repo.save(user);
 		} else {
 			throw new IllegalArgumentException("User with email " + email + " does not exist.");
 		}
 	}
+
+//	@Override
+//	@Transactional
+//	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
+//
+//		// Generate a unique filename
+//		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+//
+//		if (file.isEmpty()) {
+//			throw new IllegalArgumentException("File is empty");
+//		}
+//
+//		// Save the image file to a local directory
+//		String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
+//		Path directoryPath = Paths.get(uploadDir);
+//		Files.createDirectories(directoryPath);
+//
+//		String filePath = Paths.get(uploadDir, uniqueFileName).toString();
+//		Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+//
+//		// Store the image path in the database
+//		User user = repo.findByEmail(email);
+//		if (user != null) {
+//			user.setImagePath(filePath);
+//			repo.save(user);
+//		} else {
+//			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+//		}
+//	}
 
 	@Override
 	public byte[] getPhotoBytesByEmail(String email) throws IOException {
@@ -390,17 +437,17 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public Portfolio addPortfolio(String email, Portfolio portfolio, MultipartFile multipartFile)
-	        throws ResourceNotFoundException, IOException {
+			throws ResourceNotFoundException, IOException {
 
-	    String photoPath = addPortfolioImage(multipartFile);
-	    User user = repo.findByEmail(email);
-	    if (user.isVerified()) {
-	        portfolio.setUser(user);
-	        portfolio.setPhoto_path(photoPath);
-	        return portfolioRepository.save(portfolio);
-	    } else {
-	        throw new ResourceNotFoundException("Account is not Verified...!!!");
-	    }
+		String photoPath = addPortfolioImage(multipartFile);
+		User user = repo.findByEmail(email);
+		if (user.isVerified()) {
+			portfolio.setUser(user);
+			portfolio.setPhoto_path(photoPath);
+			return portfolioRepository.save(portfolio);
+		} else {
+			throw new ResourceNotFoundException("Account is not Verified...!!!");
+		}
 	}
 
 	private String addPortfolioImage(MultipartFile multipartFile) throws IOException {
@@ -721,43 +768,44 @@ public class UserServiceImple implements UserService {
 
 		return repo.save(existingUser);
 	}
-	
+
 	@Override
-    @Transactional
-    public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
-        // Fetch the user from the database
-        User user = repo.findByEmail(email);
-        if (user != null) {
-            // Delete the old photo from the folder
-            deletePhotoFromFileSystem(user.getImagePath());
-            
-            // Save the new photo to the folder and update the user's photo path in the database
-            String imagePath = savePhotoToFileSystem(photo);
-            user.setImagePath(imagePath);
-            repo.save(user);
-        } else {
-            throw new IllegalArgumentException("User with email " + email + " does not exist.");
-        }
-    }
+	@Transactional
+	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
+		// Fetch the user from the database
+		User user = repo.findByEmail(email);
+		if (user != null) {
+			// Delete the old photo from the folder
+			deletePhotoFromFileSystem(user.getImagePath());
 
-    private void deletePhotoFromFileSystem(String imagePath) throws IOException {
-        if (imagePath != null) {
-            Path path = Paths.get(imagePath);
-            Files.deleteIfExists(path);
-        }
-    }
+			// Save the new photo to the folder and update the user's photo path in the
+			// database
+			String imagePath = savePhotoToFileSystem(photo);
+			user.setImagePath(imagePath);
+			repo.save(user);
+		} else {
+			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+		}
+	}
 
-    private String savePhotoToFileSystem(MultipartFile photo) throws IOException {
-        // Generate a unique filename for the new photo
-        String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-        // Define the upload directory
-        String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
-        // Create the directory if it doesn't exist
-        Path directoryPath = Paths.get(uploadDir);
-        Files.createDirectories(directoryPath);
-        // Save the photo to the upload directory
-        Path filePath = Paths.get(uploadDir, fileName);
-        Files.write(filePath, photo.getBytes());
-        return filePath.toString();
-    }
+	private void deletePhotoFromFileSystem(String imagePath) throws IOException {
+		if (imagePath != null) {
+			Path path = Paths.get(imagePath);
+			Files.deleteIfExists(path);
+		}
+	}
+
+	private String savePhotoToFileSystem(MultipartFile photo) throws IOException {
+		// Generate a unique filename for the new photo
+		String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
+		// Define the upload directory
+		String uploadDir = "C:\\Users\\srich\\OneDrive\\Desktop\\Profile Pics";
+		// Create the directory if it doesn't exist
+		Path directoryPath = Paths.get(uploadDir);
+		Files.createDirectories(directoryPath);
+		// Save the photo to the upload directory
+		Path filePath = Paths.get(uploadDir, fileName);
+		Files.write(filePath, photo.getBytes());
+		return filePath.toString();
+	}
 }
