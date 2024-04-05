@@ -22,10 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.util.IOUtils;
 import com.example.JobSupportBackend.EmailUtil.EmailUtil;
 import com.example.JobSupportBackend.EmailUtil.OtpUtil;
 import com.example.JobSupportBackend.dto.EmployerInfo;
@@ -108,11 +111,14 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private MilestoneRepository milestoneRepository;
 
-	@Value("${aws.s3.bucketName}")
+	@Value("${aws.bucketName}")
 	private String bucketName;
 
 	@Value("${aws.s3.folderName}")
 	private String folderName;
+	
+	@Value("${aws.region}")
+	private String awsRegion;
 
 	@SuppressWarnings("unused")
 	private static final int MAX_IMAGE_SIZE = 1024 * 1024; // Example: 1 MB
@@ -168,31 +174,34 @@ public class UserServiceImple implements UserService {
 	@Transactional
 	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
 
-		// Generate a unique filename
-		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+	    // Generate a unique filename
+	    String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
-		if (file.isEmpty()) {
-			throw new IllegalArgumentException("File is empty");
-		}
+	    if (file.isEmpty()) {
+	        throw new IllegalArgumentException("File is empty");
+	    }
 
-		// Upload the image file to AWS S3
-		try (InputStream inputStream = file.getInputStream()) {
-			ObjectMetadata metadata = new ObjectMetadata();
-			metadata.setContentLength(file.getSize());
-			AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
-			String s3Key = folderName + "/" + uniqueFileName;
-			s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
-		}
+	    // Specify the AWS region explicitly
+	    Regions region = Regions.fromName(awsRegion);
+	    AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).build();
 
-		// Store the image path in the database
-		String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
-		User user = repo.findByEmail(email);
-		if (user != null) {
-			user.setImagePath(imagePath);
-			repo.save(user);
-		} else {
-			throw new IllegalArgumentException("User with email " + email + " does not exist.");
-		}
+	    // Upload the image file to AWS S3
+	    try (InputStream inputStream = file.getInputStream()) {
+	        ObjectMetadata metadata = new ObjectMetadata();
+	        metadata.setContentLength(file.getSize());
+	        String s3Key = folderName + "/" + uniqueFileName;
+	        s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
+	    }
+
+	    // Store the image path in the database
+	    String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
+	    User user = repo.findByEmail(email);
+	    if (user != null) {
+	        user.setImagePath(imagePath);
+	        repo.save(user);
+	    } else {
+	        throw new IllegalArgumentException("User with email " + email + " does not exist.");
+	    }
 	}
 
 //	@Override
@@ -224,24 +233,55 @@ public class UserServiceImple implements UserService {
 //		}
 //	}
 
+//	@Override
+//	public byte[] getPhotoBytesByEmail(String email) throws IOException {
+//		// Fetch the user entity by email
+//		User user = repo.findByEmail(email);
+//		if (user == null) {
+//			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+//		}
+//
+//		// Get the image path from the user object
+//		String imagePath = user.getImagePath();
+//		if (imagePath == null || imagePath.isEmpty()) {
+//			throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+//		}
+//
+//		// Read the photo bytes from the file
+//		Path photoPath = Paths.get(imagePath);
+//		return Files.readAllBytes(photoPath);
+//	}
+	
 	@Override
 	public byte[] getPhotoBytesByEmail(String email) throws IOException {
-		// Fetch the user entity by email
-		User user = repo.findByEmail(email);
-		if (user == null) {
-			throw new IllegalArgumentException("User with email " + email + " does not exist.");
-		}
+	    // Fetch the user entity by email
+	    User user = repo.findByEmail(email);
+	    if (user == null) {
+	        throw new IllegalArgumentException("User with email " + email + " does not exist.");
+	    }
 
-		// Get the image path from the user object
-		String imagePath = user.getImagePath();
-		if (imagePath == null || imagePath.isEmpty()) {
-			throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
-		}
+	    // Get the image path from the user object
+	    String imagePath = user.getImagePath();
+	    if (imagePath == null || imagePath.isEmpty()) {
+	        throw new IllegalArgumentException("User with email " + email + " does not have a photo.");
+	    }
 
-		// Read the photo bytes from the file
-		Path photoPath = Paths.get(imagePath);
-		return Files.readAllBytes(photoPath);
+	    // Extract the S3 key from the image path
+	    String s3Key = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+
+	    // Specify the AWS region explicitly
+	    Regions region = Regions.fromName(awsRegion);
+	    AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).build();
+
+	    // Download the image bytes from AWS S3
+	    S3Object object = s3Client.getObject(bucketName, folderName + "/" + s3Key);
+	    try (InputStream inputStream = object.getObjectContent()) {
+	        return IOUtils.toByteArray(inputStream);
+	    } catch (IOException e) {
+	        throw new IOException("Error reading image from S3", e);
+	    }
 	}
+
 
 	@Override
 	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {

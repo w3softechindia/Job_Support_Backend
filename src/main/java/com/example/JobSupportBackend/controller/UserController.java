@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -110,23 +111,36 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/photo/{email}")
-	public ResponseEntity<ByteArrayResource> getPhoto(@PathVariable String email) {
-		try {
-			// Get the photo bytes for the given email
-			byte[] photoBytes = userService.getPhotoBytesByEmail(email);
-
-			// Create a ByteArrayResource from the photo bytes
-			ByteArrayResource resource = new ByteArrayResource(photoBytes);
-
-			// Return ResponseEntity with the resource
-			return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(resource);
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		} catch (IllegalArgumentException e) {
-			return ResponseEntity.notFound().build();
-		}
-	}
+//	@GetMapping("/photo/{email}")
+//	public ResponseEntity<ByteArrayResource> getPhoto(@PathVariable String email) {
+//		try {
+//			// Get the photo bytes for the given email
+//			byte[] photoBytes = userService.getPhotoBytesByEmail(email);
+//
+//			// Create a ByteArrayResource from the photo bytes
+//			ByteArrayResource resource = new ByteArrayResource(photoBytes);
+//
+//			// Return ResponseEntity with the resource
+//			return ResponseEntity.ok().header("Content-Type", "image/jpeg").body(resource);
+//		} catch (IOException e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//		} catch (IllegalArgumentException e) {
+//			return ResponseEntity.notFound().build();
+//		}
+//	}
+	
+	 @GetMapping("/photo/{email}")
+	    public ResponseEntity<byte[]> getUserPhotoByEmail(@PathVariable String email) {
+	        try {
+	            byte[] photoBytes = userService.getPhotoBytesByEmail(email);
+	            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(photoBytes);
+	        } catch (IOException e) {
+	            e.printStackTrace(); // Log the error for debugging purposes
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        } catch (IllegalArgumentException e) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	        }
+	    }
 	
 	@PutMapping("/updateInfoForEmployeerDashBoard/{email}")
 	 public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email, @RequestBody User updatedUser) {
