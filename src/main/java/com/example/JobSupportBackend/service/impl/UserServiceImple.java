@@ -204,7 +204,6 @@ public class UserServiceImple implements UserService {
 	    }
 	}
 
-
 //	@Override
 //	@Transactional
 //	public void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException {
