@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.entity.AdminPostProject;
-import com.example.JobSupportBackend.entity.PostProject;
-import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
-import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.AdminProjectService;
 @Service
 public class AdminProjectServiceImpl  implements AdminProjectService{

@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.PostProject;
-import com.example.JobSupportBackend.entity.ProjectFile;
 
 public interface ProjectService {
 
@@ -21,4 +20,11 @@ public interface ProjectService {
 
 	List<PostProject> findAll();
 
+	List<Long> findFalseStatusIds();
+
+	void toggleStatus(Long projectId);
+
+	List<Long> getExpiredProjectIds();
+
+	List<PostProject> findByIds(List<Long> ids);
 }

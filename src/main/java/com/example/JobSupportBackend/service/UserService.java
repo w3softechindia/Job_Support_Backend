@@ -66,7 +66,7 @@ public interface UserService {
 	public Portfolio getPortfolioByEmailAndTitle(String email, String title);
 
 	public Portfolio updatePortfolio(String email, String title, Portfolio portfolio, MultipartFile photo)
-			throws InvalidIdException, IOException;
+			throws InvalidIdException, IOException, ResourceNotFoundException;
 
 	public String deletePortfolio(String email, String title) throws ResourceNotFoundException;
 
@@ -93,8 +93,4 @@ public interface UserService {
 	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
 	
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
-	
-//	public String uploadFileToS3(MultipartFile file) throws IOException;
-
-//	 byte[] getImageDataByEmail(String email) throws IOException;
 }

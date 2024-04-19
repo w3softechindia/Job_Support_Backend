@@ -35,11 +35,9 @@ public class PostProject {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private User user;
-
 
 	@Column(name = "project_title")
 	private String project_title;
@@ -88,14 +86,8 @@ public class PostProject {
 	@Column(name = "number_of_files")
 	private Integer number_of_files;
 
-
-
-	
-	
-	
-	
-	
-	 
+	@Column(name = "status") // New column for status
+	private String status = "true"; // Default is "true"
 
 	@ElementCollection
 	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))

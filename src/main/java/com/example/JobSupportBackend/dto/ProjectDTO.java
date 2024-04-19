@@ -18,7 +18,7 @@ public class ProjectDTO {
 	private String projectCategory;
 	@Column(name = "project_duration")
 	private String project_duration;
-	
+
 	private String city;
 	private String state;
 	private Long project_id;
@@ -46,9 +46,10 @@ public class ProjectDTO {
 	private String description;
 
 	private Integer number_of_files;
-	
-	
-	 private String userEmail;
+
+	private String status;
+
+	private String userEmail;
 
 	@ElementCollection
 	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
