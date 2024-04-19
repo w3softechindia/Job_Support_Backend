@@ -27,4 +27,13 @@ public interface ProjectService {
 	List<Long> getExpiredProjectIds();
 
 	List<PostProject> findByIds(List<Long> ids);
+	
+	
+	
+	
+	
+	
+	 PostProject updateWorkingStatus(Long id, String workingStatus);
+	 List<Long> findProjectIdsByWorkingStatus(String workingStatus);
+	
 }

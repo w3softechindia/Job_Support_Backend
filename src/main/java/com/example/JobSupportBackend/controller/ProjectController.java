@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,6 +58,8 @@ public class ProjectController {
 
 	@Autowired
 	private ProjectRepo repooo;
+	
+	
 
 	@PostMapping("/addproject/{userEmail}")
 	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project, @PathVariable String userEmail)
@@ -120,7 +123,8 @@ public class ProjectController {
 
 		return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
 	}
-
+	
+	
 	@GetMapping("/projects/{userEmail}")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByUserEmail(@PathVariable String userEmail) {
 		try {
@@ -321,6 +325,7 @@ public class ProjectController {
 		response.setSkills(project.getSkills());
 		response.setTags(project.getTags());
 		response.setStatus(project.getStatus());
+		response.setWorking_status(project.getWorkingstatus());
 
 		return response;
 	}
@@ -353,6 +358,7 @@ public class ProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	
 
 	@PutMapping("/updateProject/{projectId}")
 	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
@@ -391,4 +397,65 @@ public class ProjectController {
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	 @PatchMapping("/{id}/set-ongoing")
+	    public ResponseEntity<PostProject> setProjectOngoing(@PathVariable Long id) {
+	        PostProject updatedProject = postProjectService.updateWorkingStatus(id, "ongoing");
+	        String message = "Project with ID " + id + " set to ongoing.";
+	        return ResponseEntity.ok().body(updatedProject);
+	    }
+
+	    @PatchMapping("/{id}/set-complete")
+	    public ResponseEntity<PostProject> setProjectComplete(@PathVariable Long id) {
+	        PostProject updatedProject = postProjectService.updateWorkingStatus(id, "complete");
+	        String message = "Project with ID " + id + " set to complete.";
+	        return ResponseEntity.ok().body(updatedProject);
+	    }
+	
+	
+	    @GetMapping("/getOngoingProjectIds")
+	    public ResponseEntity<List<Long>> getOngoingProjectIds() {
+	        try {
+	            List<Long> ongoingProjectIds = postProjectService.findProjectIdsByWorkingStatus("ongoing");
+	            return ResponseEntity.ok(ongoingProjectIds);
+	        } catch (Exception ex) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+
+	    @GetMapping("/getCompletedProjectIds")
+	    public ResponseEntity<List<Long>> getCompletedProjectIds() {
+	        try {
+	            List<Long> completedProjectIds = postProjectService.findProjectIdsByWorkingStatus("complete");
+	            return ResponseEntity.ok(completedProjectIds);
+	        } catch (Exception ex) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+	    
+	    
+	    
+
+
+	
+	
 }
