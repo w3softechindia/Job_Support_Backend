@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
@@ -30,6 +30,7 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.CertificationService;
 import com.example.JobSupportBackend.service.EducationService;
 import com.example.JobSupportBackend.service.ExperienceService;
@@ -60,6 +61,9 @@ public class UserController {
 
 	@Autowired
 	private CertificationService certificationService;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	@PostMapping("/register")
 	public ResponseEntity<User> register(@RequestBody Register register) throws InvalidIdException, MessagingException {
@@ -128,41 +132,57 @@ public class UserController {
 //			return ResponseEntity.notFound().build();
 //		}
 //	}
-	
-	 @GetMapping("/photo/{email}")
-	    public ResponseEntity<byte[]> getUserPhotoByEmail(@PathVariable String email) {
-	        try {
-	            byte[] photoBytes = userService.getPhotoBytesByEmail(email);
-	            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(photoBytes);
-	        } catch (IOException e) {
-	            e.printStackTrace(); // Log the error for debugging purposes
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	        } catch (IllegalArgumentException e) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	        }
-	    }
-	
+
+	@GetMapping("/photo/{email}")
+	public ResponseEntity<byte[]> getUserPhotoByEmail(@PathVariable String email) {
+		try {
+			byte[] photoBytes = userService.getPhotoBytesByEmail(email);
+			return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(photoBytes);
+		} catch (IOException e) {
+			e.printStackTrace(); // Log the error for debugging purposes
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+
 	@PutMapping("/updateInfoForEmployeerDashBoard/{email}")
-	 public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email, @RequestBody User updatedUser) {
-	        try {
-	            User updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
-	            return new ResponseEntity<>(updatedUserInfo, HttpStatus.ACCEPTED);
-	        } catch (Exception e) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	        }
-	    }
-	 @PutMapping("/photoUpdate/{email}")
-	 public ResponseEntity<?> updatePhoto(@PathVariable String email, @RequestParam("photo") MultipartFile photo) {
-	        try {
-	            if (photo.isEmpty()) {
-	                return ResponseEntity.badRequest().build(); // Return 400 Bad Request if photo is empty
-	            }
-	            userService.updatePhotoByEmail(email, photo);
-	            return ResponseEntity.ok().build(); // Return 200 OK if photo is updated successfully
-	        } catch (IOException e) {
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	        }
-	    }
+	public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email,
+			@RequestBody User updatedUser) {
+		try {
+			User updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
+			return new ResponseEntity<>(updatedUserInfo, HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+//	@PutMapping("/photoUpdate/{email}")
+//	public ResponseEntity<?> updatePhoto(@PathVariable String email, @RequestParam("photo") MultipartFile photo) {
+//		try {
+//			if (photo.isEmpty()) {
+//				return ResponseEntity.badRequest().build(); // Return 400 Bad Request if photo is empty
+//			}
+//			userService.updatePhotoByEmail(email, photo);
+//			return ResponseEntity.ok().build(); // Return 200 OK if photo is updated successfully
+//		} catch (IOException e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//		}
+//	}
+
+	@PutMapping("/photoUpdate/{email}")
+	public ResponseEntity<?> updatePhoto(@PathVariable String email, @RequestParam("photo") MultipartFile photo) {
+		try {
+			userService.updatePhotoByEmail(email, photo);
+			return ResponseEntity.ok().build(); // Return 200 OK if photo is updated successfully
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().build(); // Return 400 Bad Request if photo is empty or user does not
+														// exist
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Return 500 Internal Server Error
+																					// for other IO exceptions
+		}
+	}
 
 	@PutMapping("/otherInfo/{email}")
 	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
@@ -221,6 +241,12 @@ public class UserController {
 			throw new Exception("Credentials cant be null");
 
 		}
+	}
+
+	@GetMapping("/check-email")
+	public ResponseEntity<Boolean> checkEmailExists(@RequestParam String email) {
+		boolean emailExists = userRepository.existsByEmail(email);
+		return ResponseEntity.ok(emailExists);
 	}
 
 	@PutMapping("/sendOTP/{email}")
@@ -283,34 +309,47 @@ public class UserController {
 
 	@PostMapping("/postPortfolio/{email}")
 	public ResponseEntity<Portfolio> postPortfolio(@PathVariable String email, @RequestParam("title") String title,
-			@RequestParam("link") String link, @RequestParam("photo") MultipartFile photo)
-			throws ResourceNotFoundException, IOException {
-		// Create a new Portfolio object
-		Portfolio portfolio = new Portfolio();
-		portfolio.setTitle(title);
-		portfolio.setLink(link);
+			@RequestParam("link") String link, @RequestParam("photo") MultipartFile photo) {
+		try {
+			// Create a new Portfolio object
+			Portfolio portfolio = new Portfolio();
+			portfolio.setTitle(title);
+			portfolio.setLink(link);
 
-		// Call service method to handle the portfolio
-		Portfolio addedPortfolio = userService.addPortfolio(email, portfolio, photo);
+			// Call service method to handle the portfolio
+			Portfolio addedPortfolio = userService.addPortfolio(email, portfolio, photo);
 
-		// Return response
-		return new ResponseEntity<>(addedPortfolio, HttpStatus.OK);
+			// Return the response entity
+			return ResponseEntity.status(HttpStatus.CREATED).body(addedPortfolio);
+		} catch (ResourceNotFoundException e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+		} catch (IOException e) {
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload the portfolio image",
+					e);
+		} catch (Exception e) {
+			// Handle generic exceptions
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"An error occurred while adding the portfolio", e);
+		}
 	}
 
 	@GetMapping("/getPortfolios/{email}")
-	public ResponseEntity<List<Portfolio>> getPortfoliosByEmail(@PathVariable String email) throws IOException {
+	public ResponseEntity<List<Portfolio>> getAllPortfoliosByUser(@PathVariable String email) {
 		try {
 			List<Portfolio> portfolios = userService.getAllPortfoliosWithImages(email);
 			return new ResponseEntity<>(portfolios, HttpStatus.OK);
 		} catch (IOException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(null);
 		}
 	}
 
 	@PutMapping("/updatePortfolio/{email}/{title1}")
 	public ResponseEntity<Portfolio> updatePortfolio(@PathVariable String email, @PathVariable String title1,
 			@RequestParam("title") String title, @RequestParam("link") String link,
-			@RequestParam("photo") MultipartFile photo) throws InvalidIdException, IOException {
+			@RequestParam("photo") MultipartFile photo)
+			throws InvalidIdException, IOException, ResourceNotFoundException {
 		Portfolio portfolio = new Portfolio();
 		portfolio.setTitle(title);
 		portfolio.setLink(link);

@@ -1,35 +1,40 @@
 package com.example.JobSupportBackend.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.JobSupportBackend.dto.FileDTO;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.PostProject;
 import com.example.JobSupportBackend.entity.ProjectFile;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.ProjectFileRepository;
+import com.example.JobSupportBackend.repo.ProjectRepo;
 import com.example.JobSupportBackend.service.ProjectService;
 
 import jakarta.mail.internet.ParseException;
@@ -43,6 +48,15 @@ public class ProjectController {
 	private ProjectFileRepository projectFileRepository;
 	@Autowired
 	private AdminPostProjectRpository adminPostProjectRpository;
+
+	@Value("${aws.bucketName}")
+	private String bucketName;
+
+	@Value("${aws.s3.folderNamee}")
+	private String folderNamee;
+
+	@Autowired
+	private ProjectRepo repooo;
 
 	@PostMapping("/addproject/{userEmail}")
 	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project, @PathVariable String userEmail)
@@ -133,7 +147,7 @@ public class ProjectController {
 				dto.setNumber_of_files(project.getNumber_of_files());
 				dto.setSkills(project.getSkills());
 				dto.setTags(project.getTags());
-
+				dto.setStatus(project.getStatus());
 				projectDTOs.add(dto);
 			}
 			return ResponseEntity.ok(projectDTOs);
@@ -142,6 +156,39 @@ public class ProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+
+//	@PostMapping("/files/{projectId}")
+//	public ResponseEntity<String> uploadFile(@PathVariable Long projectId, @RequestParam("file") MultipartFile file) {
+//		try {
+//			// Check if project exists
+//			Optional<PostProject> optionalPostProject = postProjectService.findById(projectId);
+//			if (!optionalPostProject.isPresent()) {
+//				return new ResponseEntity<>("Project not found", HttpStatus.NOT_FOUND);
+//			}
+//
+//			// Save file to local folder
+//			String filePath = saveFileLocally(file);
+//
+//			// Save file path to database
+//			ProjectFile projectFile = new ProjectFile();
+//			projectFile.setFilePath(filePath);
+//			projectFile.setPostProject(optionalPostProject.get());
+//			projectFileRepository.save(projectFile);
+//
+//			return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//
+//	private String saveFileLocally(MultipartFile file) throws IOException {
+//		String folderPath = "C:\\Users\\srich\\OneDrive\\Desktop\\Project Files"; // Set your folder path here
+//		String fileName = file.getOriginalFilename();
+//		Path filePath = Paths.get(folderPath + File.separator + fileName);
+//		Files.write(filePath, file.getBytes());
+//		return filePath.toString();
+//	}
 
 	@PostMapping("/files/{projectId}")
 	public ResponseEntity<String> uploadFile(@PathVariable Long projectId, @RequestParam("file") MultipartFile file) {
@@ -152,8 +199,8 @@ public class ProjectController {
 				return new ResponseEntity<>("Project not found", HttpStatus.NOT_FOUND);
 			}
 
-			// Save file to local folder
-			String filePath = saveFileLocally(file);
+			// Save file to AWS S3 bucket
+			String filePath = saveFileToS3(file);
 
 			// Save file path to database
 			ProjectFile projectFile = new ProjectFile();
@@ -162,22 +209,63 @@ public class ProjectController {
 			projectFileRepository.save(projectFile);
 
 			return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 			return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	private String saveFileLocally(MultipartFile file) throws IOException {
-		String folderPath = "C:\\Users\\srich\\OneDrive\\Desktop\\Project Files"; // Set your folder path here
-		String fileName = file.getOriginalFilename();
-		Path filePath = Paths.get(folderPath + File.separator + fileName);
-		Files.write(filePath, file.getBytes());
-		return filePath.toString();
+	private String saveFileToS3(MultipartFile file) throws IOException, URISyntaxException {
+		// Generate a unique filename
+		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+		if (file.isEmpty()) {
+			throw new IllegalArgumentException("File is empty");
+		}
+
+		// Specify the AWS region explicitly
+		String awsRegion = "us-east-1"; // Replace with your desired region
+		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(awsRegion).build();
+
+		// Upload the file to AWS S3 bucket
+		try (InputStream inputStream = file.getInputStream()) {
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(file.getSize());
+			String s3Key = folderNamee + "/" + uniqueFileName;
+			s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
+		}
+
+		// Construct and return the S3 URI
+		return "https://" + bucketName + ".s3.amazonaws.com/" + folderNamee + "/" + uniqueFileName;
 	}
 
+//	
+//	@GetMapping("/filesGet/{projectId}")
+//	public ResponseEntity<List<FileDTO>> getFilesByProjectId(@PathVariable Long projectId) {
+//		try {
+//			// Check if project exists
+//			Optional<PostProject> optionalPostProject = postProjectService.findById(projectId);
+//			if (!optionalPostProject.isPresent()) {
+//				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//			}
+//
+//			// Retrieve files for the project
+//			List<ProjectFile> projectFiles = optionalPostProject.get().getFiles();
+//
+//			// Convert ProjectFile entities to FileDTOs
+//			List<FileDTO> fileDTOs = projectFiles.stream().map(file -> new FileDTO(file.getId(), file.getFilePath()))
+//					.collect(Collectors.toList());
+//
+//			return new ResponseEntity<>(fileDTOs, HttpStatus.OK);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//	
+
 	@GetMapping("/filesGet/{projectId}")
-	public ResponseEntity<List<FileDTO>> getFilesByProjectId(@PathVariable Long projectId) {
+	public ResponseEntity<List<String>> getFilesByProjectId(@PathVariable Long projectId) {
 		try {
 			// Check if project exists
 			Optional<PostProject> optionalPostProject = postProjectService.findById(projectId);
@@ -188,11 +276,10 @@ public class ProjectController {
 			// Retrieve files for the project
 			List<ProjectFile> projectFiles = optionalPostProject.get().getFiles();
 
-			// Convert ProjectFile entities to FileDTOs
-			List<FileDTO> fileDTOs = projectFiles.stream().map(file -> new FileDTO(file.getId(), file.getFilePath()))
-					.collect(Collectors.toList());
+			// Extract file paths
+			List<String> filePaths = projectFiles.stream().map(ProjectFile::getFilePath).collect(Collectors.toList());
 
-			return new ResponseEntity<>(fileDTOs, HttpStatus.OK);
+			return new ResponseEntity<>(filePaths, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -233,7 +320,75 @@ public class ProjectController {
 		response.setNumber_of_files(project.getNumber_of_files());
 		response.setSkills(project.getSkills());
 		response.setTags(project.getTags());
+		response.setStatus(project.getStatus());
 
 		return response;
 	}
+
+	@GetMapping("/unpublished")
+	public ResponseEntity<List<Long>> getFalseStatusIds() {
+		List<Long> falseStatusIds = postProjectService.findFalseStatusIds();
+		return new ResponseEntity<>(falseStatusIds, HttpStatus.OK);
+	}
+
+	@PutMapping("/status/toggle/{projectId}")
+	public ResponseEntity<Void> toggleStatus(@PathVariable Long projectId) {
+		postProjectService.toggleStatus(projectId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/expired")
+	public List<Long> getExpiredProjectIds() {
+		return postProjectService.getExpiredProjectIds();
+	}
+
+	@GetMapping("/getProjectsByIds")
+	public ResponseEntity<List<ProjectDTO>> getProjectsByIds(@RequestParam List<Long> ids) {
+		try {
+			List<PostProject> projects = postProjectService.findByIds(ids);
+			List<ProjectDTO> projectDetailsResponses = projects.stream().map(this::convertToProjectDetailsResponse)
+					.collect(Collectors.toList());
+			return ResponseEntity.ok(projectDetailsResponses);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+
+	@PutMapping("/updateProject/{projectId}")
+	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
+			@RequestBody ProjectDTO updatedProjectDTO) {
+		try {
+			Optional<PostProject> optionalProject = repooo.findById(projectId);
+			if (optionalProject.isPresent()) {
+				PostProject postProject = optionalProject.get();
+
+				// Update properties only if they are not null in the updatedProjectDTO
+				if (updatedProjectDTO.getDeadline_date() != null)
+					postProject.setDeadline_date(updatedProjectDTO.getDeadline_date());
+
+				// Save the updated project
+				PostProject updatedProject = repooo.save(postProject);
+
+				// Update corresponding AdminPostProject
+				Optional<AdminPostProject> optionalAdminProject = adminPostProjectRpository.findById(projectId);
+				if (optionalAdminProject.isPresent()) {
+					AdminPostProject adminProject = optionalAdminProject.get();
+					// Update only specific properties of AdminPostProject
+					if (updatedProjectDTO.getDeadline_date() != null)
+						adminProject.setDeadline_date(updatedProjectDTO.getDeadline_date());
+					// Update other properties similarly as needed
+
+					adminPostProjectRpository.save(adminProject);
+				}
+
+				ProjectDTO updatedProjectDTO1 = convertToProjectDetailsResponse(updatedProject);
+				return ResponseEntity.ok(updatedProjectDTO1);
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+
 }
