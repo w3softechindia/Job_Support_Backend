@@ -50,8 +50,8 @@ public class SecurityConfugiration {
 						"/sendProposal/**", "/getProposals/*", "/getProposalById/*", "/updateProposal/*",
 						"/deleteProposal/*", "/getProjectsOfAdmin", "/getProposalsByProjectId/*",
 						"/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*", "/uploadPhotoToS3", "/check-email",
-						"/unpublished", "/status/toggle/*", "/expired", "/getProjectsByIds", "/updateProject/*","/{id}/set-complete",
-						"/{id}/set-ongoing","/getOngoingProjectIds", "/getCompletedProjectIds")
+						"/unpublished", "/status/toggle/*", "/expired", "/getProjectsByIds", "/updateProject/*","/set-complete",
+						"/set-ongoing","/getOngoingProjectIds", "/getCompletedProjectIds")
 				.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))

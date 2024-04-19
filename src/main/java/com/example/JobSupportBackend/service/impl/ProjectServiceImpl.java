@@ -124,15 +124,12 @@ public class ProjectServiceImpl implements ProjectService {
 	
 
 	
-	 @Override
-	    public PostProject updateWorkingStatus(Long id, String workingStatus) {
-	        PostProject postProject = postProjectRepository.findById(id)
-	                .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
-
-	        postProject.setWorkingstatus(workingStatus);
-	        return postProjectRepository.save(postProject);
-	    }
-	
+	@Override
+    public List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status) {
+        List<PostProject> projectsToUpdate = postProjectRepository.findAllById(ids);
+        projectsToUpdate.forEach(project -> project.setWorkingstatus(status));
+        return postProjectRepository.saveAll(projectsToUpdate);
+    }
 	
 	
 	 @Override
