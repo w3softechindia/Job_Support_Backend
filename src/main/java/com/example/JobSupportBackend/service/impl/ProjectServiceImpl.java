@@ -124,12 +124,14 @@ public class ProjectServiceImpl implements ProjectService {
 	
 
 	
+
 	@Override
     public List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status) {
         List<PostProject> projectsToUpdate = postProjectRepository.findAllById(ids);
         projectsToUpdate.forEach(project -> project.setWorkingstatus(status));
         return postProjectRepository.saveAll(projectsToUpdate);
     }
+
 	
 	
 	 @Override
