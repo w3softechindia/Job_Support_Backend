@@ -72,6 +72,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return postProjectRepository.findIdsByStatusFalse();
 	}
 
+	
+	
+	
 	@Override
 	public void toggleStatus(Long projectId) {
 		Optional<PostProject> optionalProject = postProjectRepository.findById(projectId);
@@ -90,6 +93,13 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public List<Long> getExpiredProjectIds() {
 		List<Long> expiredProjectIds = new ArrayList<>();
@@ -110,4 +120,27 @@ public class ProjectServiceImpl implements ProjectService {
 		return postProjectRepository.findAllById(ids);
 	}
 
+	
+	
+
+	
+	 @Override
+	    public PostProject updateWorkingStatus(Long id, String workingStatus) {
+	        PostProject postProject = postProjectRepository.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+
+	        postProject.setWorkingstatus(workingStatus);
+	        return postProjectRepository.save(postProject);
+	    }
+	
+	
+	
+	 @Override
+	    public List<Long> findProjectIdsByWorkingStatus(String workingStatus) {
+	        return postProjectRepository.findIdsByWorkingStatus(workingStatus);
+	    }
+	
+	
+	
+	
 }

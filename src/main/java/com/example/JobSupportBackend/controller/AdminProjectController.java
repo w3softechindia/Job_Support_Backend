@@ -27,6 +27,8 @@ public class AdminProjectController {
 	@Autowired
 	private AdminProjectService adminProjectService;
 
+	
+	
 	@GetMapping("/getAllAdminProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
 		try {
@@ -68,6 +70,7 @@ public class AdminProjectController {
 		return projectDTO;
 	}
 
+	
 	@GetMapping("/getAdminProjectById/{projectId}")
 	public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
 		try {
@@ -83,6 +86,7 @@ public class AdminProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	
 
 	@PutMapping("/updateAdminProject/{projectId}")
 	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
@@ -118,6 +122,11 @@ public class AdminProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	
+	
+	
+	
+	
 	
 	@GetMapping("/getProjectById/{id}")
 	public ResponseEntity<AdminPostProject> getProjectById(@PathVariable long id){

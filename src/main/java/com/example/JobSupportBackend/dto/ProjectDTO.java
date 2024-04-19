@@ -48,6 +48,8 @@ public class ProjectDTO {
 	private Integer number_of_files;
 
 	private String status;
+	
+	private String working_status;
 
 	private String userEmail;
 
