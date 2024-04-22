@@ -551,14 +551,6 @@ public class UserServiceImple implements UserService {
 		// Save the portfolio to the database
 		return portfolioRepository.save(portfolio);
 	}
-
-		// Set the user and photo path for the portfolio
-		portfolio.setUser(user);
-		portfolio.setPhoto_path(imagePath);
-
-		// Save the portfolio to the database
-		return portfolioRepository.save(portfolio);
-	}
 	
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
