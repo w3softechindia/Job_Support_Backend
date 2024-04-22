@@ -24,7 +24,10 @@ public interface ProjectService {
 
 	void toggleStatus(Long projectId);
 
-	List<Long> getExpiredProjectIds();
-
 	List<PostProject> findByIds(List<Long> ids);
+	
+	List<Long> getExpiredProjectIdsByUserEmail(String userEmail);
+	
+	 List<Long> findProjectIdsByWorkingStatus(String workingStatus);
+	 List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status);
 }
