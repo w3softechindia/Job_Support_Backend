@@ -551,6 +551,9 @@ public class UserServiceImple implements UserService {
 		// Save the portfolio to the database
 		return portfolioRepository.save(portfolio);
 	}
+
+		
+	
 	
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
