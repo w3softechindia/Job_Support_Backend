@@ -342,10 +342,18 @@ public class ProjectController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/expired")
-	public List<Long> getExpiredProjectIds() {
-		return postProjectService.getExpiredProjectIds();
-	}
+	
+	
+
+	
+	
+	 @GetMapping("/expired/{userEmail}")
+	    public List<Long> getExpiredProjectIdsByUserEmail(@PathVariable String userEmail) {
+	        return postProjectService.getExpiredProjectIdsByUserEmail(userEmail);
+	    }
+	
+	
+	
 
 	@GetMapping("/getProjectsByIds")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByIds(@RequestParam List<Long> ids) {
