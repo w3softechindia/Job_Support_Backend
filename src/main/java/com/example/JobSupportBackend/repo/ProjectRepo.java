@@ -16,10 +16,7 @@ public interface ProjectRepo extends JpaRepository<PostProject, Long> {
 
 	@Query("SELECT p.id FROM PostProject p WHERE p.status = 'false'")
 	List<Long> findIdsByStatusFalse();
-
-	
 	
 	 @Query("SELECT p.id FROM PostProject p WHERE p.workingstatus = :workingStatus")
 	    List<Long> findIdsByWorkingStatus(@Param("workingStatus") String workingStatus);
-	
 }

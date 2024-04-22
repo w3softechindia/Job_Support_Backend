@@ -551,21 +551,29 @@ public class UserServiceImple implements UserService {
 		// Save the portfolio to the database
 		return portfolioRepository.save(portfolio);
 	}
+
+		// Set the user and photo path for the portfolio
+		portfolio.setUser(user);
+		portfolio.setPhoto_path(imagePath);
+
+		// Save the portfolio to the database
+		return portfolioRepository.save(portfolio);
+	}
 	
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
 		// Retrieve all portfolios for the given user email
-	    List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
-	    
-	    // Iterate through each portfolio and populate the photo_path with the image URL
-	    for (Portfolio portfolio : portfolios) {
-	        // Construct the image URL based on the photo_path stored in the database
-	        byte[] photoPath = constructImageUrl(portfolio.getPhoto_path());
-	        portfolio.setImageBytes(photoPath);
-	    }
-	    
-	    // Return the list of portfolios with image URLs
-	    return portfolios;
+		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+
+		// Iterate through each portfolio and populate the photo_path with the image URL
+		for (Portfolio portfolio : portfolios) {
+			// Construct the image URL based on the photo_path stored in the database
+			byte[] photoPath = constructImageUrl(portfolio.getPhoto_path());
+			portfolio.setImageBytes(photoPath);
+		}
+
+		// Return the list of portfolios with image URLs
+		return portfolios;
 	}
 
 	private byte[] constructImageUrl(String imagePath) throws IOException {
@@ -756,6 +764,7 @@ public class UserServiceImple implements UserService {
 			proposal1.setProposedPrice(proposal.getProposedPrice());
 			proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
 			proposal1.setCoverLetter(proposal.getCoverLetter());
+			proposal1.setProposalStatus("Yet TO Be");
 			proposal1.setAdminPostProject(adminProjectOptional.get());
 			proposal1.setUser(userOptional.get());
 
@@ -802,6 +811,7 @@ public class UserServiceImple implements UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("Proposal not exists..!!"));
 		proposal.setCoverLetter(sendProposal.getCoverLetter());
 		proposal.setProposedPrice(sendProposal.getProposedPrice());
+		proposal.setProposalStatus("yet To Be");
 		proposal.setEstimatedDelivery(sendProposal.getEstimatedDelivery());
 
 		milestoneRepository.deleteByProposalId(proposalId);
@@ -949,37 +959,37 @@ public class UserServiceImple implements UserService {
 //		Files.write(filePath, photo.getBytes());
 //		return filePath.toString();
 //	}
-	
-	  @Override
-	    @Transactional
-	    public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
-	        // Fetch the user from the database
-	        User user = repo.findByEmail(email);
-	        if (user != null) {
-	            if (photo.isEmpty()) {
-	                throw new IllegalArgumentException("Photo is empty");
-	            }
 
-	            // Generate a unique filename for the new photo
-	            String uniqueFileName = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
+	@Override
+	@Transactional
+	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
+		// Fetch the user from the database
+		User user = repo.findByEmail(email);
+		if (user != null) {
+			if (photo.isEmpty()) {
+				throw new IllegalArgumentException("Photo is empty");
+			}
 
-	            // Specify the AWS region explicitly
-	            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(awsRegion).build();
+			// Generate a unique filename for the new photo
+			String uniqueFileName = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
 
-	            // Upload the photo file to AWS S3
-	            try (InputStream inputStream = photo.getInputStream()) {
-	                ObjectMetadata metadata = new ObjectMetadata();
-	                metadata.setContentLength(photo.getSize());
-	                String s3Key = folderName + "/" + uniqueFileName;
-	                s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
-	                String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
+			// Specify the AWS region explicitly
+			AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(awsRegion).build();
 
-	                // Update the user's photo path in the database
-	                user.setImagePath(imagePath);
-	                repo.save(user);
-	            }
-	        } else {
-	            throw new IllegalArgumentException("User with email " + email + " does not exist.");
-	        }
-	    }
+			// Upload the photo file to AWS S3
+			try (InputStream inputStream = photo.getInputStream()) {
+				ObjectMetadata metadata = new ObjectMetadata();
+				metadata.setContentLength(photo.getSize());
+				String s3Key = folderName + "/" + uniqueFileName;
+				s3Client.putObject(new PutObjectRequest(bucketName, s3Key, inputStream, metadata));
+				String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
+
+				// Update the user's photo path in the database
+				user.setImagePath(imagePath);
+				repo.save(user);
+			}
+		} else {
+			throw new IllegalArgumentException("User with email " + email + " does not exist.");
+		}
+	}
 }

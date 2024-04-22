@@ -71,10 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<Long> findFalseStatusIds() {
 		return postProjectRepository.findIdsByStatusFalse();
 	}
-
-	
-	
-	
+  
 	@Override
 	public void toggleStatus(Long projectId) {
 		Optional<PostProject> optionalProject = postProjectRepository.findById(projectId);
@@ -93,15 +90,6 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-	
-
-
 	  @Override
 	    public List<Long> getExpiredProjectIdsByUserEmail(String userEmail) {
 	        List<Long> expiredProjectIds = new ArrayList<>();
@@ -116,19 +104,11 @@ public class ProjectServiceImpl implements ProjectService {
 
 	        return expiredProjectIds;
 	    }
-	
-	
-	
-	
+
 	@Override
 	public List<PostProject> findByIds(List<Long> ids) {
 		return postProjectRepository.findAllById(ids);
 	}
-
-	
-	
-
-	
 
 	@Override
     public List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status) {
@@ -137,14 +117,8 @@ public class ProjectServiceImpl implements ProjectService {
         return postProjectRepository.saveAll(projectsToUpdate);
     }
 
-	
-	
 	 @Override
 	    public List<Long> findProjectIdsByWorkingStatus(String workingStatus) {
 	        return postProjectRepository.findIdsByWorkingStatus(workingStatus);
 	    }
-	
-	
-	
-	
 }
