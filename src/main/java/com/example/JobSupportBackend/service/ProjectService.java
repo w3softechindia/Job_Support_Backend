@@ -36,10 +36,6 @@ public interface ProjectService {
 	
 	
 	
-	
-	
-
-	
 	 List<Long> findProjectIdsByWorkingStatus(String workingStatus);
 	 List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status);
 

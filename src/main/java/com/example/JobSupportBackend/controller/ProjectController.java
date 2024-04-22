@@ -433,6 +433,16 @@ public class ProjectController {
         return ResponseEntity.ok().body(updatedProjects);
     }
 	
+
+    @PatchMapping("/set-complete")
+    public ResponseEntity<List<PostProject>> setProjectsComplete(@RequestBody List<Long> ids) {
+        List<PostProject> updatedProjects = postProjectService.updateWorkingStatusForMultiple(ids, "complete");
+        String message = "Projects set to complete.";
+        return ResponseEntity.ok().body(updatedProjects);
+    }
+	    
+	    
+	    
 	
 
     @PatchMapping("/set-complete")
