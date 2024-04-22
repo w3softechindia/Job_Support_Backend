@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.JobSupportBackend.entity.Admin;
+import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
@@ -50,5 +51,25 @@ public class AdminController {
 		String deleteUser = adminService.deleteUser(email);
 		return ResponseEntity.ok(deleteUser);
 	}
-
+	
+	@PostMapping("/proposalApproval/{proposalId}/{proposalStatus}/{approvalStatus}")
+	public ResponseEntity<AdminApprovedProposal> approval(@PathVariable int proposalId,@PathVariable String proposalStatus,@PathVariable String approvalStatus) throws Exception{
+		AdminApprovedProposal approval = adminService.approveProposal(proposalId, proposalStatus, approvalStatus);
+		if(approval !=null) {
+			return ResponseEntity.ok(approval);
+		}
+		else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@PutMapping("/rejectProposal/{proposalId}/{proposalStatus}")
+	public ResponseEntity<String> rejectProposal(@PathVariable int proposalId,@PathVariable String proposalStatus ){
+		String rejectProposal = adminService.rejectProposal(proposalId, proposalStatus);
+		if(rejectProposal!=null) {
+			return ResponseEntity.ok(rejectProposal);
+		}else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 }
