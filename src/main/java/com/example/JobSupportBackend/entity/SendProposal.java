@@ -36,6 +36,9 @@ public class SendProposal {
 
 	@JsonProperty("coverLetter")
 	private String coverLetter;
+	
+	@JsonProperty("proposalStatus")
+	private String proposalStatus;
 
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sendProposal")
