@@ -342,10 +342,18 @@ public class ProjectController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/expired")
-	public List<Long> getExpiredProjectIds() {
-		return postProjectService.getExpiredProjectIds();
-	}
+	
+	
+
+	
+	
+	 @GetMapping("/expired/{userEmail}")
+	    public List<Long> getExpiredProjectIdsByUserEmail(@PathVariable String userEmail) {
+	        return postProjectService.getExpiredProjectIdsByUserEmail(userEmail);
+	    }
+	
+	
+	
 
 	@GetMapping("/getProjectsByIds")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByIds(@RequestParam List<Long> ids) {
@@ -424,6 +432,17 @@ public class ProjectController {
         String message = "Projects set to ongoing.";
         return ResponseEntity.ok().body(updatedProjects);
     }
+	
+
+    @PatchMapping("/set-complete")
+    public ResponseEntity<List<PostProject>> setProjectsComplete(@RequestBody List<Long> ids) {
+        List<PostProject> updatedProjects = postProjectService.updateWorkingStatusForMultiple(ids, "complete");
+        String message = "Projects set to complete.";
+        return ResponseEntity.ok().body(updatedProjects);
+    }
+	    
+	    
+	    
 	
 
     @PatchMapping("/set-complete")
