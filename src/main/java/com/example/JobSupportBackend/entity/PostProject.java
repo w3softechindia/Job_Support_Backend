@@ -89,10 +89,8 @@ public class PostProject {
 	@Column(name = "status") // New column for status
 	private String status = "true"; // Default is "true"
 	
-	
 	@Column(name = "working_status")
 	private String workingstatus;
-
 
 	@ElementCollection
 	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))

@@ -34,7 +34,6 @@ public class SecurityConfugiration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
 		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable()).authorizeHttpRequests(auth -> auth
 				.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
 						"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*", "/verifyOTP/**",
@@ -50,7 +49,7 @@ public class SecurityConfugiration {
 						"/sendProposal/**", "/getProposals/*", "/getProposalById/*", "/updateProposal/*",
 						"/deleteProposal/*", "/getProjectsOfAdmin", "/getProposalsByProjectId/*",
 						"/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*", "/uploadPhotoToS3", "/check-email",
-						"/unpublished", "/status/toggle/*", "/expired/*", "/getProjectsByIds", "/updateProject/*","/set-complete",
+						"/unpublished", "/status/toggle/*", "/expired/*", "/getProjectsByIds", "/updateProject/*","/proposalApproval/**","/rejectProposal/**","/set-complete",
 						"/set-ongoing","/getOngoingProjectIds", "/getCompletedProjectIds")
 
 				.permitAll().anyRequest().authenticated())

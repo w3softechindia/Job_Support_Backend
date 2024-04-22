@@ -58,8 +58,6 @@ public class ProjectController {
 
 	@Autowired
 	private ProjectRepo repooo;
-	
-	
 
 	@PostMapping("/addproject/{userEmail}")
 	public ResponseEntity<PostProject> createProject(@RequestBody PostProject project, @PathVariable String userEmail)
@@ -341,19 +339,11 @@ public class ProjectController {
 		postProjectService.toggleStatus(projectId);
 		return ResponseEntity.noContent().build();
 	}
-
-	
-	
-
-	
 	
 	 @GetMapping("/expired/{userEmail}")
 	    public List<Long> getExpiredProjectIdsByUserEmail(@PathVariable String userEmail) {
 	        return postProjectService.getExpiredProjectIdsByUserEmail(userEmail);
 	    }
-	
-	
-	
 
 	@GetMapping("/getProjectsByIds")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByIds(@RequestParam List<Long> ids) {
@@ -366,7 +356,6 @@ public class ProjectController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-	
 
 	@PutMapping("/updateProject/{projectId}")
 	public ResponseEntity<ProjectDTO> updateProjectDetails(@PathVariable Long projectId,
@@ -405,34 +394,12 @@ public class ProjectController {
 		}
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
 	@PatchMapping("/set-ongoing")
     public ResponseEntity<List<PostProject>> setProjectsOngoing(@RequestBody List<Long> ids) {
         List<PostProject> updatedProjects = postProjectService.updateWorkingStatusForMultiple(ids, "ongoing");
         String message = "Projects set to ongoing.";
         return ResponseEntity.ok().body(updatedProjects);
     }
-	
 
     @PatchMapping("/set-complete")
     public ResponseEntity<List<PostProject>> setProjectsComplete(@RequestBody List<Long> ids) {
@@ -440,20 +407,9 @@ public class ProjectController {
         String message = "Projects set to complete.";
         return ResponseEntity.ok().body(updatedProjects);
     }
-	    
-	    
-	    
-	
 
-    @PatchMapping("/set-complete")
-    public ResponseEntity<List<PostProject>> setProjectsComplete(@RequestBody List<Long> ids) {
-        List<PostProject> updatedProjects = postProjectService.updateWorkingStatusForMultiple(ids, "complete");
-        String message = "Projects set to complete.";
-        return ResponseEntity.ok().body(updatedProjects);
-    }
-	    
-	    
-	    
+	  
+    
 	
 	    @GetMapping("/getOngoingProjectIds")
 	    public ResponseEntity<List<Long>> getOngoingProjectIds() {
@@ -474,11 +430,4 @@ public class ProjectController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
 	    }
-	    
-	    
-	    
-
-
-	
-	
 }
