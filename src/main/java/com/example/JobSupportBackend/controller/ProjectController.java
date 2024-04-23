@@ -430,4 +430,32 @@ public class ProjectController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
 	    }
+	    
+	    
+	    
+	 
+	    @GetMapping("/getmainProjectId/{projectId}")
+	    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
+	        try {
+	            Optional<PostProject> projectOptional = postProjectService.findById(projectId);
+	            if (projectOptional.isPresent()) {
+	                PostProject project = projectOptional.get();
+	                ProjectDTO projectDetailsResponse = convertToProjectDetailsResponse(project);
+	                return ResponseEntity.ok(projectDetailsResponse);
+	            } else {
+	                return ResponseEntity.notFound().build();
+	            }
+	        } catch (Exception ex) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+
+	    
+	    
+	    
+	   
+	    
+	    
+	    
+	    
 }

@@ -1,5 +1,7 @@
 package com.example.JobSupportBackend.service;
 
+import java.util.List;
+
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.User;
@@ -19,4 +21,11 @@ public interface AdminService {
 	public AdminApprovedProposal approveProposal(int proposalId,String proposalStatus,String approvalStatus) throws ResourceNotFoundException, InvalidIdException, Exception;
 	
 	public String rejectProposal(int proposalId,String proposalStatus);
+	
+	
+	
+	List<AdminApprovedProposal> getAllApprovedProposals();
+
+	
+	
 }
