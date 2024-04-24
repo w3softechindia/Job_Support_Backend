@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,8 +171,13 @@ public class AdminServiceImple implements AdminService {
 		approvedProposalOpt.ifPresent(approvedProposal -> {
 			adminApprovedProposalRepository.delete(approvedProposal);
 		});
-
 		return "Proposal Rejected Successfully..!!!";
+	}
+	
+	@Override
+	public List<AdminApprovedProposal> getAllApprovedProposals() {
+	    // Assuming adminApprovedProposalRepository is the repository for AdminApprovedProposal
+	    return adminApprovedProposalRepository.findAll();
 	}
 
 //	@Override

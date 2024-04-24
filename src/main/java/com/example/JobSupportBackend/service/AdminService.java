@@ -1,5 +1,7 @@
 package com.example.JobSupportBackend.service;
 
+import java.util.List;
+
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.User;
@@ -22,5 +24,5 @@ public interface AdminService {
 	
 	public String rejectProposal(int proposalId,String proposalStatus) throws MessagingException;
 	
-//	public String proposalStatus(int proposalId) throws InvalidIdException;
+	List<AdminApprovedProposal> getAllApprovedProposals();
 }
