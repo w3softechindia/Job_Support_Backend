@@ -121,8 +121,7 @@ public class ProjectController {
 
 		return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
 	}
-	
-	
+
 	@GetMapping("/projects/{userEmail}")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByUserEmail(@PathVariable String userEmail) {
 		try {
@@ -339,11 +338,11 @@ public class ProjectController {
 		postProjectService.toggleStatus(projectId);
 		return ResponseEntity.noContent().build();
 	}
-	
-	 @GetMapping("/expired/{userEmail}")
-	    public List<Long> getExpiredProjectIdsByUserEmail(@PathVariable String userEmail) {
-	        return postProjectService.getExpiredProjectIdsByUserEmail(userEmail);
-	    }
+
+	@GetMapping("/expired/{userEmail}")
+	public List<Long> getExpiredProjectIdsByUserEmail(@PathVariable String userEmail) {
+		return postProjectService.getExpiredProjectIdsByUserEmail(userEmail);
+	}
 
 	@GetMapping("/getProjectsByIds")
 	public ResponseEntity<List<ProjectDTO>> getProjectsByIds(@RequestParam List<Long> ids) {
@@ -448,14 +447,5 @@ public class ProjectController {
 	        } catch (Exception ex) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	        }
-	    }
-
-	    
-	    
-	    
-	   
-	    
-	    
-	    
-	    
+	    }    
 }

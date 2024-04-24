@@ -9,6 +9,7 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.SendProposal;
@@ -40,9 +41,9 @@ public interface UserService {
 
 	public String regenerateOtp(String email) throws MessagingException, InvalidIdException;
 
-	User sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException;
+	String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException;
 
-	boolean verifyOTP(String email, String otp) throws InvalidIdException;
+	Boolean verifyOTP(String email, String otp) throws InvalidIdException;
 
 	User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception;
 
@@ -93,4 +94,6 @@ public interface UserService {
 	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
 	
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
+	
+	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException;
 }

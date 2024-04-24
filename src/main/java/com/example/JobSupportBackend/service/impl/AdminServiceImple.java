@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.JobSupportBackend.EmailUtil.EmailUtil;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.AdminPostProject;
@@ -26,6 +27,8 @@ import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.AdminService;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class AdminServiceImple implements AdminService {
@@ -65,6 +68,9 @@ public class AdminServiceImple implements AdminService {
 
 	@Autowired
 	private ProposalsRepository proposalsRepository;
+
+	@Autowired
+	private EmailUtil emailUtil;
 
 	@Override
 	public Admin register(Admin admin) throws InvalidIdException {
@@ -130,6 +136,9 @@ public class AdminServiceImple implements AdminService {
 		adminApprovedProposalRepository.save(approvedProposal);
 //		project.setAdminApprovedProposal(approvedProposal);
 		adminPostProjectRpository.save(project);
+		
+		emailUtil.sendFreelancerHiringNotification(sendProposal.getUser().getEmail(), project.getProject_title());
+		emailUtil.sendProjectStartedNotification(project.getUser().getEmail(), sendProposal.getUser().getName(), project.getProject_title());
 
 		sendProposal.setProposalStatus(proposalStatus); // Dynamic acceptance status
 		proposalsRepository.save(sendProposal);
@@ -138,31 +147,32 @@ public class AdminServiceImple implements AdminService {
 	}
 
 	@Override
-	public String rejectProposal(int proposalId, String proposalStatus) {
-	    Optional<SendProposal> proposalOpt = proposalsRepository.findById(proposalId);
-	    
-	    if (!proposalOpt.isPresent()) {
-	        return "Proposal Not Found";
-	    }
+	public String rejectProposal(int proposalId, String proposalStatus) throws MessagingException {
+		Optional<SendProposal> proposalOpt = proposalsRepository.findById(proposalId);
 
-	    SendProposal proposal = proposalOpt.get();
-	    proposal.setProposalStatus(proposalStatus);
-	    proposalsRepository.save(proposal);
+		if (!proposalOpt.isPresent()) {
+			return "Proposal Not Found";
+		}
 
-	    // Assuming the freelancer's email can be fetched like this
-	    String freelancerEmail = proposal.getUser().getEmail();
+		SendProposal proposal = proposalOpt.get();
+		proposal.setProposalStatus(proposalStatus);
+		proposalsRepository.save(proposal);
 
-	    // Retrieve the approved proposal linked to this freelancer's email
-	    Optional<AdminApprovedProposal> approvedProposalOpt = adminApprovedProposalRepository.findByFreelancerEmail(freelancerEmail);
+		// Assuming the freelancer's email can be fetched like this
+		String freelancerEmail = proposal.getUser().getEmail();
+		
+		emailUtil.sendRejectionNotification(freelancerEmail, proposal.getAdminPostProject().getProject_title());
 
-	    // If an approved proposal is found, delete it
-	    approvedProposalOpt.ifPresent(approvedProposal -> {
-	        adminApprovedProposalRepository.delete(approvedProposal);
-	    });
+		// Retrieve the approved proposal linked to this freelancer's email
+		Optional<AdminApprovedProposal> approvedProposalOpt = adminApprovedProposalRepository
+				.findByFreelancerEmail(freelancerEmail);
 
-	    return "Proposal Rejected Successfully..!!!";
+		// If an approved proposal is found, delete it
+		approvedProposalOpt.ifPresent(approvedProposal -> {
+			adminApprovedProposalRepository.delete(approvedProposal);
+		});
+		return "Proposal Rejected Successfully..!!!";
 	}
-
 	
 	@Override
 	public List<AdminApprovedProposal> getAllApprovedProposals() {
@@ -170,8 +180,10 @@ public class AdminServiceImple implements AdminService {
 	    return adminApprovedProposalRepository.findAll();
 	}
 
-	  
-	
-
+//	@Override
+//	public String proposalStatus(int proposalId) throws InvalidIdException {
+//		SendProposal proposal = proposalsRepository.findById(proposalId).orElseThrow(()-> new InvalidIdException("Proposal Id not found..!!"));
+//		return proposal.getProposalStatus();
+//	}
 
 }

@@ -121,12 +121,4 @@ public class ProjectServiceImpl implements ProjectService {
 	    public List<Long> findProjectIdsByWorkingStatus(String workingStatus) {
 	        return postProjectRepository.findIdsByWorkingStatus(workingStatus);
 	    }
-	 
-	 
-	 
-	 
-	
-	 
-	 
-	 
 }

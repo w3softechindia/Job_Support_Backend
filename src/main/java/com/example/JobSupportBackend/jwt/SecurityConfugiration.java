@@ -50,7 +50,7 @@ public class SecurityConfugiration {
 						"/deleteProposal/*", "/getProjectsOfAdmin", "/getProposalsByProjectId/*",
 						"/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*", "/uploadPhotoToS3", "/check-email",
 						"/unpublished", "/status/toggle/*", "/expired/*", "/getProjectsByIds", "/updateProject/*","/proposalApproval/**","/rejectProposal/**","/set-complete",
-						"/set-ongoing","/getOngoingProjectIds", "/getCompletedProjectIds", "/proposalApproval/all","/getmainProjectId/*")
+						"/set-ongoing","/getOngoingProjectIds", "/getCompletedProjectIds", "/proposalApproval/all","/getmainProjectId/*","/onGoingProjects")
 
 				.permitAll().anyRequest().authenticated())
 

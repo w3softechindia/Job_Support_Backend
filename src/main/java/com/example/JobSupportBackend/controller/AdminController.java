@@ -23,6 +23,8 @@ import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.service.AdminService;
 
+import jakarta.mail.MessagingException;
+
 @RestController
 public class AdminController {
 
@@ -80,7 +82,7 @@ public class AdminController {
 	
 	
 	@PutMapping("/rejectProposal/{proposalId}/{proposalStatus}")
-	public ResponseEntity<String> rejectProposal(@PathVariable int proposalId,@PathVariable String proposalStatus ){
+	public ResponseEntity<String> rejectProposal(@PathVariable int proposalId,@PathVariable String proposalStatus ) throws MessagingException{
 		String rejectProposal = adminService.rejectProposal(proposalId, proposalStatus);
 		if(rejectProposal!=null) {
 			return ResponseEntity.ok(rejectProposal);

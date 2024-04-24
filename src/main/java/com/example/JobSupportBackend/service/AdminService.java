@@ -8,6 +8,8 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 
+import jakarta.mail.MessagingException;
+
 public interface AdminService {
 	
 	public Admin register(Admin admin) throws InvalidIdException;
@@ -20,12 +22,7 @@ public interface AdminService {
 	
 	public AdminApprovedProposal approveProposal(int proposalId,String proposalStatus,String approvalStatus) throws ResourceNotFoundException, InvalidIdException, Exception;
 	
-	public String rejectProposal(int proposalId,String proposalStatus);
-	
-	
+	public String rejectProposal(int proposalId,String proposalStatus) throws MessagingException;
 	
 	List<AdminApprovedProposal> getAllApprovedProposals();
-
-	
-	
 }

@@ -21,7 +21,9 @@ public class EmailUtil {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void sendOtpMail(String email, String otp) throws MessagingException {
+	public void sendOtpMail(String email, String otp) throws MessagingException, InvalidIdException {
+		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
+		String name=user.getUsername();
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 		helper.setTo(email);
@@ -30,7 +32,7 @@ public class EmailUtil {
 				+ "\r\n"
 				+ "    <div style=\"max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\r\n"
 				+ "        <h2 style=\"color: #ff5722;\">JobSupport4U OTP Verification</h2>\r\n"
-				+ "        <h2>Dear "+email+",</h2>\r\n" + "        <p>Your OTP for Verification is:</p>\r\n"
+				+ "        <h2>Dear "+name+",</h2>\r\n" + "        <p>Your OTP for Verification is:</p>\r\n"
 				+ "        \r\n"
 				+ "        <div style=\"font-size: 36px; color: #ff5722; margin: 20px 0; padding: 10px; border: 2px solid #ff5722; border-radius: 5px;\">\r\n"
 				+ "            <strong>" + otp + "</strong>\r\n" + "        </div>\r\n" + "\r\n"
@@ -42,7 +44,7 @@ public class EmailUtil {
 		javaMailSender.send(message);
 	}
 
-	public void setPassword(String email, String otp) throws MessagingException, InvalidIdException {
+	public void sendPasswordOtp(String email, String otp) throws MessagingException, InvalidIdException {
 		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
 		String name=user.getUsername();
 		MimeMessage message = javaMailSender.createMimeMessage();
@@ -66,4 +68,50 @@ public class EmailUtil {
 		helper.setText(emailBody, true);
 		javaMailSender.send(message);
 	}
+	
+	public void sendFreelancerHiringNotification(String email, String projectName) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(email);
+        helper.setSubject("Congratulations! You've been hired");
+
+        String content = String.format("<h1>Congratulations!</h1>" +
+                "<p>Hello "+ email + ",</p>" +
+                "<p>We are pleased to inform you that you have been hired for the project <strong>"+ projectName +"</strong>.</p>" +
+                "<p>We look forward to your great contributions. Further details will follow shortly.</p>" +
+                "<p>Best Regards,<br/>Your Team</p>", email, projectName);
+        helper.setText(content, true);
+
+        javaMailSender.send(message);
+    }
+	
+	public void sendProjectStartedNotification(String employerEmail, String freelancerName, String projectName) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(employerEmail);
+        helper.setSubject("Your project is now in progress");
+        String content= String.format("<h1>Project Update</h1>" +
+                "<p>Dear Project Owner,</p>" +
+                "<p>We are pleased to inform you that your project <strong>"+ projectName +"</strong> is now being worked on by <strong>"+ freelancerName +"</strong>.</p>" +
+                "<p>We will keep you updated on the progress.</p>" +
+                "<p>Best Regards,<br/>Your Team</p>", projectName, freelancerName);
+        helper.setText(content, true);
+        javaMailSender.send(message);
+    }
+	
+	public void sendRejectionNotification(String email, String projectName) throws MessagingException {
+	    MimeMessage message = javaMailSender.createMimeMessage();
+	    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	    helper.setTo(email);
+	    helper.setSubject("Update on Your Proposal Submission");
+	    String content=String.format("<h1>Proposal Rejected</h1>" +
+                "<p>Hello,</p>" +
+                "<p>We regret to inform you that your proposal for the project <strong>"+ projectName +"</strong> has been rejected.</p>" +
+                "<p>We encourage you to apply for other projects and wish you better luck next time.</p>" +
+                "<p>Best Regards,<br/>Your Team</p>", projectName);
+	    helper.setText(content, true);
+	    javaMailSender.send(message);
+	}
+
 }

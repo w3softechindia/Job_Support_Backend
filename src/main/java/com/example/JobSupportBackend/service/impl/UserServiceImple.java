@@ -339,21 +339,22 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException {
+	public String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.isVerified()) {
 			String otp = otpUtil.generateOtp();
-			emailUtil.setPassword(email, otp);
+			emailUtil.sendPasswordOtp(email, otp);
 			user.setOtp(otp);
 			user.setOtpGeneratedtime(LocalDateTime.now());
-			return repo.save(user);
+			repo.save(user);
+			return "Otp sent....please verify within 1 minute";
 		} else {
 			throw new ResourceNotFoundException("User email is not Verified..!!!");
 		}
 	}
 
 	@Override
-	public boolean verifyOTP(String email, String otp) throws InvalidIdException {
+	public Boolean verifyOTP(String email, String otp) throws InvalidIdException {
 		User user = repo.findById(email)
 				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
 		if (user.getOtp().equals(otp)
@@ -759,7 +760,7 @@ public class UserServiceImple implements UserService {
 			proposal1.setProposedPrice(proposal.getProposedPrice());
 			proposal1.setEstimatedDelivery(proposal.getEstimatedDelivery());
 			proposal1.setCoverLetter(proposal.getCoverLetter());
-			proposal1.setProposalStatus("Yet TO Be");
+			proposal1.setProposalStatus("Yet To Be");
 			proposal1.setAdminPostProject(adminProjectOptional.get());
 			proposal1.setUser(userOptional.get());
 
@@ -987,4 +988,24 @@ public class UserServiceImple implements UserService {
 			throw new IllegalArgumentException("User with email " + email + " does not exist.");
 		}
 	}
+
+	@Override
+	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException {
+	    List<SendProposal> proposals = proposalsRepository.findByUserEmail(email);
+	    List<AdminPostProject> ongoingProjects = new ArrayList<>();
+
+	    for (SendProposal proposal : proposals) {
+	        if (proposal.getProposalStatus().equalsIgnoreCase("Approved")) {
+	            ongoingProjects.add(proposal.getAdminPostProject());
+	        }
+	    }
+	    
+	    if (ongoingProjects.isEmpty()) {
+	        // If no approved proposals were found, then throw the exception
+	        throw new ResourceNotFoundException("No Projects Approved..!!!");
+	    }
+	    
+	    return ongoingProjects; // Return the list of ongoing projects
+	}
+
 }
