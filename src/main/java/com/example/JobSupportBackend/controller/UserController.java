@@ -23,6 +23,7 @@ import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
+import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.SendProposal;
@@ -250,11 +251,11 @@ public class UserController {
 	}
 
 	@PutMapping("/sendOTP/{email}")
-	public ResponseEntity<User> sendOTP(@PathVariable String email) throws Exception {
+	public ResponseEntity<String> sendOTP(@PathVariable String email) throws Exception {
 		if (email == null) {
 			throw new Exception("Email cant be null");
 		} else {
-			return new ResponseEntity<User>(userService.sendOTP(email), HttpStatus.OK);
+			return new ResponseEntity<String>(userService.sendOTP(email), HttpStatus.OK);
 		}
 	}
 
@@ -445,4 +446,16 @@ public class UserController {
 		List<SendProposal> proposalsByProjectId = userService.getProposalsByProjectId(projectId);
 		return new ResponseEntity<List<SendProposal>>(proposalsByProjectId, HttpStatus.OK);
 	}
+	
+	 @GetMapping("/onGoingProjects")
+	    public ResponseEntity<List<AdminPostProject>> getOngoingProjects(@RequestParam String email) {
+	        try {
+	            List<AdminPostProject> ongoingProjects = userService.onGoingProjects(email);
+	            return ResponseEntity.ok(ongoingProjects);
+	        } catch (ResourceNotFoundException e) {
+	            return ResponseEntity.notFound().build();
+	        } catch (Exception e) {
+	            return ResponseEntity.internalServerError().body(null);
+	        }
+	    }
 }
