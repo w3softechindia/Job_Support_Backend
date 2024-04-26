@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,18 +72,8 @@ public class AdminController {
 		}
 	}
 	
-
-	
-	
-	
-
-	
-	
-	
-	
-	
 	@PutMapping("/rejectProposal/{proposalId}/{proposalStatus}")
-	public ResponseEntity<String> rejectProposal(@PathVariable int proposalId,@PathVariable String proposalStatus ) throws MessagingException{
+	public ResponseEntity<String> rejectProposal(@PathVariable int proposalId,@PathVariable String proposalStatus ) throws MessagingException, UnsupportedEncodingException{
 		String rejectProposal = adminService.rejectProposal(proposalId, proposalStatus);
 		if(rejectProposal!=null) {
 			return ResponseEntity.ok(rejectProposal);
@@ -118,10 +109,9 @@ public class AdminController {
 	        }
 	    }
 	
-	
-	
-	
-	
-
-
+	 @PutMapping("/rejectProject/{projectId}")
+	 public ResponseEntity<String> rejectProject(@PathVariable Long projectId) throws MessagingException, UnsupportedEncodingException{
+		 String rejectProjectToEmployer = adminService.rejectProjectToEmployer(projectId);
+		 return new ResponseEntity<String>(rejectProjectToEmployer,HttpStatus.ACCEPTED);
+	 }
 }

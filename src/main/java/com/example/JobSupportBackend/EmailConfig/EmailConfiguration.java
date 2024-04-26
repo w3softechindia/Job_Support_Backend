@@ -1,12 +1,12 @@
 package com.example.JobSupportBackend.EmailConfig;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.util.Properties;
 
 @Configuration
 public class EmailConfiguration {
@@ -24,14 +24,22 @@ public class EmailConfiguration {
 	private String mailPassword;
 	
 	@Bean
-	JavaMailSender javaMailSender() {
-		JavaMailSenderImpl impl=new JavaMailSenderImpl();
-		impl.setHost(mailHost);
-		impl.setPort(Integer.parseInt(mailPort));
-		impl.setUsername(mailUsername);
-		impl.setPassword(mailPassword);
-		Properties mailProperties = impl.getJavaMailProperties();
-		mailProperties.put("mail.smtp.starttls.enable", "true");
-		return impl;
+	public JavaMailSender javaMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost(mailHost);
+		mailSender.setPort(Integer.parseInt(mailPort));
+		mailSender.setUsername(mailUsername);
+		mailSender.setPassword(mailPassword);
+		
+		Properties props = mailSender.getJavaMailProperties();
+		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.ssl.enable", "true"); // Use SSL for secure email sending
+		props.put("mail.smtp.ssl.trust", mailHost); // Trust the host, required for some servers
+		props.put("mail.smtp.connectiontimeout", "5000");
+		props.put("mail.smtp.timeout", "3000");
+		props.put("mail.smtp.writetimeout", "5000");
+		
+		return mailSender;
 	}
 }

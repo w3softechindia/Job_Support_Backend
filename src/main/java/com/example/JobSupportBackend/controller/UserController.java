@@ -1,6 +1,7 @@
 package com.example.JobSupportBackend.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,8 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@PostMapping("/register")
-	public ResponseEntity<User> register(@RequestBody Register register) throws InvalidIdException, MessagingException {
-		return new ResponseEntity<User>(userService.register(register), HttpStatus.CREATED);
+	public ResponseEntity<User> register(@RequestBody Register user) throws InvalidIdException, MessagingException, UnsupportedEncodingException {
+		return new ResponseEntity<User>(userService.register(user), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/verify/{email}/{otp}")
@@ -78,7 +79,7 @@ public class UserController {
 
 	@PutMapping("/regenerate-otp/{email}")
 	public ResponseEntity<String> regenerateOtp(@PathVariable String email)
-			throws MessagingException, InvalidIdException {
+			throws MessagingException, InvalidIdException, UnsupportedEncodingException {
 		return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
 	}
 
@@ -459,3 +460,4 @@ public class UserController {
 	        }
 	    }
 }
+

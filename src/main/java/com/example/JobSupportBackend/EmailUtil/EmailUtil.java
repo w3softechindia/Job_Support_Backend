@@ -1,5 +1,7 @@
 package com.example.JobSupportBackend.EmailUtil;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,11 +23,12 @@ public class EmailUtil {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void sendOtpMail(String email, String otp) throws MessagingException, InvalidIdException {
-		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
-		String name=user.getUsername();
+	public void sendOtpMail(String email, String otp) throws MessagingException, InvalidIdException, UnsupportedEncodingException {
+//		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
+//		String name=user.getUsername();
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
 		helper.setTo(email);
 		helper.setSubject("Email Verification");
 		String emailBody = String.format("<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; text-align: center; padding: 20px;\">\r\n"
@@ -44,11 +47,12 @@ public class EmailUtil {
 		javaMailSender.send(message);
 	}
 
-	public void sendPasswordOtp(String email, String otp) throws MessagingException, InvalidIdException {
+	public void sendPasswordOtp(String email, String otp) throws MessagingException, InvalidIdException, UnsupportedEncodingException {
 		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
-		String name=user.getUsername();
+		String name=user.getName();
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
 		helper.setTo(email);
 		helper.setSubject("OTP Verification");
 		String emailBody = String.format(
@@ -68,11 +72,11 @@ public class EmailUtil {
 		helper.setText(emailBody, true);
 		javaMailSender.send(message);
 	}
-	
-	public void sendFreelancerHiringNotification(String email, String projectName) throws MessagingException {
+
+	public void sendFreelancerHiringNotification(String email, String projectName) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
         helper.setTo(email);
         helper.setSubject("Congratulations! You've been hired");
 
@@ -86,9 +90,10 @@ public class EmailUtil {
         javaMailSender.send(message);
     }
 	
-	public void sendProjectStartedNotification(String employerEmail, String freelancerName, String projectName) throws MessagingException {
+	public void sendProjectStartedNotification(String employerEmail, String freelancerName, String projectName) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
         helper.setTo(employerEmail);
         helper.setSubject("Your project is now in progress");
         String content= String.format("<h1>Project Update</h1>" +
@@ -100,15 +105,31 @@ public class EmailUtil {
         javaMailSender.send(message);
     }
 	
-	public void sendRejectionNotification(String email, String projectName) throws MessagingException {
+	public void sendRejectionNotification(String email, String projectName) throws MessagingException, UnsupportedEncodingException {
 	    MimeMessage message = javaMailSender.createMimeMessage();
 	    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
 	    helper.setTo(email);
 	    helper.setSubject("Update on Your Proposal Submission");
 	    String content=String.format("<h1>Proposal Rejected</h1>" +
                 "<p>Hello,</p>" +
                 "<p>We regret to inform you that your proposal for the project <strong>"+ projectName +"</strong> has been rejected.</p>" +
                 "<p>We encourage you to apply for other projects and wish you better luck next time.</p>" +
+                "<p>Best Regards,<br/>Your Team</p>", projectName);
+	    helper.setText(content, true);
+	    javaMailSender.send(message);
+	}
+	
+	public void sendProjectRejectionToEmployer(String email, String projectName) throws MessagingException, UnsupportedEncodingException {
+	    MimeMessage message = javaMailSender.createMimeMessage();
+	    MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		helper.setFrom("jobsupport4u@w3softech.in","JobSupport4U");
+	    helper.setTo(email);
+	    helper.setSubject("Update on Your Project");
+	    String content=String.format("<h1>Project Rejected</h1>" +
+                "<p>Hello,</p>" +
+                "<p>We regret to inform you that your project <strong>"+ projectName +"</strong> has been rejected to publish by the Admin</p>" +
+                "<p>We encourage you to post other projects and wish you better luck next time.</p>" +
                 "<p>Best Regards,<br/>Your Team</p>", projectName);
 	    helper.setText(content, true);
 	    javaMailSender.send(message);

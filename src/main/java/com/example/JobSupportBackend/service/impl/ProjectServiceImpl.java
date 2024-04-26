@@ -71,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<Long> findFalseStatusIds() {
 		return postProjectRepository.findIdsByStatusFalse();
 	}
-  
+
 	@Override
 	public void toggleStatus(Long projectId) {
 		Optional<PostProject> optionalProject = postProjectRepository.findById(projectId);
@@ -90,20 +90,20 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 	}
 
-	  @Override
-	    public List<Long> getExpiredProjectIdsByUserEmail(String userEmail) {
-	        List<Long> expiredProjectIds = new ArrayList<>();
-	        List<PostProject> projects = postProjectRepository.findByUserEmail(userEmail);
-	        Date currentDate = new Date();
+	@Override
+	public List<Long> getExpiredProjectIdsByUserEmail(String userEmail) {
+		List<Long> expiredProjectIds = new ArrayList<>();
+		List<PostProject> projects = postProjectRepository.findByUserEmail(userEmail);
+		Date currentDate = new Date();
 
-	        for (PostProject project : projects) {
-	            if (project.getDeadline_date().before(currentDate)) {
-	                expiredProjectIds.add(project.getId());
-	            }
-	        }
+		for (PostProject project : projects) {
+			if (project.getDeadline_date().before(currentDate)) {
+				expiredProjectIds.add(project.getId());
+			}
+		}
 
-	        return expiredProjectIds;
-	    }
+		return expiredProjectIds;
+	}
 
 	@Override
 	public List<PostProject> findByIds(List<Long> ids) {
@@ -111,14 +111,30 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-    public List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status) {
-        List<PostProject> projectsToUpdate = postProjectRepository.findAllById(ids);
-        projectsToUpdate.forEach(project -> project.setWorkingstatus(status));
-        return postProjectRepository.saveAll(projectsToUpdate);
-    }
+	public List<PostProject> updateWorkingStatusForMultiple(List<Long> ids, String status) {
+		List<PostProject> projectsToUpdate = postProjectRepository.findAllById(ids);
+		projectsToUpdate.forEach(project -> project.setWorkingstatus(status));
+		return postProjectRepository.saveAll(projectsToUpdate);
+	}
 
-	 @Override
-	    public List<Long> findProjectIdsByWorkingStatus(String workingStatus) {
-	        return postProjectRepository.findIdsByWorkingStatus(workingStatus);
-	    }
+	@Override
+	public List<Long> findProjectIdsByWorkingStatus(String workingStatus) {
+		return postProjectRepository.findIdsByWorkingStatus(workingStatus);
+	}
+
+	@Override
+	public List<Long> getExpiredProjectIds() {
+		List<Long> expiredProjectIds = new ArrayList<>();
+		List<PostProject> projects = postProjectRepository.findAll();
+		Date currentDate = new Date();
+
+		for (PostProject project : projects) {
+			if (project.getDeadline_date().before(currentDate)) {
+				expiredProjectIds.add(project.getId());
+			}
+		}
+
+		return expiredProjectIds;
+
+	}
 }
