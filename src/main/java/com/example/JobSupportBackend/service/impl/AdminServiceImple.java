@@ -78,6 +78,9 @@ public class AdminServiceImple implements AdminService {
 	@Autowired
 	private EmailUtil emailUtil;
 
+	@Autowired
+	private EmailUtil emailUtil;
+
 	@Override
 	public Admin register(Admin admin) throws InvalidIdException {
 		return adminRepository.save(admin);

@@ -1023,5 +1023,4 @@ public class UserServiceImple implements UserService {
 	    
 	    return ongoingProjects; // Return the list of ongoing projects
 	}
-
 }

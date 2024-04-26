@@ -35,7 +35,7 @@ public class EmailUtil {
 				+ "\r\n"
 				+ "    <div style=\"max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\r\n"
 				+ "        <h2 style=\"color: #ff5722;\">JobSupport4U OTP Verification</h2>\r\n"
-				+ "        <h2>Dear "+email+",</h2>\r\n" + "        <p>Your OTP for Verification is:</p>\r\n"
+				+ "        <h2>Dear "+name+",</h2>\r\n" + "        <p>Your OTP for Verification is:</p>\r\n"
 				+ "        \r\n"
 				+ "        <div style=\"font-size: 36px; color: #ff5722; margin: 20px 0; padding: 10px; border: 2px solid #ff5722; border-radius: 5px;\">\r\n"
 				+ "            <strong>" + otp + "</strong>\r\n" + "        </div>\r\n" + "\r\n"
@@ -72,7 +72,7 @@ public class EmailUtil {
 		helper.setText(emailBody, true);
 		javaMailSender.send(message);
 	}
-	
+
 	public void sendFreelancerHiringNotification(String email, String projectName) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
