@@ -1,6 +1,7 @@
 package com.example.JobSupportBackend.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,7 @@ import jakarta.mail.MessagingException;
 
 public interface UserService {
 
-	public User register(Register register) throws InvalidIdException, MessagingException;
+	public User register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException;
 
 	public User getDetails(String email);
 	
@@ -39,9 +40,9 @@ public interface UserService {
 
 	public User verifyAccount(String email, String otp) throws Exception;
 
-	public String regenerateOtp(String email) throws MessagingException, InvalidIdException;
+	public String regenerateOtp(String email) throws MessagingException, InvalidIdException, UnsupportedEncodingException;
 
-	String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException;
+	String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException;
 
 	Boolean verifyOTP(String email, String otp) throws InvalidIdException;
 

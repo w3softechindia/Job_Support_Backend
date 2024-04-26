@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import com.example.JobSupportBackend.EmailUtil.EmailUtil;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.AdminPostProject;
+import com.example.JobSupportBackend.entity.PostProject;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
@@ -23,6 +25,7 @@ import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
+import com.example.JobSupportBackend.repo.ProjectRepo;
 import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -68,6 +71,9 @@ public class AdminServiceImple implements AdminService {
 
 	@Autowired
 	private ProposalsRepository proposalsRepository;
+	
+	@Autowired
+	private ProjectRepo projectRepo;
 
 	@Autowired
 	private EmailUtil emailUtil;
@@ -147,7 +153,7 @@ public class AdminServiceImple implements AdminService {
 	}
 
 	@Override
-	public String rejectProposal(int proposalId, String proposalStatus) throws MessagingException {
+	public String rejectProposal(int proposalId, String proposalStatus) throws MessagingException, UnsupportedEncodingException {
 		Optional<SendProposal> proposalOpt = proposalsRepository.findById(proposalId);
 
 		if (!proposalOpt.isPresent()) {
@@ -180,10 +186,14 @@ public class AdminServiceImple implements AdminService {
 	    return adminApprovedProposalRepository.findAll();
 	}
 
-//	@Override
-//	public String proposalStatus(int proposalId) throws InvalidIdException {
-//		SendProposal proposal = proposalsRepository.findById(proposalId).orElseThrow(()-> new InvalidIdException("Proposal Id not found..!!"));
-//		return proposal.getProposalStatus();
-//	}
+	@Override
+	public String rejectProjectToEmployer(Long projectId) throws MessagingException, UnsupportedEncodingException {
+		PostProject postProject = projectRepo.findById(projectId).get();
+		if(postProject!=null) {
+			emailUtil.sendProjectRejectionToEmployer(postProject.getUser().getEmail(), postProject.getProject_title());
+			return "Project Rejected Succesfully";
+		}
+		return "No Projects Found";
+	}
 
 }

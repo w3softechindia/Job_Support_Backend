@@ -1,5 +1,6 @@
 package com.example.JobSupportBackend.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.example.JobSupportBackend.entity.Admin;
@@ -22,7 +23,9 @@ public interface AdminService {
 	
 	public AdminApprovedProposal approveProposal(int proposalId,String proposalStatus,String approvalStatus) throws ResourceNotFoundException, InvalidIdException, Exception;
 	
-	public String rejectProposal(int proposalId,String proposalStatus) throws MessagingException;
+	public String rejectProposal(int proposalId,String proposalStatus) throws MessagingException, UnsupportedEncodingException;
 	
 	List<AdminApprovedProposal> getAllApprovedProposals();
+
+	String rejectProjectToEmployer(Long projectId) throws MessagingException, UnsupportedEncodingException;
 }

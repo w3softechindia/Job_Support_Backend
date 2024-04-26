@@ -2,6 +2,7 @@ package com.example.JobSupportBackend.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User register(Register register) throws InvalidIdException, MessagingException {
+	public User register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException {
 		Optional<User> user2 = repo.findById(register.getEmail());
 		if (user2.isPresent()) {
 			throw new InvalidIdException("Email already exists...!!!" + register.getEmail());
@@ -138,6 +139,21 @@ public class UserServiceImple implements UserService {
 					.build();
 			user.setStatus("Yet To Be");
 			return repo.save(user);
+		}
+	}
+	
+	
+	public String sendOTP1(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
+		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		if (user.isVerified()) {
+			String otp = otpUtil.generateOtp();
+			emailUtil.sendPasswordOtp(email, otp);
+			user.setOtp(otp);
+			user.setOtpGeneratedtime(LocalDateTime.now());
+			repo.save(user);
+			return "Otp sent....please verify within 1 minute";
+		} else {
+			throw new ResourceNotFoundException("User email is not Verified..!!!");
 		}
 	}
 
@@ -328,7 +344,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public String regenerateOtp(String email) throws MessagingException, InvalidIdException {
+	public String regenerateOtp(String email) throws MessagingException, InvalidIdException, UnsupportedEncodingException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		String otp = otpUtil.generateOtp();
 		emailUtil.sendOtpMail(email, otp);
@@ -339,7 +355,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException {
+	public String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.isVerified()) {
 			String otp = otpUtil.generateOtp();
