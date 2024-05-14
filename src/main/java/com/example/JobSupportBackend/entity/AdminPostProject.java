@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -86,6 +85,8 @@ public class AdminPostProject {
 
 	@Column(name = "number_of_files")
 	private Integer number_of_files;
+	
+	private String project_status;
 
 	@ElementCollection
 	@CollectionTable(name = "admin_postproject_skills", joinColumns = @JoinColumn(name = "admin_postproject_id"))
@@ -97,7 +98,8 @@ public class AdminPostProject {
 	@Column(name = "tag")
 	private List<String> tags;
 
-//	@OneToMany(mappedBy = "Admin_postproject", cascade = CascadeType.ALL)
+//	@OneToMany(mappedBy = "adminPostProject", cascade = CascadeType.ALL)
+//	@JsonIgnore
 //	private List<ProjectFile> files;
 
 //	@OneToMany(mappedBy = "adminPostProject", cascade = CascadeType.ALL)

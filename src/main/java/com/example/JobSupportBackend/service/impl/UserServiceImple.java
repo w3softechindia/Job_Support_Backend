@@ -6,9 +6,11 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,26 +33,32 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.Certification;
+import com.example.JobSupportBackend.entity.ChartData;
+import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
 import com.example.JobSupportBackend.entity.Milestone;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.ProjectFile;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.AdminApprovedProposalRepository;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.CertificationRepository;
+import com.example.JobSupportBackend.repo.CompletedProjectRepository;
 import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
 import com.example.JobSupportBackend.repo.MilestoneRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
+import com.example.JobSupportBackend.repo.ProjectFileRepository;
 import com.example.JobSupportBackend.repo.ProposalsRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -105,6 +113,15 @@ public class UserServiceImple implements UserService {
 	@Autowired
 	private MilestoneRepository milestoneRepository;
 
+	@Autowired
+	private AdminApprovedProposalRepository adminApprovedProposalRepository;
+
+	@Autowired
+	private ProjectFileRepository projectFileRepository;
+
+	@Autowired
+	private CompletedProjectRepository completedProjectRepository;
+
 	@Value("${aws.bucketName}")
 	private String bucketName;
 
@@ -127,7 +144,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException {
+	public User register(Register register)
+			throws InvalidIdException, MessagingException, UnsupportedEncodingException {
 		Optional<User> user2 = repo.findById(register.getEmail());
 		if (user2.isPresent()) {
 			throw new InvalidIdException("Email already exists...!!!" + register.getEmail());
@@ -144,6 +162,21 @@ public class UserServiceImple implements UserService {
 	
 	
 	public String sendOTP1(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
+		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		if (user.isVerified()) {
+			String otp = otpUtil.generateOtp();
+			emailUtil.sendPasswordOtp(email, otp);
+			user.setOtp(otp);
+			user.setOtpGeneratedtime(LocalDateTime.now());
+			repo.save(user);
+			return "Otp sent....please verify within 1 minute";
+		} else {
+			throw new ResourceNotFoundException("User email is not Verified..!!!");
+		}
+	}
+
+	public String sendOTP1(String email)
+			throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.isVerified()) {
 			String otp = otpUtil.generateOtp();
@@ -344,7 +377,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public String regenerateOtp(String email) throws MessagingException, InvalidIdException, UnsupportedEncodingException {
+	public String regenerateOtp(String email)
+			throws MessagingException, InvalidIdException, UnsupportedEncodingException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		String otp = otpUtil.generateOtp();
 		emailUtil.sendOtpMail(email, otp);
@@ -355,7 +389,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
+	public String sendOTP(String email)
+			throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.isVerified()) {
 			String otp = otpUtil.generateOtp();
@@ -569,9 +604,6 @@ public class UserServiceImple implements UserService {
 		return portfolioRepository.save(portfolio);
 	}
 
-		
-	
-	
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
 		// Retrieve all portfolios for the given user email
@@ -1007,20 +1039,91 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException {
-	    List<SendProposal> proposals = proposalsRepository.findByUserEmail(email);
-	    List<AdminPostProject> ongoingProjects = new ArrayList<>();
+		List<SendProposal> proposals = proposalsRepository.findByUserEmail(email);
+		List<AdminPostProject> ongoingProjects = new ArrayList<>();
 
-	    for (SendProposal proposal : proposals) {
-	        if (proposal.getProposalStatus().equalsIgnoreCase("Approved")) {
-	            ongoingProjects.add(proposal.getAdminPostProject());
-	        }
-	    }
-	    
-	    if (ongoingProjects.isEmpty()) {
-	        // If no approved proposals were found, then throw the exception
-	        throw new ResourceNotFoundException("No Projects Approved..!!!");
-	    }
-	    
-	    return ongoingProjects; // Return the list of ongoing projects
+		for (SendProposal proposal : proposals) {
+			if ("Approved".equalsIgnoreCase(proposal.getProposalStatus())
+					&& "Pending".equalsIgnoreCase(proposal.getAdminPostProject().getProject_status())) {
+				ongoingProjects.add(proposal.getAdminPostProject());
+			}
+		}
+
+		if (ongoingProjects.isEmpty()) {
+			// If no approved proposals were found, then throw the exception
+			throw new ResourceNotFoundException("No Projects Approved..!!!");
+		}
+		return ongoingProjects; // Return the list of ongoing projects
+	}
+
+	@Override
+	@Transactional
+	public AdminPostProject projectStatus(String email,Long id, String status) {
+		AdminPostProject adminPostProject = adminPostProjectRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+
+		adminPostProject.setProject_status(status);
+		AdminPostProject updatedProject = adminPostProjectRepository.save(adminPostProject);
+
+		if ("Completed".equals(status)) {
+			CompletedProjects completedProject = new CompletedProjects();
+			completedProject.setProject_id(updatedProject.getProject_id());
+			completedProject.setEmployer(updatedProject.getUser().getEmail());
+			completedProject.setFreelancer(email);
+			completedProject.setProject_title(updatedProject.getProject_title());
+			completedProject.setProject_category(updatedProject.getProject_category());
+			completedProject.setProject_duration(updatedProject.getProject_duration());
+			completedProject.setDeadline_date(updatedProject.getDeadline_date());
+			completedProject.setBudget_amount(updatedProject.getBudget_amount());
+			completedProject.setActive_rate(updatedProject.getActive_rate());
+			completedProject.setFixed_rate(updatedProject.getFixed_rate());
+			completedProject.setHourly_rate_from(updatedProject.getHourly_rate_from());
+			completedProject.setHourly_rate_to(updatedProject.getHourly_rate_to());
+			completedProject.setProject_status(updatedProject.getProject_status());
+			// Save the completion date as now or based on some business logic
+			completedProject.setCompletionDate(new Date());
+			completedProjectRepository.save(completedProject);
+		}
+
+		return updatedProject;
+	}
+
+	@Override
+	public List<CompletedProjects> completedProjects(String email) {
+
+		List<CompletedProjects> completedProjects = completedProjectRepository.findByFreelancer(email);
+		return completedProjects;
+	}
+
+	@Override
+	public List<String> getFilesByProjectId(Long projectId) {
+		List<ProjectFile> projectFiles = projectFileRepository.findByPostProjectId(projectId);
+
+		// Extract file paths
+		List<String> filePaths = projectFiles.stream().map(ProjectFile::getFilePath).collect(Collectors.toList());
+
+		return filePaths;
+	}
+
+	@Override
+	public int getCountOfCompletedProjects(String email) {
+		int count = completedProjectRepository.countByFreelancer(email);
+		return count;
+	}
+
+	@Override
+	public ChartData getChartData(String email) {
+		long[] series = { proposalsRepository.countByUserEmail(email),
+				proposalsRepository.countByProposalStatusAndUserEmail("Approved",email),
+				completedProjectRepository.countByFreelancer(email),
+				adminApprovedProposalRepository.countByFreelancerEmailAndPendingStatus(email) };
+		String[] labels = { "Proposals", "Approved Proposals", "Completed Jobs", "Ongoing Jobs" };
+		return new ChartData(series, labels);
+	}
+
+	@Override
+	public List<User> gellallUsers() {
+		List<User> findAll = repo.findAll();
+		return findAll;
 	}
 }

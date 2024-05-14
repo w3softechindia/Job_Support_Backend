@@ -26,6 +26,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public PostProject save(PostProject project) {
+		project.setProject_status("Pending");
 		return postProjectRepository.save(project);
 	}
 
@@ -44,6 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 
 		// Set the user for the project
+		project.setProject_status("Pending");
 		project.setUser(user);
 
 		// Your existing logic for parsing and setting attributes goes here...

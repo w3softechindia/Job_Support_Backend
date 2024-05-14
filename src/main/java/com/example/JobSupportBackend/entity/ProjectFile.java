@@ -8,9 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
-
+@Data
 @Table(name = "project_file")
 public class ProjectFile {
 
@@ -25,30 +26,6 @@ public class ProjectFile {
 		this.postProject = postProject;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	public PostProject getPostProject() {
-		return postProject;
-	}
-
-	public void setPostProject(PostProject postProject) {
-		this.postProject = postProject;
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -59,5 +36,8 @@ public class ProjectFile {
 	@ManyToOne
 	@JoinColumn(name = "post_project_id", referencedColumnName = "id")
 	private PostProject postProject;
+	
+	@ManyToOne
+	private AdminPostProject adminPostProject;
 
 }

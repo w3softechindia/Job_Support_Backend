@@ -11,6 +11,8 @@ import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.entity.AdminPostProject;
+import com.example.JobSupportBackend.entity.ChartData;
+import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.SendProposal;
@@ -97,4 +99,16 @@ public interface UserService {
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
 	
 	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException;
+		
+	public List<CompletedProjects> completedProjects(String email);
+	
+	public List<String> getFilesByProjectId(Long projectId);
+	
+	public int getCountOfCompletedProjects(String email);
+	
+	public ChartData getChartData(String email);
+	
+	List<User> gellallUsers();
+
+	AdminPostProject projectStatus(String email, Long id, String status);
 }

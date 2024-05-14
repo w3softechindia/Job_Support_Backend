@@ -25,6 +25,8 @@ import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
 import com.example.JobSupportBackend.entity.AdminPostProject;
+import com.example.JobSupportBackend.entity.ChartData;
+import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.SendProposal;
@@ -68,7 +70,8 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@PostMapping("/register")
-	public ResponseEntity<User> register(@RequestBody Register user) throws InvalidIdException, MessagingException, UnsupportedEncodingException {
+	public ResponseEntity<User> register(@RequestBody Register user)
+			throws InvalidIdException, MessagingException, UnsupportedEncodingException {
 		return new ResponseEntity<User>(userService.register(user), HttpStatus.CREATED);
 	}
 
@@ -447,17 +450,54 @@ public class UserController {
 		List<SendProposal> proposalsByProjectId = userService.getProposalsByProjectId(projectId);
 		return new ResponseEntity<List<SendProposal>>(proposalsByProjectId, HttpStatus.OK);
 	}
+
+	@GetMapping("/onGoingProjects")
+	public ResponseEntity<List<AdminPostProject>> getOngoingProjects(@RequestParam String email) {
+		try {
+			List<AdminPostProject> ongoingProjects = userService.onGoingProjects(email);
+			return ResponseEntity.ok(ongoingProjects);
+		} catch (ResourceNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(null);
+		}
+	}
 	
-	 @GetMapping("/onGoingProjects")
-	    public ResponseEntity<List<AdminPostProject>> getOngoingProjects(@RequestParam String email) {
-	        try {
-	            List<AdminPostProject> ongoingProjects = userService.onGoingProjects(email);
-	            return ResponseEntity.ok(ongoingProjects);
-	        } catch (ResourceNotFoundException e) {
-	            return ResponseEntity.notFound().build();
-	        } catch (Exception e) {
-	            return ResponseEntity.internalServerError().body(null);
-	        }
-	    }
+	@PutMapping("/projectStatus/{email}/{id}/{status}")
+	public ResponseEntity<AdminPostProject> projectStatus(@PathVariable String email, @PathVariable Long id, @PathVariable String status){
+		AdminPostProject projectStatus = userService.projectStatus(email,id, status);
+		return new ResponseEntity<AdminPostProject>(projectStatus,HttpStatus.ACCEPTED);
+	}
+	
+	@GetMapping("/completedProjects/{email}")
+	public ResponseEntity<List<CompletedProjects>> completedProjects(@PathVariable String email){
+		List<CompletedProjects> completedProjects = userService.completedProjects(email);
+		return new ResponseEntity<List<CompletedProjects>>(completedProjects,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getFilesByAdminProjectId/{projectId}")
+	public ResponseEntity<List<String>> getFilesByAdminProjectId(@PathVariable Long projectId){
+		List<String> filesByProjectId = userService.getFilesByProjectId(projectId);
+		return new ResponseEntity<List<String>>(filesByProjectId,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getCompletedProjectsByFreelancer/{email}")
+	public ResponseEntity<Integer> getCompletedProjectsByFreelancer(@PathVariable String email){
+		int countOfCompletedProjects = userService.getCountOfCompletedProjects(email);
+		return new ResponseEntity<Integer>(countOfCompletedProjects,HttpStatus.OK);
+	}
+	
+	@GetMapping("/chartData/{email}")
+    public ResponseEntity<ChartData> getChartData(@PathVariable String email) {
+		ChartData chartData = userService.getChartData(email);
+		return new ResponseEntity<ChartData>(chartData,HttpStatus.OK);
+    }
+	
+	@GetMapping("/getall")
+	public ResponseEntity<List<User>> getAllUsers(){
+		List<User>u=userService.gellallUsers();
+		return new ResponseEntity<List<User>>(u,HttpStatus.OK);
+	}
+	
 }
 

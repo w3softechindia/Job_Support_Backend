@@ -78,9 +78,6 @@ public class AdminServiceImple implements AdminService {
 	@Autowired
 	private EmailUtil emailUtil;
 
-	@Autowired
-	private EmailUtil emailUtil;
-
 	@Override
 	public Admin register(Admin admin) throws InvalidIdException {
 		return adminRepository.save(admin);
@@ -174,7 +171,7 @@ public class AdminServiceImple implements AdminService {
 
 		// Retrieve the approved proposal linked to this freelancer's email
 		Optional<AdminApprovedProposal> approvedProposalOpt = adminApprovedProposalRepository
-				.findByFreelancerEmail(freelancerEmail);
+				.findFirstByFreelancer_Email(freelancerEmail);
 
 		// If an approved proposal is found, delete it
 		approvedProposalOpt.ifPresent(approvedProposal -> {

@@ -17,8 +17,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 	@Query(value = "UPDATE User u SET u.imageBytes = :imageBytes WHERE u.email = :email")
 	void saveImageBytes(String email, byte[] imageBytes);
 
-
-
 	List<User> findByRole(String role);
 
 	List<User> findByRoleAndStatus(String role, String status);

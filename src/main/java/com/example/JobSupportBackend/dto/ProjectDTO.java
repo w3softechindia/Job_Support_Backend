@@ -52,6 +52,8 @@ public class ProjectDTO {
 	private String working_status;
 
 	private String userEmail;
+	
+	private String project_status;
 
 	@ElementCollection
 	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))
