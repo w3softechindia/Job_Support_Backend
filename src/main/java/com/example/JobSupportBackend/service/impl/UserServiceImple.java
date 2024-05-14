@@ -159,6 +159,21 @@ public class UserServiceImple implements UserService {
 			return repo.save(user);
 		}
 	}
+	
+	
+	public String sendOTP1(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
+		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		if (user.isVerified()) {
+			String otp = otpUtil.generateOtp();
+			emailUtil.sendPasswordOtp(email, otp);
+			user.setOtp(otp);
+			user.setOtpGeneratedtime(LocalDateTime.now());
+			repo.save(user);
+			return "Otp sent....please verify within 1 minute";
+		} else {
+			throw new ResourceNotFoundException("User email is not Verified..!!!");
+		}
+	}
 
 	public String sendOTP1(String email)
 			throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
