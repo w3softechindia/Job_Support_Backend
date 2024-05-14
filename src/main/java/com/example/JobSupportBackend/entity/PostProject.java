@@ -91,6 +91,8 @@ public class PostProject {
 	
 	@Column(name = "working_status")
 	private String workingstatus;
+	
+	private String project_status;
 
 	@ElementCollection
 	@CollectionTable(name = "postproject_skills", joinColumns = @JoinColumn(name = "postproject_id"))

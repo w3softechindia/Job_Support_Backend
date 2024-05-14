@@ -26,8 +26,6 @@ public class AdminProjectController {
 	
 	@Autowired
 	private AdminProjectService adminProjectService;
-
-	
 	
 	@GetMapping("/getAllAdminProjects")
 	public ResponseEntity<List<ProjectDTO>> getAllProjectDetails() {
@@ -67,6 +65,7 @@ public class AdminProjectController {
 		projectDTO.setUserEmail(adminPostProject.getUser().getEmail());
 		projectDTO.setCity(adminPostProject.getUser().getCity());
 		projectDTO.setState(adminPostProject.getUser().getState());
+		projectDTO.setProject_status(adminPostProject.getProject_status());
 		return projectDTO;
 	}
 
@@ -95,7 +94,7 @@ public class AdminProjectController {
 			Optional<AdminPostProject> optionalProject = repoo.findById(projectId);
 			if (optionalProject.isPresent()) {
 				AdminPostProject adminPostProject = optionalProject.get();
-
+				adminPostProject.setProject_status("Pending");
 				// Update properties only if they are not null in the updatedProjectDTO
 				if (updatedProjectDTO.getProjectTitle() != null)
 					adminPostProject.setProject_title(updatedProjectDTO.getProjectTitle());

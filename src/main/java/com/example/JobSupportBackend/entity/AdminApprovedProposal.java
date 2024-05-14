@@ -31,6 +31,6 @@ public class AdminApprovedProposal {
 	private AdminPostProject adminPostProject;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "freelancer_id")
+	@JoinColumn(name = "freelancer_email")
 	private User freelancer;
 }
