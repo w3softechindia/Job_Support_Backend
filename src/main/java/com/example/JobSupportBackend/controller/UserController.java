@@ -499,5 +499,10 @@ public class UserController {
 		return new ResponseEntity<List<User>>(u,HttpStatus.OK);
 	}
 	
+	@GetMapping("/getCountOfOngoingProjects/{email}/{status}")
+	public ResponseEntity<Integer> getCountOfOngoingProjects(String email,String status){
+		int countOfOngoingProjects = userService.getCountOfOngoingProjects(email, status);
+		return new ResponseEntity<Integer>(countOfOngoingProjects,HttpStatus.OK);
+	}
 }
 

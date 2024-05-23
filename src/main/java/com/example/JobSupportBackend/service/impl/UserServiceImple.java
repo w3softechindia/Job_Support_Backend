@@ -31,6 +31,7 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.Certification;
 import com.example.JobSupportBackend.entity.ChartData;
@@ -1095,5 +1096,19 @@ public class UserServiceImple implements UserService {
 	public List<User> gellallUsers() {
 		List<User> findAll = repo.findAll();
 		return findAll;
+	}
+
+	@Override
+	public int getCountOfOngoingProjects(String email, String status) {
+	    List<AdminApprovedProposal> byFreelancerEmail = adminApprovedProposalRepository.findByFreelancer_Email(email);
+	    int count = 0;
+
+	    for (AdminApprovedProposal adminApprovedProposal : byFreelancerEmail) {
+	        if (adminApprovedProposal.getAdminPostProject().getProject_status().equals(status)) {
+	            count++;
+	        }
+	    }
+	    return count;
+
 	}
 }
