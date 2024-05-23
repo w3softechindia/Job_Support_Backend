@@ -55,7 +55,7 @@ public class SecurityConfugiration {
 						"/proposalApproval/all", "/getmainProjectId/*", "/onGoingProjects", "/expired",
 						"/rejectProject/*", "/ws/**", "/h2-console/**", "/chat/**", "/projectStatus/**",
 						"/completedProjects/*", "/getCompletedProjectsByFreelancer/*", "/chartData/*", "/send",
-						"/gett/*/*", "/getall", "/count", "/message/count", "/message/delete")
+						"/gett/*/*", "/getall", "/count", "/message/count", "/message/delete","/getCountOfOngoingProjects/**")
 
 						.permitAll().anyRequest().authenticated())
 

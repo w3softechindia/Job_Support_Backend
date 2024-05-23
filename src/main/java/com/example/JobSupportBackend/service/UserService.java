@@ -111,4 +111,6 @@ public interface UserService {
 	List<User> gellallUsers();
 
 	AdminPostProject projectStatus(String email, Long id, String status);
+	
+	public int getCountOfOngoingProjects(String email,String status);
 }
