@@ -34,30 +34,31 @@ public class SecurityConfugiration {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/authenticate", "/register", "/update/*",
-						"/persnolInfo/*", "/otherInfo/*", "/addUserData/*", "/getUser/*", "/employerInfo/*",
-						"/verify/**", "/sendOTP/*", "/verifyOTP/**", "/upload/*", "/resetPassword/**", "/photo/*",
-						"/regenerate-otp/*", "/adminRegister", "/adminLogin/**", "/updateFreelancer/*",
-						"/deleteSkill/*", "/email/*", "/change-password/***", "/postReason/*", "/files/*",
-						"/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*", "/adminRegister", "/adminLogin/**",
-						"/postPortfolio/*", "/getPortfolios/*", "/images/**", "getallProjects", "/updatedprojectIds",
-						"/gettingupdatedprojectIds", "/updatePortfolio/**", "/deletePortfolio/**",
-						"/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects", "/filesGet/*", "/files/*",
-						"/projects/*", "/changeStatus/*", "/deleteUser/*", "/getAllUsersByStatus/**", "/active/*",
-						"/deactivated/*", "/getAdminProjectById/*", "/updateAdminProject/*", "/totalUsersByRole/*",
-						"/accountStatus/*", "/getProjectById/*", "/sendProposal/**", "/getProposals/*",
-						"/getProposalById/*", "/updateProposal/*", "/deleteProposal/*", "/getProjectsOfAdmin",
-						"/getProposalsByProjectId/*", "/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*",
-						"/uploadPhotoToS3", "/check-email", "/unpublished", "/status/toggle/*", "/expired/*",
-						"/getProjectsByIds", "/updateProject/*", "/proposalApproval/**", "/rejectProposal/**",
-						"/set-complete", "/set-ongoing", "/getOngoingProjectIds", "/getCompletedProjectIds",
-						"/proposalApproval/all", "/getmainProjectId/*", "/onGoingProjects", "/expired",
-						"/rejectProject/*", "/ws/**", "/h2-console/**", "/chat/**", "/projectStatus/**",
-						"/completedProjects/*", "/getCompletedProjectsByFreelancer/*", "/chartData/*", "/send",
-						"/gett/*/*", "/getall", "/count", "/message/count", "/message/delete","/getCountOfOngoingProjects/**")
+		httpSecurity.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers("/authenticate", "/register", "/update/*", "/persnolInfo/*", "/otherInfo/*",
+						"/addUserData/*", "/getUser/*", "/employerInfo/*", "/verify/**", "/sendOTP/*", "/verifyOTP/**",
+						"/upload/*", "/resetPassword/**", "/photo/*", "/regenerate-otp/*", "/adminRegister",
+						"/adminLogin/**", "/updateFreelancer/*", "/deleteSkill/*", "/email/*", "/change-password/***",
+						"/postReason/*", "/files/*", "/addproject/*", "/regenerate-otp/*", "/updateFreelancer/*",
+						"/adminRegister", "/adminLogin/**", "/postPortfolio/*", "/getPortfolios/*", "/images/**",
+						"getallProjects", "/updatedprojectIds", "/gettingupdatedprojectIds", "/updatePortfolio/**",
+						"/deletePortfolio/**", "/getPortByEmail&Title/**", "/getAllUsers/*", "/getAllAdminProjects",
+						"/filesGet/*", "/files/*", "/projects/*", "/changeStatus/*", "/deleteUser/*",
+						"/getAllUsersByStatus/**", "/active/*", "/deactivated/*", "/getAdminProjectById/*",
+						"/updateAdminProject/*", "/totalUsersByRole/*", "/accountStatus/*", "/getProjectById/*",
+						"/sendProposal/**", "/getProposals/*", "/getProposalById/*", "/updateProposal/*",
+						"/deleteProposal/*", "/getProjectsOfAdmin", "/getProposalsByProjectId/*",
+						"/updateInfoForEmployeerDashBoard/*", "/photoUpdate/*", "/uploadPhotoToS3", "/check-email",
+						"/unpublished", "/status/toggle/*", "/expired/*", "/getProjectsByIds", "/updateProject/*",
+						"/proposalApproval/**", "/rejectProposal/**", "/set-complete", "/set-ongoing",
+						"/getOngoingProjectIds", "/getCompletedProjectIds", "/proposalApproval/all",
+						"/getmainProjectId/*", "/onGoingProjects", "/expired", "/rejectProject/*", "/ws/**",
+						"/h2-console/**", "/chat/**", "/projectStatus/**", "/completedProjects/*",
+						"/getCompletedProjectsByFreelancer/*", "/chartData/*", "/send", "/gett/*/*", "/getall",
+						"/count", "/message/count", "/message/delete", "/getCountOfOngoingProjects/**",
+						"/completedPprojects", "/add/reviews/*", "/log/credits/*", "/reviewsOfFreelancer/*")
 
-						.permitAll().anyRequest().authenticated())
+				.permitAll().anyRequest().authenticated())
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
