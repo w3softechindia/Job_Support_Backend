@@ -1127,5 +1127,4 @@ public class UserServiceImple implements UserService {
 		List<Review> list = reviewRepository.findByFreelancer(email);
 		return list;
 	}
-
 }
