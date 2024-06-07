@@ -29,6 +29,7 @@ import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
@@ -462,47 +463,76 @@ public class UserController {
 			return ResponseEntity.internalServerError().body(null);
 		}
 	}
-	
+
 	@PutMapping("/projectStatus/{email}/{id}/{status}")
-	public ResponseEntity<AdminPostProject> projectStatus(@PathVariable String email, @PathVariable Long id, @PathVariable String status){
-		AdminPostProject projectStatus = userService.projectStatus(email,id, status);
-		return new ResponseEntity<AdminPostProject>(projectStatus,HttpStatus.ACCEPTED);
+	public ResponseEntity<AdminPostProject> projectStatus(@PathVariable String email, @PathVariable Long id,
+			@PathVariable String status) {
+		AdminPostProject projectStatus = userService.projectStatus(email, id, status);
+		return new ResponseEntity<AdminPostProject>(projectStatus, HttpStatus.ACCEPTED);
 	}
-	
+
 	@GetMapping("/completedProjects/{email}")
-	public ResponseEntity<List<CompletedProjects>> completedProjects(@PathVariable String email){
+	public ResponseEntity<List<CompletedProjects>> completedProjects(@PathVariable String email) {
 		List<CompletedProjects> completedProjects = userService.completedProjects(email);
-		return new ResponseEntity<List<CompletedProjects>>(completedProjects,HttpStatus.OK);
+		return new ResponseEntity<List<CompletedProjects>>(completedProjects, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getFilesByAdminProjectId/{projectId}")
-	public ResponseEntity<List<String>> getFilesByAdminProjectId(@PathVariable Long projectId){
+	public ResponseEntity<List<String>> getFilesByAdminProjectId(@PathVariable Long projectId) {
 		List<String> filesByProjectId = userService.getFilesByProjectId(projectId);
-		return new ResponseEntity<List<String>>(filesByProjectId,HttpStatus.OK);
+		return new ResponseEntity<List<String>>(filesByProjectId, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getCompletedProjectsByFreelancer/{email}")
-	public ResponseEntity<Integer> getCompletedProjectsByFreelancer(@PathVariable String email){
+	public ResponseEntity<Integer> getCompletedProjectsByFreelancer(@PathVariable String email) {
 		int countOfCompletedProjects = userService.getCountOfCompletedProjects(email);
-		return new ResponseEntity<Integer>(countOfCompletedProjects,HttpStatus.OK);
+		return new ResponseEntity<Integer>(countOfCompletedProjects, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/chartData/{email}")
-    public ResponseEntity<ChartData> getChartData(@PathVariable String email) {
+	public ResponseEntity<ChartData> getChartData(@PathVariable String email) {
 		ChartData chartData = userService.getChartData(email);
-		return new ResponseEntity<ChartData>(chartData,HttpStatus.OK);
-    }
-	
+		return new ResponseEntity<ChartData>(chartData, HttpStatus.OK);
+	}
+
 	@GetMapping("/getall")
-	public ResponseEntity<List<User>> getAllUsers(){
-		List<User>u=userService.gellallUsers();
-		return new ResponseEntity<List<User>>(u,HttpStatus.OK);
+	public ResponseEntity<List<User>> getAllUsers() {
+		List<User> u = userService.gellallUsers();
+		return new ResponseEntity<List<User>>(u, HttpStatus.OK);
+	}
+
+	@GetMapping("/getCountOfOngoingProjects/{email}/{status}")
+	public ResponseEntity<Integer> getCountOfOngoingProjects(String email, String status) {
+		int countOfOngoingProjects = userService.getCountOfOngoingProjects(email, status);
+		return new ResponseEntity<Integer>(countOfOngoingProjects, HttpStatus.OK);
+	}
+
+//	@GetMapping("/completedPprojects")
+//	    public List<CompletedProjects> getCompletedProjectsByEmployerEmail(@RequestBody Map<String, String> requestBody) {
+//	        String email = requestBody.get("email");
+//	        return userService.getCompletedProjectsByEmployerEmail(email);
+//	    }
+
+	@GetMapping("/completedPprojects")
+	public ResponseEntity<List<CompletedProjects>> getCompletedProjectsByEmployerEmail(@RequestParam String email) {
+		if (email == null || email.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email parameter is missing");
+		}
+
+		try {
+			List<CompletedProjects> projects = userService.getCompletedProjectsByEmployerEmail(email);
+			if (projects == null || projects.isEmpty()) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No projects found for the given email.");
+			}
+			return new ResponseEntity<>(projects, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to fetch completed projects", e);
+		}
 	}
 	
-	@GetMapping("/getCountOfOngoingProjects/{email}/{status}")
-	public ResponseEntity<Integer> getCountOfOngoingProjects(String email,String status){
-		int countOfOngoingProjects = userService.getCountOfOngoingProjects(email, status);
-		return new ResponseEntity<Integer>(countOfOngoingProjects,HttpStatus.OK);
+	@GetMapping("/reviewsOfFreelancer/{email}")
+	public ResponseEntity<List<Review>> findByFreelancer(@PathVariable String email){
+		List<Review> allFreelancerReviews = userService.getAllFreelancerReviews(email);
+		return new ResponseEntity<List<Review>>(allFreelancerReviews,HttpStatus.ACCEPTED);
 	}
 }
-

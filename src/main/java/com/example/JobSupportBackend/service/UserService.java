@@ -15,6 +15,7 @@ import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
+import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
@@ -27,10 +28,10 @@ public interface UserService {
 	public User register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException;
 
 	public User getDetails(String email);
-	
+
 	public List<User> getAllUsers(String role);
-	
-	public List<User> getAllUsersByStatus(String role,String status);
+
+	public List<User> getAllUsersByStatus(String role, String status);
 
 	public User updateRole(String email, String newRole) throws Exception;
 
@@ -42,9 +43,11 @@ public interface UserService {
 
 	public User verifyAccount(String email, String otp) throws Exception;
 
-	public String regenerateOtp(String email) throws MessagingException, InvalidIdException, UnsupportedEncodingException;
+	public String regenerateOtp(String email)
+			throws MessagingException, InvalidIdException, UnsupportedEncodingException;
 
-	String sendOTP(String email) throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException;
+	String sendOTP(String email)
+			throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException;
 
 	Boolean verifyOTP(String email, String otp) throws InvalidIdException;
 
@@ -79,38 +82,43 @@ public interface UserService {
 	int getActiveUsersCount(String role);
 
 	int getDeactivatedUsersCount(String role);
-	
+
 	public String getUserAccountStatus(String email) throws InvalidIdException;
-	
+
 	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal);
-	
+
 	public List<SendProposal> getProposals(String email);
-	
+
 	public SendProposal getProposalById(int proposalId) throws ResourceNotFoundException;
-	
+
 	public SendProposal updateProposals(int proposalId, SendProposal sendProposal) throws ResourceNotFoundException;
-	
+
 	public String deleteProposal(int proposalId);
-	
+
 	List<SendProposal> getProposalsByProjectId(Long id);
-	
+
 	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
-	
+
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
-	
+
 	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException;
-		
+
 	public List<CompletedProjects> completedProjects(String email);
-	
+
 	public List<String> getFilesByProjectId(Long projectId);
-	
+
 	public int getCountOfCompletedProjects(String email);
-	
+
 	public ChartData getChartData(String email);
-	
+
 	List<User> gellallUsers();
 
 	AdminPostProject projectStatus(String email, Long id, String status);
+
+	public int getCountOfOngoingProjects(String email, String status);
+
+	List<CompletedProjects> getCompletedProjectsByEmployerEmail(String email);
 	
-	public int getCountOfOngoingProjects(String email,String status);
+	public List<Review> getAllFreelancerReviews(String email);
+
 }

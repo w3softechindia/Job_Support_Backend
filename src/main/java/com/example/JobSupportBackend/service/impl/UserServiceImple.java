@@ -43,6 +43,7 @@ import com.example.JobSupportBackend.entity.Language;
 import com.example.JobSupportBackend.entity.Milestone;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.ProjectFile;
+import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
 import com.example.JobSupportBackend.entity.User;
@@ -61,6 +62,7 @@ import com.example.JobSupportBackend.repo.MilestoneRepository;
 import com.example.JobSupportBackend.repo.PortfolioRepository;
 import com.example.JobSupportBackend.repo.ProjectFileRepository;
 import com.example.JobSupportBackend.repo.ProposalsRepository;
+import com.example.JobSupportBackend.repo.ReviewRepository;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.UserService;
@@ -122,6 +124,9 @@ public class UserServiceImple implements UserService {
 
 	@Autowired
 	private CompletedProjectRepository completedProjectRepository;
+	
+	@Autowired
+	private ReviewRepository reviewRepository;
 
 	@Value("${aws.bucketName}")
 	private String bucketName;
@@ -1029,7 +1034,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	@Transactional
-	public AdminPostProject projectStatus(String email,Long id, String status) {
+	public AdminPostProject projectStatus(String email, Long id, String status) {
 		AdminPostProject adminPostProject = adminPostProjectRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 
@@ -1085,7 +1090,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	public ChartData getChartData(String email) {
 		long[] series = { proposalsRepository.countByUserEmail(email),
-				proposalsRepository.countByProposalStatusAndUserEmail("Approved",email),
+				proposalsRepository.countByProposalStatusAndUserEmail("Approved", email),
 				completedProjectRepository.countByFreelancer(email),
 				adminApprovedProposalRepository.countByFreelancerEmailAndPendingStatus(email) };
 		String[] labels = { "Proposals", "Approved Proposals", "Completed Jobs", "Ongoing Jobs" };
@@ -1100,15 +1105,26 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public int getCountOfOngoingProjects(String email, String status) {
-	    List<AdminApprovedProposal> byFreelancerEmail = adminApprovedProposalRepository.findByFreelancer_Email(email);
-	    int count = 0;
+		List<AdminApprovedProposal> byFreelancerEmail = adminApprovedProposalRepository.findByFreelancer_Email(email);
+		int count = 0;
 
-	    for (AdminApprovedProposal adminApprovedProposal : byFreelancerEmail) {
-	        if (adminApprovedProposal.getAdminPostProject().getProject_status().equals(status)) {
-	            count++;
-	        }
-	    }
-	    return count;
+		for (AdminApprovedProposal adminApprovedProposal : byFreelancerEmail) {
+			if (adminApprovedProposal.getAdminPostProject().getProject_status().equals(status)) {
+				count++;
+			}
+		}
+		return count;
 
+	}
+
+	@Override
+	public List<CompletedProjects> getCompletedProjectsByEmployerEmail(String email) {
+		return completedProjectRepository.findByEmployerEmail(email);
+	}
+
+	@Override
+	public List<Review> getAllFreelancerReviews(String email) {
+		List<Review> list = reviewRepository.findByFreelancer(email);
+		return list;
 	}
 }
