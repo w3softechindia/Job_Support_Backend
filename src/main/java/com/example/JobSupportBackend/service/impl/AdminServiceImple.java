@@ -8,14 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.EmailUtil.EmailUtil;
+import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.AdminPostProject;
+import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.PostProject;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.AccountDeletionRequestsRepository;
 import com.example.JobSupportBackend.repo.AdminApprovedProposalRepository;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.AdminRepository;
@@ -58,7 +61,7 @@ public class AdminServiceImple implements AdminService {
 	private LanguageRepository languageRepository;
 
 	@Autowired
-	private DeletedAccountsRepository accountsRepository;
+	private AccountDeletionRequestsRepository accountsRepository;
 
 	@Autowired
 	private PortfolioRepository portfolioRepository;
@@ -74,6 +77,9 @@ public class AdminServiceImple implements AdminService {
 	
 	@Autowired
 	private ProjectRepo projectRepo;
+	
+	@Autowired
+	private DeletedAccountsRepository deletedAccountsRepository;
 
 	@Autowired
 	private EmailUtil emailUtil;
@@ -194,6 +200,18 @@ public class AdminServiceImple implements AdminService {
 			return "Project Rejected Succesfully";
 		}
 		return "No Projects Found";
+	}
+
+	@Override
+	public String deleteAccount(String email,String status) throws InvalidIdException {
+//		User user = userRepository.findById(email).orElseThrow(()->new InvalidIdException("Employee Id not found...!!!!"));
+		AccountDeletionRequests requests = accountsRepository.findById(email).orElseThrow(()->new InvalidIdException("Employee Id not found...!!!!"));
+		DeletedAccounts deletedAccounts=new DeletedAccounts();
+		deletedAccounts.setEmail(requests.getEmail());
+		deletedAccounts.setReason(requests.getReason());
+		deletedAccounts.setStatus(status);
+		
+		return "Deleted Successfully....!!!!!";
 	}
 
 }

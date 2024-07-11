@@ -6,14 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class DeletedAccounts {
+@NoArgsConstructor
+public class AccountDeletionRequests {
 	
+	String reason;
 	@Id
 	String email;
-	String reason;
-	String status;
+	String password;
 }

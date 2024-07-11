@@ -31,12 +31,12 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.Certification;
 import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
-import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Education;
 import com.example.JobSupportBackend.entity.Experience;
 import com.example.JobSupportBackend.entity.Language;
@@ -50,11 +50,11 @@ import com.example.JobSupportBackend.entity.User;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
+import com.example.JobSupportBackend.repo.AccountDeletionRequestsRepository;
 import com.example.JobSupportBackend.repo.AdminApprovedProposalRepository;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.CertificationRepository;
 import com.example.JobSupportBackend.repo.CompletedProjectRepository;
-import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
@@ -102,7 +102,7 @@ public class UserServiceImple implements UserService {
 	private LanguageRepository languageRepository;
 
 	@Autowired
-	private DeletedAccountsRepository accountsRepository;
+	private AccountDeletionRequestsRepository accountsRepository;
 
 	@Autowired
 	private PortfolioRepository portfolioRepository;
@@ -486,7 +486,7 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException {
+	public void postReason(String email, AccountDeletionRequests deletedAccounts) throws InvalidIdException {
 		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
 		if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
 			deletedAccounts.setEmail(email);

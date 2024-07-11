@@ -3,6 +3,7 @@ package com.example.JobSupportBackend.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
 import com.example.JobSupportBackend.entity.User;
@@ -28,4 +29,6 @@ public interface AdminService {
 	List<AdminApprovedProposal> getAllApprovedProposals();
 
 	String rejectProjectToEmployer(Long projectId) throws MessagingException, UnsupportedEncodingException;
+	
+	String deleteAccount(String email,String status) throws InvalidIdException;
 }
