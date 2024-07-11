@@ -24,6 +24,7 @@ import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
 import com.example.JobSupportBackend.dto.UserDataDTO;
+import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
@@ -302,7 +303,7 @@ public class UserController {
 	}
 
 	@PostMapping("/postReason/{email}")
-	public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody DeletedAccounts accounts) {
+	public ResponseEntity<String> postReason(@PathVariable String email, @RequestBody AccountDeletionRequests accounts) {
 		try {
 			userService.postReason(email, accounts);
 			return ResponseEntity.ok("Reason posted successfully for email: " + email);

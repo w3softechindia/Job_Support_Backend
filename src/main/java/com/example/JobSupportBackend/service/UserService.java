@@ -10,10 +10,10 @@ import com.example.JobSupportBackend.dto.EmployerInfo;
 import com.example.JobSupportBackend.dto.Otherinfo;
 import com.example.JobSupportBackend.dto.PersonalInfo;
 import com.example.JobSupportBackend.dto.Register;
+import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
-import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
@@ -63,7 +63,7 @@ public interface UserService {
 
 	void changePassword(String email, String password, String newPassword);
 
-	public void postReason(String email, DeletedAccounts deletedAccounts) throws InvalidIdException;
+	public void postReason(String email, AccountDeletionRequests requests) throws InvalidIdException;
 
 	public Portfolio addPortfolio(String email, Portfolio portfolio, MultipartFile multipartFile)
 			throws ResourceNotFoundException, IOException;

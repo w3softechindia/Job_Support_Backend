@@ -8,6 +8,4 @@ import com.example.JobSupportBackend.entity.DeletedAccounts;
 @Repository
 public interface DeletedAccountsRepository extends JpaRepository<DeletedAccounts, String>{
 
-	void deleteById(String email);
-	
 }
