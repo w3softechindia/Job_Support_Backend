@@ -111,15 +111,17 @@
                     </excludes>
                 </configuration>
             </plugin>
-           <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <release>17</release>
-                </configuration>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.12.0</version> <!-- Updated version -->
+            <configuration>
+                <source>17</source>
+                <target>17</target>
+                <release>17</release> <!-- Added release configuration -->
+            </configuration>
+        </plugin>
+
             <plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
