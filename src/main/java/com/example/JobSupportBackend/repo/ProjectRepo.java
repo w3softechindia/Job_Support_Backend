@@ -12,7 +12,7 @@ import com.example.JobSupportBackend.entity.PostProject;
 @Repository
 public interface ProjectRepo extends JpaRepository<PostProject, Long> {
 
-	List<PostProject> findByUserEmail(String userEmail);
+	List<PostProject> findByUsersEmail(String userEmail);
 
 	@Query("SELECT p.id FROM PostProject p WHERE p.status = 'false'")
 	List<Long> findIdsByStatusFalse();

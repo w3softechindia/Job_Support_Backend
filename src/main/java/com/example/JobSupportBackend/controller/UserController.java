@@ -28,11 +28,10 @@ import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.ChartData;
 import com.example.JobSupportBackend.entity.CompletedProjects;
-import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
@@ -72,14 +71,14 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@PostMapping("/register")
-	public ResponseEntity<User> register(@RequestBody Register user)
+	public ResponseEntity<Users> register(@RequestBody Register user)
 			throws InvalidIdException, MessagingException, UnsupportedEncodingException {
-		return new ResponseEntity<User>(userService.register(user), HttpStatus.CREATED);
+		return new ResponseEntity<Users>(userService.register(user), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/verify/{email}/{otp}")
-	public ResponseEntity<User> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {
-		return new ResponseEntity<User>(userService.verifyAccount(email, otp), HttpStatus.OK);
+	public ResponseEntity<Users> verifyAccount(@PathVariable String email, @PathVariable String otp) throws Exception {
+		return new ResponseEntity<Users>(userService.verifyAccount(email, otp), HttpStatus.OK);
 	}
 
 	@PutMapping("/regenerate-otp/{email}")
@@ -89,15 +88,15 @@ public class UserController {
 	}
 
 	@PutMapping("/update/{email}")
-	public ResponseEntity<User> role(@PathVariable String email, @RequestParam String newRole) throws Exception {
-		User user = userService.updateRole(email, newRole);
+	public ResponseEntity<Users> role(@PathVariable String email, @RequestParam String newRole) throws Exception {
+		Users user = userService.updateRole(email, newRole);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	@PutMapping("/persnolInfo/{email}")
-	public ResponseEntity<User> personalInfo(@PathVariable String email, @RequestBody PersonalInfo personalInfo)
+	public ResponseEntity<Users> personalInfo(@PathVariable String email, @RequestBody PersonalInfo personalInfo)
 			throws Exception {
-		return new ResponseEntity<User>(userService.updatePersonalInfo(personalInfo, email), HttpStatus.ACCEPTED);
+		return new ResponseEntity<Users>(userService.updatePersonalInfo(personalInfo, email), HttpStatus.ACCEPTED);
 	}
 
 //	@PostMapping("/upload/{email}")
@@ -154,10 +153,10 @@ public class UserController {
 	}
 
 	@PutMapping("/updateInfoForEmployeerDashBoard/{email}")
-	public ResponseEntity<User> updateInfoForEmployeerDashBoard(@PathVariable String email,
-			@RequestBody User updatedUser) {
+	public ResponseEntity<Users> updateInfoForEmployeerDashBoard(@PathVariable String email,
+			@RequestBody Users updatedUser) {
 		try {
-			User updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
+			Users updatedUserInfo = userService.updateInfoForEmployeerDashBoard(email, updatedUser);
 			return new ResponseEntity<>(updatedUserInfo, HttpStatus.ACCEPTED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -192,13 +191,13 @@ public class UserController {
 	}
 
 	@PutMapping("/otherInfo/{email}")
-	public ResponseEntity<User> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
+	public ResponseEntity<Users> otherInfo(@PathVariable String email, @RequestBody Otherinfo otherinfo)
 			throws Exception {
-		return new ResponseEntity<User>(userService.otherinfo(otherinfo, email), HttpStatus.ACCEPTED);
+		return new ResponseEntity<Users>(userService.otherinfo(otherinfo, email), HttpStatus.ACCEPTED);
 	}
 
 	@PostMapping("/addUserData/{email}")
-	public ResponseEntity<User> addUserData(@PathVariable String email, @RequestBody UserDataDTO dataDTO) {
+	public ResponseEntity<Users> addUserData(@PathVariable String email, @RequestBody UserDataDTO dataDTO) {
 		try {
 			if (dataDTO.getSkills() != null) {
 				skillsService.addSkills(email, dataDTO.getSkills());
@@ -216,7 +215,7 @@ public class UserController {
 				languageService.addLanguages(email, dataDTO.getLanguages());
 			}
 
-			User user = userService.getUserByEmail(email);
+			Users user = userService.getUserByEmail(email);
 			return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Return an empty body or any
@@ -225,8 +224,8 @@ public class UserController {
 	}
 
 	@GetMapping("/getUser/{email}")
-	public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-		User user = userService.getUserByEmail(email);
+	public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+		Users user = userService.getUserByEmail(email);
 		if (user != null) {
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		} else
@@ -234,16 +233,16 @@ public class UserController {
 	}
 
 	@PutMapping("/employerInfo/{email}")
-	public ResponseEntity<User> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
+	public ResponseEntity<Users> employerInfo(@PathVariable String email, @RequestBody EmployerInfo employerInfo)
 			throws Exception {
-		return new ResponseEntity<User>(userService.employerInfo(employerInfo, email), HttpStatus.ACCEPTED);
+		return new ResponseEntity<Users>(userService.employerInfo(employerInfo, email), HttpStatus.ACCEPTED);
 	}
 
 	@PutMapping("/resetPassword/{email}/{password}")
-	public ResponseEntity<User> resetPassword(@PathVariable String email, @PathVariable String password)
+	public ResponseEntity<Users> resetPassword(@PathVariable String email, @PathVariable String password)
 			throws Exception {
 		if (email != null && password != null) {
-			return new ResponseEntity<User>(userService.resetPassword(email, password), HttpStatus.OK);
+			return new ResponseEntity<Users>(userService.resetPassword(email, password), HttpStatus.OK);
 		} else {
 			throw new Exception("Credentials cant be null");
 
@@ -275,9 +274,9 @@ public class UserController {
 	}
 
 	@PutMapping("/updateFreelancer/{email}")
-	public ResponseEntity<User> updateUserByEmail(@PathVariable String email, @RequestBody User updatedUserData) {
+	public ResponseEntity<Users> updateUserByEmail(@PathVariable String email, @RequestBody Users updatedUserData) {
 		try {
-			User updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
+			Users updatedUser = userService.updateFreelancerDetails(email, updatedUserData);
 			return ResponseEntity.ok(updatedUser);
 		} catch (InvalidIdException e) {
 			return ResponseEntity.notFound().build();
@@ -380,14 +379,14 @@ public class UserController {
 	}
 
 	@GetMapping("/getAllUsers/{role}")
-	public ResponseEntity<List<User>> getAllUsers(@PathVariable String role) {
-		List<User> allUsers = userService.getAllUsers(role);
+	public ResponseEntity<List<Users>> getAllUsers(@PathVariable String role) {
+		List<Users> allUsers = userService.getAllUsers(role);
 		return ResponseEntity.ok(allUsers);
 	}
 
 	@GetMapping("/getAllUsersByStatus/{role}/{status}")
-	public ResponseEntity<List<User>> getUserByStatus(@PathVariable String role, @PathVariable String status) {
-		List<User> allUsersByStatus = userService.getAllUsersByStatus(role, status);
+	public ResponseEntity<List<Users>> getUserByStatus(@PathVariable String role, @PathVariable String status) {
+		List<Users> allUsersByStatus = userService.getAllUsersByStatus(role, status);
 		return ResponseEntity.ok(allUsersByStatus);
 	}
 
@@ -497,9 +496,9 @@ public class UserController {
 	}
 
 	@GetMapping("/getall")
-	public ResponseEntity<List<User>> getAllUsers() {
-		List<User> u = userService.gellallUsers();
-		return new ResponseEntity<List<User>>(u, HttpStatus.OK);
+	public ResponseEntity<List<Users>> getAllUsers() {
+		List<Users> u = userService.gellallUsers();
+		return new ResponseEntity<List<Users>>(u, HttpStatus.OK);
 	}
 
 	@GetMapping("/getCountOfOngoingProjects/{email}/{status}")

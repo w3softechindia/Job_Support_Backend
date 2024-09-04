@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.JobSupportBackend.dto.ApprovedProposalDTO;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.service.AdminService;
@@ -44,9 +44,9 @@ public class AdminController {
 	}
 
 	@PutMapping("/changeStatus/{email}")
-	public ResponseEntity<User> updateStatusByEmail(@PathVariable String email, @RequestParam String status)
+	public ResponseEntity<Users> updateStatusByEmail(@PathVariable String email, @RequestParam String status)
 			throws ResourceNotFoundException {
-		User updatedUser = adminService.setStatus(email, status);
+		Users updatedUser = adminService.setStatus(email, status);
 		if (updatedUser != null) {
 			return ResponseEntity.ok(updatedUser);
 		} else {

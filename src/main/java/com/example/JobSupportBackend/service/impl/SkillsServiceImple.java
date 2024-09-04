@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.entity.Skills;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.SkillsRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -23,10 +23,10 @@ public class SkillsServiceImple implements SkillsService {
 
 	@Override
 	public void addSkills(String userEmail, List<Skills> skills) throws InvalidIdException {
-		User user = userRepository.findByEmail(userEmail);
+		Users user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			skills.forEach(skill->{
-				skill.setUser(user);
+				skill.setUsers(user);
 				skillsRepository.save(skill);
 			});
 		}else {

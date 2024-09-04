@@ -10,7 +10,7 @@ import com.example.JobSupportBackend.entity.Education;
 @Repository
 public interface EducationRepository extends JpaRepository<Education, Integer>{
 
-	List<Education> findByUserEmail(String email);
+	List<Education> findByUsersEmail(String email);
 
-	void deleteByUserEmail(String email);
+	void deleteByUsersEmail(String email);
 }

@@ -98,7 +98,7 @@ public class ProjectController {
 		AdminPostProject adminProject = new AdminPostProject();
 
 		adminProject.setProject_id(savedProject.getId());
-		adminProject.setUser(savedProject.getUser());
+		adminProject.setUser(savedProject.getUsers());
 		adminProject.setProject_title(savedProject.getProject_title());
 		adminProject.setProject_category(savedProject.getProject_category());
 		adminProject.setProject_duration(savedProject.getProject_duration());
@@ -303,7 +303,7 @@ public class ProjectController {
 		ProjectDTO response = new ProjectDTO();
 		response.setId(project.getId());
 		response.setProjectTitle(project.getProject_title());
-		response.setUserEmail(project.getUser().getEmail());
+		response.setUserEmail(project.getUsers().getEmail());
 
 		response.setProjectCategory(project.getProject_category());
 		response.setProject_duration(project.getProject_duration());

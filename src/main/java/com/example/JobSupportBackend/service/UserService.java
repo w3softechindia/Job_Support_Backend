@@ -17,7 +17,7 @@ import com.example.JobSupportBackend.entity.CompletedProjects;
 import com.example.JobSupportBackend.entity.Portfolio;
 import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 
@@ -25,23 +25,23 @@ import jakarta.mail.MessagingException;
 
 public interface UserService {
 
-	public User register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException;
+	public Users register(Register register) throws InvalidIdException, MessagingException, UnsupportedEncodingException;
 
-	public User getDetails(String email);
+	public Users getDetails(String email);
 
-	public List<User> getAllUsers(String role);
+	public List<Users> getAllUsers(String role);
 
-	public List<User> getAllUsersByStatus(String role, String status);
+	public List<Users> getAllUsersByStatus(String role, String status);
 
-	public User updateRole(String email, String newRole) throws Exception;
+	public Users updateRole(String email, String newRole) throws Exception;
 
-	public User otherinfo(Otherinfo otherInfo, String email) throws Exception;
+	public Users otherinfo(Otherinfo otherInfo, String email) throws Exception;
 
-	public User updateFreelancerDetails(String email, User user) throws InvalidIdException;
+	public Users updateFreelancerDetails(String email, Users user) throws InvalidIdException;
 
-	public User employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException;
+	public Users employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException;
 
-	public User verifyAccount(String email, String otp) throws Exception;
+	public Users verifyAccount(String email, String otp) throws Exception;
 
 	public String regenerateOtp(String email)
 			throws MessagingException, InvalidIdException, UnsupportedEncodingException;
@@ -51,11 +51,11 @@ public interface UserService {
 
 	Boolean verifyOTP(String email, String otp) throws InvalidIdException;
 
-	User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception;
+	Users updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception;
 
-	User resetPassword(String email, String password) throws InvalidIdException;
+	Users resetPassword(String email, String password) throws InvalidIdException;
 
-	public User getUserByEmail(String email);
+	public Users getUserByEmail(String email);
 
 	void updateUserImagePathAndStoreInDatabase(String email, MultipartFile file) throws IOException;
 
@@ -97,7 +97,7 @@ public interface UserService {
 
 	List<SendProposal> getProposalsByProjectId(Long id);
 
-	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception;
+	public Users updateInfoForEmployeerDashBoard(String email, Users updatedUser) throws Exception;
 
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException;
 
@@ -111,7 +111,7 @@ public interface UserService {
 
 	public ChartData getChartData(String email);
 
-	List<User> gellallUsers();
+	List<Users> gellallUsers();
 
 	AdminPostProject projectStatus(String email, Long id, String status);
 

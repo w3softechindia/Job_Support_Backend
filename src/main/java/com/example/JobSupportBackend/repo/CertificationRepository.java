@@ -10,8 +10,8 @@ import com.example.JobSupportBackend.entity.Certification;
 @Repository
 public interface CertificationRepository extends JpaRepository<Certification, Integer>{
 
-	List<Certification> findByUserEmail(String email);
+	List<Certification> findByUsersEmail(String email);
 
-	void deleteByUserEmail(String email);
+	void deleteByUsersEmail(String email);
 	
 }

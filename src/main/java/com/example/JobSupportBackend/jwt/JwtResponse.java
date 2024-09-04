@@ -1,6 +1,6 @@
 package com.example.JobSupportBackend.jwt;
 
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JwtResponse {
 	
-	private User user;
+	private Users user;
 	private String jwtToken;
 }

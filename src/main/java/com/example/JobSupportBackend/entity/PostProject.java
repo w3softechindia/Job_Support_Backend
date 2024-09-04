@@ -36,8 +36,7 @@ public class PostProject {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
-	private User user;
+	private Users users;
 
 	@Column(name = "project_title")
 	private String project_title;

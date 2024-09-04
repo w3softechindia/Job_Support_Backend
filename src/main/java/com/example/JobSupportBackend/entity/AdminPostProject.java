@@ -36,8 +36,7 @@ public class AdminPostProject {
 	private Long project_id; // Declare projectId property
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
-	private User user;
+	private Users user;
 
 	@Column(name = "project_title")
 	private String project_title;

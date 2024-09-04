@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.dto.ProjectDTO;
 import com.example.JobSupportBackend.entity.PostProject;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.repo.ProjectRepo;
 import com.example.JobSupportBackend.repo.UserRepository;
 import com.example.JobSupportBackend.service.ProjectService;
@@ -38,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public PostProject saveProject(PostProject project, String userEmail) {
 		// Fetch the user by email
-		User user = urp.findByEmail(userEmail);
+		Users user = urp.findByEmail(userEmail);
 		if (user == null) {
 			// Handle case where user does not exist
 			throw new IllegalArgumentException("User with email " + userEmail + " does not exist.");
@@ -46,7 +46,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 		// Set the user for the project
 		project.setProject_status("Pending");
-		project.setUser(user);
+		project.setUsers(user);
 
 		// Your existing logic for parsing and setting attributes goes here...
 
@@ -56,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<PostProject> getProjectsByUserEmail(String userEmail) {
-		return postProjectRepository.findByUserEmail(userEmail);
+		return postProjectRepository.findByUsersEmail(userEmail);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<Long> getExpiredProjectIdsByUserEmail(String userEmail) {
 		List<Long> expiredProjectIds = new ArrayList<>();
-		List<PostProject> projects = postProjectRepository.findByUserEmail(userEmail);
+		List<PostProject> projects = postProjectRepository.findByUsersEmail(userEmail);
 		Date currentDate = new Date();
 
 		for (PostProject project : projects) {

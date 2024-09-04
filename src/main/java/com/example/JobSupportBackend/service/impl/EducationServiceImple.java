@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.entity.Education;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -22,10 +22,10 @@ public class EducationServiceImple implements EducationService{
 
 	@Override
 	public void addEducations(String userEmail, List<Education> educations) throws InvalidIdException {
-		User user = userRepository.findByEmail(userEmail);
+		Users user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			educations.forEach(education->{
-				education.setUser(user);
+				education.setUsers(user);
 				educationRepository.save(education);
 			});
 		}else {

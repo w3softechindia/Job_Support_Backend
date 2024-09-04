@@ -32,5 +32,5 @@ public class AdminApprovedProposal {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "freelancer_email")
-	private User freelancer;
+	private Users freelancer;
 }

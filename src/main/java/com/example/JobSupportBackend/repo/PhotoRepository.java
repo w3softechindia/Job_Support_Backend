@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.JobSupportBackend.entity.Photo;
 
 @Repository
-public interface PhotRepository  extends JpaRepository<Photo, Long>{
+public interface PhotoRepository  extends JpaRepository<Photo, Long>{
 
 }

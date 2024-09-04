@@ -46,7 +46,7 @@ import com.example.JobSupportBackend.entity.ProjectFile;
 import com.example.JobSupportBackend.entity.Review;
 import com.example.JobSupportBackend.entity.SendProposal;
 import com.example.JobSupportBackend.entity.Skills;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.InvalidPasswordException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
@@ -150,15 +150,15 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User register(Register register)
+	public Users register(Register register)
 			throws InvalidIdException, MessagingException, UnsupportedEncodingException {
-		Optional<User> user2 = repo.findById(register.getEmail());
+		Optional<Users> user2 = repo.findById(register.getEmail());
 		if (user2.isPresent()) {
 			throw new InvalidIdException("Email already exists...!!!" + register.getEmail());
 		} else {
 			String otp = otpUtil.generateOtp();
 			emailUtil.sendOtpMail(register.getEmail(), otp);
-			User user = User.builder().name(register.getName()).email(register.getEmail())
+			Users user = Users.builder().name(register.getName()).email(register.getEmail())
 					.password(getEncodedPassword(register.getPassword())).otp(otp).otpGeneratedtime(LocalDateTime.now())
 					.build();
 			user.setStatus("Yet To Be");
@@ -167,8 +167,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User updateRole(String email, String newRole) throws Exception {
-		User uuser = repo.findById(email).orElseThrow(() -> new Exception("Email Id not found..!!!"));
+	public Users updateRole(String email, String newRole) throws Exception {
+		Users uuser = repo.findById(email).orElseThrow(() -> new Exception("Email Id not found..!!!"));
 		if (uuser != null) {
 			uuser.setRole(newRole);
 			return repo.save(uuser);
@@ -178,8 +178,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception {
-		User uuser = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
+	public Users updatePersonalInfo(PersonalInfo personalInfo, String email) throws Exception {
+		Users uuser = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
 		uuser.setFirstname(personalInfo.getFirstname());
 		uuser.setLastname(personalInfo.getLastname());
 		uuser.setPhonenumber(personalInfo.getPhonenumber());
@@ -216,7 +216,7 @@ public class UserServiceImple implements UserService {
 
 		// Store the image path in the database
 		String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + folderName + "/" + uniqueFileName;
-		User user = repo.findByEmail(email);
+		Users user = repo.findByEmail(email);
 		if (user != null) {
 			user.setImagePath(imagePath);
 			repo.save(user);
@@ -276,7 +276,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	public byte[] getPhotoBytesByEmail(String email) throws IOException {
 		// Fetch the user entity by email
-		User user = repo.findByEmail(email);
+		Users user = repo.findByEmail(email);
 		if (user == null) {
 			throw new IllegalArgumentException("User with email " + email + " does not exist.");
 		}
@@ -304,8 +304,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User otherinfo(Otherinfo otherInfo, String email) throws Exception {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
+	public Users otherinfo(Otherinfo otherInfo, String email) throws Exception {
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
 		user.setFacebook(otherInfo.getFacebook());
 		user.setInstagram(otherInfo.getInstagram());
 		user.setLinkedin(otherInfo.getLinkedin());
@@ -320,15 +320,15 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User getDetails(String email) {
-		User user = repo.findByEmail(email);
+	public Users getDetails(String email) {
+		Users user = repo.findByEmail(email);
 		System.out.println(user);
 		return user;
 	}
 
 	@Override
-	public User employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
+	public Users employerInfo(EmployerInfo employerInfo, String email) throws InvalidIdException {
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email Id not found..!!!"));
 		user.setEcompany(employerInfo.getEcompany());
 		user.setEtagline(employerInfo.getEtagline());
 		user.setEstablishdate(employerInfo.getEstablishdate());
@@ -341,8 +341,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User verifyAccount(String email, String otp) throws Exception {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+	public Users verifyAccount(String email, String otp) throws Exception {
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.getOtp().equals(otp)
 				&& Duration.between(user.getOtpGeneratedtime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
 			user.setVerified(true);
@@ -355,7 +355,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	public String regenerateOtp(String email)
 			throws MessagingException, InvalidIdException, UnsupportedEncodingException {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		String otp = otpUtil.generateOtp();
 		emailUtil.sendOtpMail(email, otp);
 		user.setOtp(otp);
@@ -367,7 +367,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	public String sendOTP(String email)
 			throws InvalidIdException, MessagingException, ResourceNotFoundException, UnsupportedEncodingException {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found..!!" + email));
 		if (user.isVerified()) {
 			String otp = otpUtil.generateOtp();
 			emailUtil.sendPasswordOtp(email, otp);
@@ -382,7 +382,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public Boolean verifyOTP(String email, String otp) throws InvalidIdException {
-		User user = repo.findById(email)
+		Users user = repo.findById(email)
 				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
 		if (user.getOtp().equals(otp)
 				&& Duration.between(user.getOtpGeneratedtime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
@@ -393,23 +393,23 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User resetPassword(String email, String password) throws InvalidIdException {
-		User user = repo.findById(email)
+	public Users resetPassword(String email, String password) throws InvalidIdException {
+		Users user = repo.findById(email)
 				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
 		user.setPassword(getEncodedPassword(password));
 		return repo.save(user);
 	}
 
 	@Override
-	public User getUserByEmail(String email) {
-		User user = repo.findByEmail(email);
+	public Users getUserByEmail(String email) {
+		Users user = repo.findByEmail(email);
 		return user;
 	}
 
 	@Transactional
 	@Override
-	public User updateFreelancerDetails(String email, User user) throws InvalidIdException {
-		User user1 = repo.findById(email)
+	public Users updateFreelancerDetails(String email, Users user) throws InvalidIdException {
+		Users user1 = repo.findById(email)
 				.orElseThrow(() -> new InvalidIdException("User Email Doesnot exists with " + email));
 		user1.setFirstname(user.getFirstname());
 		user1.setLastname(user.getLastname());
@@ -420,44 +420,44 @@ public class UserServiceImple implements UserService {
 		user1.setDescription(user.getDescription());
 
 		// Delete existing skills associated with the user
-		skillsRepository.deleteByUserEmail(email);
-		educationRepository.deleteByUserEmail(email);
-		certificationRepository.deleteByUserEmail(email);
-		experienceRepository.deleteByUserEmail(email);
-		languageRepository.deleteByUserEmail(email);
+		skillsRepository.deleteByUsersEmail(email);
+		educationRepository.deleteByUsersEmail(email);
+		certificationRepository.deleteByUsersEmail(email);
+		experienceRepository.deleteByUsersEmail(email);
+		languageRepository.deleteByUsersEmail(email);
 
 		// Add new skills
 		if (user.getSkills() != null) {
 			for (Skills skill : user.getSkills()) {
-				skill.setUser(user1); // Set the user for the skill
+				skill.setUsers(user1); // Set the user for the skill
 				skillsRepository.save(skill);
 			}
 		}
 
 		if (user.getEducation() != null) {
 			for (Education education : user.getEducation()) {
-				education.setUser(user1);
+				education.setUsers(user1);
 				educationRepository.save(education);
 			}
 		}
 
 		if (user.getCertification() != null) {
 			for (Certification certification : user.getCertification()) {
-				certification.setUser(user1);
+				certification.setUsers(user1);
 				certificationRepository.save(certification);
 			}
 		}
 
 		if (user.getExperience() != null) {
 			for (Experience experience : user.getExperience()) {
-				experience.setUser(user1);
+				experience.setUsers(user1);
 				experienceRepository.save(experience);
 			}
 		}
 
 		if (user.getLanguage() != null) {
 			for (Language language : user.getLanguage()) {
-				language.setUser(user1);
+				language.setUsers(user1);
 				languageRepository.save(language);
 			}
 		}
@@ -476,7 +476,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public void changePassword(String email, String password, String newPassword) {
-		User user = repo.findByEmail(email);
+		Users user = repo.findByEmail(email);
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new InvalidPasswordException("Old password is incorrect");
@@ -487,7 +487,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public void postReason(String email, AccountDeletionRequests deletedAccounts) throws InvalidIdException {
-		User user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
+		Users user = repo.findById(email).orElseThrow(() -> new InvalidIdException("Email not found: " + email));
 		if (passwordEncoder.matches(deletedAccounts.getPassword(), user.getPassword())) {
 			deletedAccounts.setEmail(email);
 			String encodedPassword = getEncodedPassword(deletedAccounts.getPassword());
@@ -562,7 +562,7 @@ public class UserServiceImple implements UserService {
 		String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + portfoliosFolder + "/" + uniqueFileName;
 
 		// Retrieve the user associated with the email
-		User user = repo.findByEmail(email);
+		Users user = repo.findByEmail(email);
 		if (user == null) {
 			throw new ResourceNotFoundException("User with email " + email + " not found.");
 		}
@@ -573,7 +573,7 @@ public class UserServiceImple implements UserService {
 		}
 
 		// Set the user and photo path for the portfolio
-		portfolio.setUser(user);
+		portfolio.setUsers(user);
 		portfolio.setPhoto_path(imagePath);
 
 		// Save the portfolio to the database
@@ -583,7 +583,7 @@ public class UserServiceImple implements UserService {
 	@Override
 	public List<Portfolio> getAllPortfoliosWithImages(String email) throws IOException {
 		// Retrieve all portfolios for the given user email
-		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		List<Portfolio> portfolios = portfolioRepository.findByUsersEmail(email);
 
 		// Iterate through each portfolio and populate the photo_path with the image URL
 		for (Portfolio portfolio : portfolios) {
@@ -705,7 +705,7 @@ public class UserServiceImple implements UserService {
 		// Store the image path in the database
 		String imagePath = "https://" + bucketName + ".s3.amazonaws.com/" + portfoliosFolder + "/" + uniqueFileName;
 
-		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		List<Portfolio> portfolios = portfolioRepository.findByUsersEmail(email);
 
 		for (Portfolio port : portfolios) {
 			if (port.getTitle().equals(title1)) {
@@ -721,7 +721,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public String deletePortfolio(String email, String title) throws ResourceNotFoundException {
-		List<Portfolio> portfolios = portfolioRepository.findByUserEmail(email);
+		List<Portfolio> portfolios = portfolioRepository.findByUsersEmail(email);
 		for (Portfolio portfolio : portfolios) {
 			if (portfolio.getTitle().equals(title)) {
 				portfolioRepository.delete(portfolio);
@@ -733,17 +733,17 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public Portfolio getPortfolioByEmailAndTitle(String email, String title) {
-		Portfolio portfolio = portfolioRepository.findByUserEmailAndTitle(email, title);
+		Portfolio portfolio = portfolioRepository.findByUsersEmailAndTitle(email, title);
 		return portfolio;
 	}
 
 	@Override
-	public List<User> getAllUsers(String role) {
+	public List<Users> getAllUsers(String role) {
 		return repo.findByRole(role);
 	}
 
 	@Override
-	public List<User> getAllUsersByStatus(String role, String status) {
+	public List<Users> getAllUsersByStatus(String role, String status) {
 		return repo.findByRoleAndStatus(role, status);
 	}
 
@@ -764,7 +764,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public String getUserAccountStatus(String email) throws InvalidIdException {
-		User byEmail = repo.findByEmail(email);
+		Users byEmail = repo.findByEmail(email);
 		if (byEmail != null) {
 			return byEmail.getStatus();
 		} else {
@@ -776,7 +776,7 @@ public class UserServiceImple implements UserService {
 	public SendProposal sendProposal(long adminProjectId, String email, SendProposal proposal) {
 
 		Optional<AdminPostProject> adminProjectOptional = adminPostProjectRepository.findById(adminProjectId);
-		Optional<User> userOptional = repo.findById(email);
+		Optional<Users> userOptional = repo.findById(email);
 
 		// Check if both entities are present
 		if (adminProjectOptional.isPresent() && userOptional.isPresent()) {
@@ -786,7 +786,7 @@ public class UserServiceImple implements UserService {
 			proposal1.setCoverLetter(proposal.getCoverLetter());
 			proposal1.setProposalStatus("Yet To Be");
 			proposal1.setAdminPostProject(adminProjectOptional.get());
-			proposal1.setUser(userOptional.get());
+			proposal1.setUsers(userOptional.get());
 
 			SendProposal savedProposal = proposalsRepository.save(proposal1);
 
@@ -812,7 +812,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public List<SendProposal> getProposals(String email) {
-		return proposalsRepository.findByUserEmail(email);
+		return proposalsRepository.findByUsersEmail(email);
 	}
 
 	@Override
@@ -859,8 +859,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public User updateInfoForEmployeerDashBoard(String email, User updatedUser) throws Exception {
-		User existingUser = repo.findByEmail(email);
+	public Users updateInfoForEmployeerDashBoard(String email, Users updatedUser) throws Exception {
+		Users existingUser = repo.findByEmail(email);
 
 		if (existingUser == null) {
 			throw new Exception("User not found");
@@ -984,7 +984,7 @@ public class UserServiceImple implements UserService {
 	@Transactional
 	public void updatePhotoByEmail(String email, MultipartFile photo) throws IOException {
 		// Fetch the user from the database
-		User user = repo.findByEmail(email);
+		Users user = repo.findByEmail(email);
 		if (user != null) {
 			if (photo.isEmpty()) {
 				throw new IllegalArgumentException("Photo is empty");
@@ -1015,7 +1015,7 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public List<AdminPostProject> onGoingProjects(String email) throws ResourceNotFoundException {
-		List<SendProposal> proposals = proposalsRepository.findByUserEmail(email);
+		List<SendProposal> proposals = proposalsRepository.findByUsersEmail(email);
 		List<AdminPostProject> ongoingProjects = new ArrayList<>();
 
 		for (SendProposal proposal : proposals) {
@@ -1089,8 +1089,8 @@ public class UserServiceImple implements UserService {
 
 	@Override
 	public ChartData getChartData(String email) {
-		long[] series = { proposalsRepository.countByUserEmail(email),
-				proposalsRepository.countByProposalStatusAndUserEmail("Approved", email),
+		long[] series = { proposalsRepository.countByUsersEmail(email),
+				proposalsRepository.countByProposalStatusAndUsersEmail("Approved", email),
 				completedProjectRepository.countByFreelancer(email),
 				adminApprovedProposalRepository.countByFreelancerEmailAndPendingStatus(email) };
 		String[] labels = { "Proposals", "Approved Proposals", "Completed Jobs", "Ongoing Jobs" };
@@ -1098,8 +1098,8 @@ public class UserServiceImple implements UserService {
 	}
 
 	@Override
-	public List<User> gellallUsers() {
-		List<User> findAll = repo.findAll();
+	public List<Users> gellallUsers() {
+		List<Users> findAll = repo.findAll();
 		return findAll;
 	}
 
