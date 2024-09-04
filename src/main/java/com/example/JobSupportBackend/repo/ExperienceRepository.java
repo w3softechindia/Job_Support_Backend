@@ -9,8 +9,8 @@ import com.example.JobSupportBackend.entity.Experience;
 
 @Repository
 public interface ExperienceRepository extends JpaRepository<Experience, Integer>{
-	List<Experience> findByUserEmail(String email);
+	List<Experience> findByUsersEmail(String email);
 
-	void deleteByUserEmail(String email);
+	void deleteByUsersEmail(String email);
 
 }

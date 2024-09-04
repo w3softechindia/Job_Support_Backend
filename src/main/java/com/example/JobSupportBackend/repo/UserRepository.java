@@ -6,20 +6,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<Users, String> {
 
-	User findByEmail(String email);
+	Users findByEmail(String email);
 
 	@Modifying
-	@Query(value = "UPDATE User u SET u.imageBytes = :imageBytes WHERE u.email = :email")
+	@Query(value = "UPDATE Users u SET u.imageBytes = :imageBytes WHERE u.email = :email")
 	void saveImageBytes(String email, byte[] imageBytes);
 
-	List<User> findByRole(String role);
+	List<Users> findByRole(String role);
 
-	List<User> findByRoleAndStatus(String role, String status);
+	List<Users> findByRoleAndStatus(String role, String status);
 
 	int countByRole(String role);
 

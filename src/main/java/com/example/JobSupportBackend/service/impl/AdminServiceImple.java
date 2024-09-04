@@ -15,7 +15,7 @@ import com.example.JobSupportBackend.entity.AdminPostProject;
 import com.example.JobSupportBackend.entity.DeletedAccounts;
 import com.example.JobSupportBackend.entity.PostProject;
 import com.example.JobSupportBackend.entity.SendProposal;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 import com.example.JobSupportBackend.repo.AccountDeletionRequestsRepository;
@@ -23,7 +23,6 @@ import com.example.JobSupportBackend.repo.AdminApprovedProposalRepository;
 import com.example.JobSupportBackend.repo.AdminPostProjectRpository;
 import com.example.JobSupportBackend.repo.AdminRepository;
 import com.example.JobSupportBackend.repo.CertificationRepository;
-import com.example.JobSupportBackend.repo.DeletedAccountsRepository;
 import com.example.JobSupportBackend.repo.EducationRepository;
 import com.example.JobSupportBackend.repo.ExperienceRepository;
 import com.example.JobSupportBackend.repo.LanguageRepository;
@@ -77,9 +76,6 @@ public class AdminServiceImple implements AdminService {
 	
 	@Autowired
 	private ProjectRepo projectRepo;
-	
-	@Autowired
-	private DeletedAccountsRepository deletedAccountsRepository;
 
 	@Autowired
 	private EmailUtil emailUtil;
@@ -101,8 +97,8 @@ public class AdminServiceImple implements AdminService {
 	}
 
 	@Override
-	public User setStatus(String email, String status) throws ResourceNotFoundException {
-		User byEmail = userRepository.findByEmail(email);
+	public Users setStatus(String email, String status) throws ResourceNotFoundException {
+		Users byEmail = userRepository.findByEmail(email);
 		if (byEmail != null) {
 			byEmail.setStatus(status);
 			return userRepository.save(byEmail);
@@ -113,15 +109,15 @@ public class AdminServiceImple implements AdminService {
 
 	@Override
 	public String deleteUser(String email) throws InvalidIdException {
-		User byEmail = userRepository.findByEmail(email);
+		Users byEmail = userRepository.findByEmail(email);
 		if (byEmail != null) {
-			skillsRepository.deleteByUserEmail(email);
-			educationRepository.deleteByUserEmail(email);
-			certificationRepository.deleteByUserEmail(email);
-			experienceRepository.deleteByUserEmail(email);
-			languageRepository.deleteByUserEmail(email);
+			skillsRepository.deleteByUsersEmail(email);
+			educationRepository.deleteByUsersEmail(email);
+			certificationRepository.deleteByUsersEmail(email);
+			experienceRepository.deleteByUsersEmail(email);
+			languageRepository.deleteByUsersEmail(email);
 			accountsRepository.deleteById(email);
-			portfolioRepository.deleteByUserEmail(email);
+			portfolioRepository.deleteByUsersEmail(email);
 
 			userRepository.delete(byEmail);
 
@@ -142,15 +138,15 @@ public class AdminServiceImple implements AdminService {
 
 		AdminApprovedProposal approvedProposal = new AdminApprovedProposal();
 		approvedProposal.setStatus(approvalStatus); // Dynamic status
-		approvedProposal.setFreelancer(sendProposal.getUser()); // Assuming the User is the freelancer
+		approvedProposal.setFreelancer(sendProposal.getUsers()); // Assuming the User is the freelancer
 		approvedProposal.setAdminPostProject(project);
 
 		adminApprovedProposalRepository.save(approvedProposal);
 //		project.setAdminApprovedProposal(approvedProposal);
 		adminPostProjectRpository.save(project);
 		
-		emailUtil.sendFreelancerHiringNotification(sendProposal.getUser().getEmail(), project.getProject_title());
-		emailUtil.sendProjectStartedNotification(project.getUser().getEmail(), sendProposal.getUser().getName(), project.getProject_title());
+		emailUtil.sendFreelancerHiringNotification(sendProposal.getUsers().getEmail(), project.getProject_title());
+		emailUtil.sendProjectStartedNotification(project.getUser().getEmail(), sendProposal.getUsers().getName(), project.getProject_title());
 
 		sendProposal.setProposalStatus(proposalStatus); // Dynamic acceptance status
 		proposalsRepository.save(sendProposal);
@@ -171,7 +167,7 @@ public class AdminServiceImple implements AdminService {
 		proposalsRepository.save(proposal);
 
 		// Assuming the freelancer's email can be fetched like this
-		String freelancerEmail = proposal.getUser().getEmail();
+		String freelancerEmail = proposal.getUsers().getEmail();
 		
 		emailUtil.sendRejectionNotification(freelancerEmail, proposal.getAdminPostProject().getProject_title());
 
@@ -196,7 +192,7 @@ public class AdminServiceImple implements AdminService {
 	public String rejectProjectToEmployer(Long projectId) throws MessagingException, UnsupportedEncodingException {
 		PostProject postProject = projectRepo.findById(projectId).get();
 		if(postProject!=null) {
-			emailUtil.sendProjectRejectionToEmployer(postProject.getUser().getEmail(), postProject.getProject_title());
+			emailUtil.sendProjectRejectionToEmployer(postProject.getUsers().getEmail(), postProject.getProject_title());
 			return "Project Rejected Succesfully";
 		}
 		return "No Projects Found";

@@ -3,7 +3,8 @@ package com.example.JobSupportBackend.dto;
 import java.util.Date;
 import java.util.List;
 
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -22,7 +23,7 @@ public class ProjectDTO {
 	private String city;
 	private String state;
 	private Long project_id;
-	private User user;
+	private Users user;
 	private Date deadline_date;
 
 	private String freelancer_type;

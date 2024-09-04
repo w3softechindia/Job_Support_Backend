@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.JobSupportBackend.entity.Language;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.LanguageRepository;
 import com.example.JobSupportBackend.repo.UserRepository;
@@ -22,10 +22,10 @@ public class LanguageServiceImple implements LanguageService{
 
 	@Override
 	public void addLanguages(String userEmail, List<Language> languages) throws InvalidIdException {
-		User user = userRepository.findByEmail(userEmail);
+		Users user = userRepository.findByEmail(userEmail);
 		if(user!=null) {
 			languages.forEach(language->{
-				language.setUser(user);
+				language.setUsers(user);
 				languageRepository.save(language);
 			});
 		}else {

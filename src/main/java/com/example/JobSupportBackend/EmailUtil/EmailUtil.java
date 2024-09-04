@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.repo.UserRepository;
 
@@ -48,7 +48,7 @@ public class EmailUtil {
 	}
 
 	public void sendPasswordOtp(String email, String otp) throws MessagingException, InvalidIdException, UnsupportedEncodingException {
-		User user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
+		Users user = userRepository.findById(email).orElseThrow(()-> new InvalidIdException("Email doesnot exist..!!"));
 		String name=user.getName();
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);

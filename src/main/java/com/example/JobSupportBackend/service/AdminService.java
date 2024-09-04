@@ -3,10 +3,9 @@ package com.example.JobSupportBackend.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import com.example.JobSupportBackend.entity.AccountDeletionRequests;
 import com.example.JobSupportBackend.entity.Admin;
 import com.example.JobSupportBackend.entity.AdminApprovedProposal;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 import com.example.JobSupportBackend.exceptions.InvalidIdException;
 import com.example.JobSupportBackend.exceptions.ResourceNotFoundException;
 
@@ -18,7 +17,7 @@ public interface AdminService {
 	
 	public Admin login(String email,String password) throws InvalidIdException;
 	
-	public User setStatus(String email,String status) throws ResourceNotFoundException;
+	public Users setStatus(String email,String status) throws ResourceNotFoundException;
 	
 	public String deleteUser(String email) throws InvalidIdException;
 	

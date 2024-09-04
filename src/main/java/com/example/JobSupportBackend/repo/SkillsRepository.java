@@ -7,17 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.JobSupportBackend.entity.Skills;
-import com.example.JobSupportBackend.entity.User;
+import com.example.JobSupportBackend.entity.Users;
 
 @Repository
 public interface SkillsRepository extends JpaRepository<Skills, Integer> {
 
-	List<Skills> findByUserEmail(String email);
+	List<Skills> findByUsersEmail(String email);
 
-	Skills deleteAllByUser(User user);
+	Skills deleteAllByUsersEmail(Users user);
 	
 	@Query(value="select skill from Skills skill where skill.skillName=?1")
 	Skills findByName(String skillName);
   
-	void deleteByUserEmail(String email);
+	void deleteByUsersEmail(String email);
 }

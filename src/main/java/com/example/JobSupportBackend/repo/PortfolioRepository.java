@@ -10,9 +10,9 @@ import com.example.JobSupportBackend.entity.Portfolio;
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Integer>{
 
-	List<Portfolio> findByUserEmail(String email);
+	List<Portfolio> findByUsersEmail(String email);
 	
-	Portfolio findByUserEmailAndTitle(String email, String title);
+	Portfolio findByUsersEmailAndTitle(String email, String title);
 
-	void deleteByUserEmail(String email);
+	void deleteByUsersEmail(String email);
 }

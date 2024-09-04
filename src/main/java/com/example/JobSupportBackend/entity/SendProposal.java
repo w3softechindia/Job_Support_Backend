@@ -28,16 +28,12 @@ public class SendProposal {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int proposalId;
 	
-	@JsonProperty("proposedPrice")
 	private String proposedPrice;
 
-	@JsonProperty("estimatedDelivery")
 	private String estimatedDelivery;
 
-	@JsonProperty("coverLetter")
 	private String coverLetter;
 	
-	@JsonProperty("proposalStatus")
 	private String proposalStatus;
 
 	
@@ -46,10 +42,8 @@ public class SendProposal {
 	private List<Milestone> milestones;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_email")
-	private User user;
+	private Users users;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_project_id")
 	private AdminPostProject adminPostProject;
 }
